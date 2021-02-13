@@ -8,25 +8,16 @@ from kivy.properties import (
 from kivy.vector import Vector
 
 
-def GetKvColor(colordata=(0,0,0,0,'rgba')):
-    r = colordata[0]
-    g = colordata[1]
-    b = colordata[2]
-    a = colordata[3]
-    mode = colordata[4]
-    item = Color(r,g,b,a,mode=mode)
-    return item
-
 class SimpleSprite(Widget):
     color = ObjectProperty(None)
     shape = ObjectProperty(None)
     speed = ObjectProperty(None)
     
-    def set_variables(self,size,pos,colordata,speed,shape,size_hint,obstacle):
+    def set_variables(self,size,pos,color,speed,shape,size_hint,obstacle):
         #print('Cell.set_variables')
         self.obstacle = obstacle
         self.speed = speed
-        self.color = GetKvColor(colordata)
+        self.color = color
         self.size_hint = size_hint
         if shape != None:
             try:
@@ -43,10 +34,11 @@ class SimpleSprite(Widget):
             #print('shape=',shape,' , the default')
 
 
-    def __init__(self,size=(16,16),pos=(0,0),colordata=(0,0,0,0,'rgba'),speed = 1,shape=None,size_hint = (1,1),obstacle=False):
+    def __init__(self,size=(16,16),pos=(0,0),color=Color(0,0,0,0),speed = 1,shape=None,size_hint = (1,1),obstacle=False):
         #print('Cell.__init__')
         super().__init__()
-        self.set_variables(size=size,pos=pos,colordata=colordata,speed=speed,shape=shape,size_hint=size_hint,obstacle=obstacle)
+        self.set_variables(size=size,pos=pos,color=color,speed=speed,shape=shape,size_hint=size_hint,obstacle=obstacle)
+        #print(self.color)
         self.init_canvas()
         self.post_init()
 
@@ -97,16 +89,16 @@ class Sprite(SimpleSprite):
     collider = ObjectProperty(None)
 
     # By default will draw a blue square. 
-    def __init__(self,size=(16,16),pos=(0,0),colordata=(0,0,1,0,'rgba'),speed=1,shape=None,size_hint=(1,1),obstacle=False):
-        super().__init__(size=size,pos=pos,colordata=colordata,shape=shape,size_hint=size_hint,obstacle=obstacle)
-        self.transparentcolor = 0,0,0,0,'rgba'
+    def __init__(self,size=(16,16),pos=(0,0),color=Color(0,0,1,0),speed=1,shape=None,size_hint=(1,1),obstacle=False):
+        super().__init__(size=size,pos=pos,color=color,shape=shape,size_hint=size_hint,obstacle=obstacle)
+        self.transparentcolor = Color(0,0,0,0)
         self.init_collider()        
 
     def init_collider(self):
         ##print('initializing collider')
         if self.collider != None:
             self.remove_widget(self.collider)
-        self.collider = SimpleSprite(shape=self.shape,colordata=(1,0,0,1,'rgba'),speed=self.speed,size_hint = self.size_hint)
+        self.collider = SimpleSprite(shape=self.shape,color=Color(1,0,0,1),speed=self.speed,size_hint = self.size_hint)
         self.add_widget(self.collider)
 
     def check_collision(self,widget,vector):
@@ -133,17 +125,17 @@ class Sprite(SimpleSprite):
         
 
 class Cell(SimpleSprite):
-    def __init__(self,size=(16,16),pos=(0,0),colordata=(175/256,176/256,148/256,0,'rgba')):
+    def __init__(self,size=(16,16),pos=(0,0),color=Color(175/256,176/256,148/256,0)):
         #print('Cell.__init__')
-        super().__init__(size=size,pos=pos,colordata=colordata)
+        super().__init__(size=size,pos=pos,color=color)
 
 
 class Wall(SimpleSprite):
     blockHoriz = ObjectProperty(None)
     blockVert = ObjectProperty(None)     
 
-    def __init__(self,size=(16,16),pos=(0,0),colordata=(0,0,1,1,'rgba'),obstacle=True):
-        super().__init__(size=size,pos=pos,colordata=colordata,obstacle=obstacle)
+    def __init__(self,size=(16,16),pos=(0,0),color=Color(0,0,1,1),obstacle=True):
+        super().__init__(size=size,pos=pos,color=color,obstacle=obstacle)
         self.blockVert = False
         self.blockHoriz = True        
           
@@ -153,23 +145,25 @@ class Floor(SimpleSprite):
     blockHoriz = ObjectProperty(None)
     blockVert = ObjectProperty(None) 
 
-    def __init__(self,size=(16,16),pos=(0,0),colordata=(0,0,1,1,'rgba'),obstacle=True):
-        super().__init__(size=size,pos=pos,colordata=colordata,obstacle=obstacle)
+    def __init__(self,size=(16,16),pos=(0,0),color=Color(0,0,1,1),obstacle=True):
+        super().__init__(size=size,pos=pos,color=color,obstacle=obstacle)
         self.blockHoriz = False
         self.blockVert = True
 
 class Ball(Sprite):
     id = ObjectProperty(None)
-    def __init__(self,size=(16,16),pos=(0,0),colordata=(.75,0,0,1,'rgba'),size_hint=(None,None),speed = 1):
-        super().__init__(shape=Ellipse(size=size,pos=pos),colordata=colordata,size_hint=size_hint,speed=speed)
+    def __init__(self,size=(16,16),pos=(0,0),color=Color(.75,0,0,1),size_hint=(None,None),speed = 1):
+        super().__init__(shape=Ellipse(size=size,pos=pos),color=color,size_hint=size_hint,speed=speed)
         self.id='ball'
 
 
 class Goal(SimpleSprite):  
     id = ObjectProperty(None)     
 
-    def __init__(self,size=(16,16),pos=(0,0),colordata=(0,.75,0,1,'rgba'),size_hint=(None,None)):
-        self.transparentcolor = 0,0,0,0,'rgba'
-        super().__init__(size=size,pos=pos,colordata=self.transparentcolor,size_hint=size_hint)
+    def __init__(self,size=(16,16),pos=(0,0),textColordata=[0,.75,0,1],size_hint=(None,None)):
+        self.transparentColor = Color(0,0,0,0)
+        super().__init__(size=size,pos=pos,color=self.transparentColor,size_hint=size_hint)
         self.id='goal'
-        self.add_widget(Label(text='EXIT',text_size=self.size,color=(0,.75,0,1)))
+        l = Label(text='EXIT',text_size=self.size,pos=self.pos,color=textColordata) 
+        self.add_widget(l)  
+
