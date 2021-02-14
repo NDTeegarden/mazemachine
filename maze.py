@@ -101,9 +101,12 @@ class MazeGame(Widget):
             self.quit()    
  # ------------------------------------------------------               
     def end_game(self, victory=True):
-        print('end_game')
+        if victory:
+            text = 'You won!'
+        else:
+            text = 'Ready to begin?'
         self.running = False
-        self.playfield.show_menu(self.difficulty)
+        self.playfield.show_menu(difficulty=self.difficulty, caption=text)
 # ------------------------------------------------------
     def quit(self):
         self.playfield.hide_menu()
@@ -112,7 +115,7 @@ class MazeGame(Widget):
 # ------------------------------------------------------
     #bind touch events to controller object
     def on_touch_down(self, touch):
-        print('MazeGame.on_touch_down')
+        #print('MazeGame.on_touch_down')
         if self.running:
             touch.grab(self)
             if (self.player1 != None):
@@ -128,7 +131,7 @@ class MazeGame(Widget):
         return super().on_touch_move(touch)                    
 # ------------------------------------------------------
     def on_touch_up(self, touch):
-        print('MazeGame.on_touch_up')
+        #print('MazeGame.on_touch_up')
         if self.running:
             if touch.grab_current is self:
                 touch.ungrab(self)
@@ -173,8 +176,8 @@ class Playfield(FloatLayout):
         self.rect.pos = self.pos
         self.rect.size = self.size 
 # ------------------------------------------------------
-    def show_menu(self,difficulty):
-        self.gameMenu = GameMenu(difficulty=difficulty)
+    def show_menu(self,difficulty,caption):
+        self.gameMenu = GameMenu(difficulty=difficulty,caption=caption)
         self.add_widget(self.gameMenu)
 # ------------------------------------------------------
     def hide_menu(self):
