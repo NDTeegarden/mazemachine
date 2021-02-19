@@ -38,12 +38,12 @@ class GameMenu(FloatLayout):
 # ------------------------------------------------------
     def add_buttons(self):
         print(self.top)
-        self.newButton = Button(text='New Maze',size_hint=(.3,.2),pos_hint={'x': .7,'top': .8},background_normal='assets/green_roundedrect.png',background_down='assets/gray_roundedrect.png')
+        self.newButton = Button(text='New Maze',size_hint=(.3,.2),pos_hint={'x': .5,'top': .8},background_normal='assets/green_roundedrect.png',background_down='assets/gray_roundedrect.png')
         def callback(instance,value):
             instance.text_size=instance.texture_size
         self.newButton.bind(texture_size=callback)
         self.newButton.bind(on_press=self.new_game)
-        self.quitButton = Button(text='Quit',size_hint=(.3,.2),pos_hint={'x': .7,'top': .4},background_normal='assets/red_roundedrect.png',background_down='assets/gray_roundedrect.png')
+        self.quitButton = Button(text='Quit',size_hint=(.3,.2),pos_hint={'x': .5,'top': .4},background_normal='assets/red_roundedrect.png',background_down='assets/gray_roundedrect.png')
         def callback(instance,value):
             instance.text_size=instance.texture_size
         self.quitButton.bind(texture_size=callback)
@@ -54,7 +54,7 @@ class GameMenu(FloatLayout):
 # ------------------------------------------------------
     def add_level_selector(self):
         #print (self.newButton.pos)
-        self.difSelector = Selector(size_hint=(.35,.75),pos_hint={'x': .15, 'top' : .85}) 
+        self.difSelector = Selector(size_hint=(.35,.75),pos_hint={'x': 0, 'top' : .85}) 
         self.add_widget(self.difSelector)
         self.difSelector.build(min=1, max=5,value=self.difficulty,orientation='vertical',title='Difficulty',descriptors=['Easy','Moderate','Standard','Hard','Maximum'])
         #print(self.difSelector.shape.size)
@@ -69,22 +69,46 @@ class GameMenu(FloatLayout):
 # ------------------------------------------------------
     def build(self,difficulty,caption):
         self.size_hint = (.75,.75) 
-        self.pos_hint = {'x': .25, 'top': .75}
+        self.pos_hint = {'center_x': .5, 'center_y': .5}
         self.anchor_x = 'center'
         self.anchor_y = 'top'
         self.newFlag = False
         self.quitFlag = False
         self.difficulty = difficulty
         self.caption = caption
-#   
+        self.init_canvas()
         self.add_caption()
         self.add_buttons()
         self.add_level_selector()
         self.canvas.ask_update()
 # ------------------------------------------------------
+    def init_canvas(self,color=Color(0,0,0,.8),shape=None):
+        self.color = color
+        if shape == None:
+            shape = self.default_shape()
+        self.shape = shape
+        self.canvas.clear()
+        self.canvas.before.add(self.color)
+        self.canvas.before.add(self.shape)
+        self.bind(pos=self.update_canvas)
+        self.bind(size=self.update_canvas)  
+# ------------------------------------------------------
     def update(self):
         self.canvas.ask_update()
-
+# ------------------------------------------------------
+    def default_shape(self):
+        s = Rectangle(size=self.size,pos=self.pos) 
+        return s
+# ------------------------------------------------------
+    def update_shape(self):
+        self.shape.pos = self.pos
+        self.shape.size = self.size
+# ------------------------------------------------------
+    def update_canvas(self,*args):
+        try:
+            self.update_shape()
+        except Exception:
+            print('widget',self,'failed to update_shape')             
 
 
 class Selector(FloatLayout):
@@ -100,7 +124,7 @@ class Selector(FloatLayout):
     def build(self,min,max,value,title,descriptors,orientation):
         self.shape = self.default_shape()
         #print(self.shape.size,self.shape.pos)
-        self.color = Color(.2,.3,0,.8)
+        self.color = Color(.2,.3,0,0)
         self.init_canvas()
         min = round(min)
         max = round(max)

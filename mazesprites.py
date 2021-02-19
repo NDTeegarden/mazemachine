@@ -73,8 +73,12 @@ class SimpleSprite(Widget):
         ##print('moving with vector',vector)
         if (vector != (0,0)):
             s = self.speed
-            dx = vector[0] * s
-            dy = vector[1] * s
+            try:
+                dx = vector[0] * s
+                dy = vector[1] * s
+            except Exception:
+                dx = 0
+                dy = 0
             x = self.pos[0] + dx
             y = self.pos[1] + dy
             self.pos = (x,y)
@@ -103,24 +107,29 @@ class Sprite(SimpleSprite):
 
     def check_collision(self,widget,vector):
         newvector = vector
-        c = self.collider
-        c.speed = self.speed
-        c.pos = self.pos
-        c.size = self.size
-        c.size_hint = (None,None)
-        c.move(newvector)
-        if (c.collide_widget(widget)):
-            newvector = (0,vector[1])
-            c.moveTo(self.pos)
+        if not newvector == (0,0):
+            c = self.collider
+            c.speed = self.speed
+            c.pos = self.pos
+            c.size = (self.size[0]-2,self.size[1]-2)
+            #c.size_hint = (None,None)
             c.move(newvector)
             if (c.collide_widget(widget)):
-                newvector = (vector[0],0)
+                print('colllision with',widget,'using vector',newvector)
+                newvector = (0,vector[1])
                 c.moveTo(self.pos)
                 c.move(newvector)
                 if (c.collide_widget(widget)):
-                    newvector=(0,0)
+                    print('colllision with',widget,'using vector',newvector)
+                    newvector = (vector[0],0)
                     c.moveTo(self.pos)
-        c.moveTo(self.pos)                    
+                    c.move(newvector)
+                    if (c.collide_widget(widget)):
+                        print('colllision with',widget,'using vector',newvector)
+                        newvector=(0,0)
+                        c.moveTo(self.pos)
+                print('newvector is',newvector)
+            c.moveTo(self.pos)                    
         return newvector
         
 

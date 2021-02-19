@@ -1,7 +1,10 @@
 #system imports
 import numpy as np
+import random as rn
 
 #kivy imports
+import kivy
+kivy.require('2.0.0')
 from kivy.config import Config
 Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
 from kivy.app import App
@@ -65,7 +68,7 @@ class MazeGame(Widget):
         self.playfield.DrawMaze(mg.GetMaze())
         self.playfield.PlaceGoal(self.playfield.end)
         self.playfield.PlaceBall(self.playfield.start)
-        self.player1 = hi.HumInt()
+        self.player1 = hi.HumInt(rootWidget=self)
         self.running = True
 
     def get_grid_size(self,difficulty):
@@ -102,11 +105,17 @@ class MazeGame(Widget):
  # ------------------------------------------------------               
     def end_game(self, victory=True):
         if victory:
-            text = 'You won!'
+            text = self.get_victory_text()
         else:
             text = 'Ready to begin?'
         self.running = False
         self.playfield.show_menu(difficulty=self.difficulty, caption=text)
+# ------------------------------------------------------
+    def get_victory_text(self):
+        values = ('Nice job!','You win!','Good work!')
+        r = rn.randrange(0, len(values))
+        item = values[r]
+        return item
 # ------------------------------------------------------
     def quit(self):
         self.playfield.hide_menu()
@@ -114,30 +123,30 @@ class MazeGame(Widget):
         exit()
 # ------------------------------------------------------
     #bind touch events to controller object
-    def on_touch_down(self, touch):
-        #print('MazeGame.on_touch_down')
-        if self.running:
-            touch.grab(self)
-            if (self.player1 != None):
-                self.player1.Handle_Touch_Down(touch)
-        return super().on_touch_down(touch)                
+    # def on_touch_down(self, touch):
+    #     #print('MazeGame.on_touch_down')
+    #     if self.running:
+    #         touch.grab(self)
+    #         if (self.player1 != None):
+    #             self.player1.handle_touch_down(touch)
+    #     return super().on_touch_down(touch)                
 # ------------------------------------------------------    
-    def on_touch_move(self, touch):
-        if self.running:
-            if touch.grab_current is self:
-                # now we only handle moves which we have grabbed
-                if (self.player1 != None):
-                    self.player1.Handle_Touch_Move(touch)
-        return super().on_touch_move(touch)                    
-# ------------------------------------------------------
-    def on_touch_up(self, touch):
-        #print('MazeGame.on_touch_up')
-        if self.running:
-            if touch.grab_current is self:
-                touch.ungrab(self)
-                if (self.player1 != None):
-                    self.player1.Handle_Touch_Up(touch)
-        return super().on_touch_up(touch)                    
+#     def on_touch_move(self, touch):
+#         if self.running:
+#             if touch.grab_current is self:
+#                 # now we only handle moves which we have grabbed
+#                 if (self.player1 != None):
+#                     self.player1.handle_touch_move(touch)
+#         return super().on_touch_move(touch)                    
+# # ------------------------------------------------------
+#     def on_touch_up(self, touch):
+#         #print('MazeGame.on_touch_up')
+#         if self.running:
+#             if touch.grab_current is self:
+#                 touch.ungrab(self)
+#                 if (self.player1 != None):
+#                     self.player1.handle_touch_up(touch)
+#         return super().on_touch_up(touch)                    
 
 # ######################################################
 class Playfield(FloatLayout):
@@ -232,12 +241,12 @@ class Playfield(FloatLayout):
     def PlaceGoal(self,cell):
         w = int(cell.size[0])
         h = int(cell.size[1])        
-        x = cell.pos[0] - int(w / 2 )
-        y = cell.pos[1] - int(h / 2) #- 8
+        x = cell.pos[0] #- int(w / 2 )
+        y = cell.pos[1] #- int(h / 2) #- 8
         #print(cell.pos,cell.size)
         self.goal = Goal(pos=(x,y),size=(w,h),textColordata=self.goalColordata)
-        self.add_widget(self.goal)
-        self.goal.moveTo(cell.pos)       
+        cell.add_widget(self.goal)
+        #self.goal.moveTo(cell.pos)       
 # ------------------------------------------------------
     def CheckCollissions(self,sprite,vector):
         newvector = vector
@@ -265,14 +274,14 @@ class Playfield(FloatLayout):
     def CheckVictory(self,sprite,goal):
         item = sprite.collide_widget(goal)
         return item                                    
-  # ------------------------------------------------------                      
-
+# ------------------------------------------------------                      
     def MoveSprite(self,player,sprite):
-        v = player.GetVector()
+        v = player.get_vector()
         if v != (0,0):
             newvector = self.CheckCollissions(sprite,v)
-            if newvector != (0,0):
+            if newvector != (0,0) and newvector != None:
                 sprite.move(newvector)
+                player.SetVector(newvector)
 
         
 
