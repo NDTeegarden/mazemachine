@@ -6,7 +6,7 @@ from kivy.properties import (
     NumericProperty, ReferenceListProperty, ObjectProperty
 )
 from kivy.vector import Vector
-
+from kivy.logger import Logger
 
 class SimpleSprite(Widget):
     color = ObjectProperty(None)
@@ -94,7 +94,7 @@ class Sprite(SimpleSprite):
 
     # By default will draw a blue square. 
     def __init__(self,size=(16,16),pos=(0,0),color=Color(0,0,1,0),speed=1,shape=None,size_hint=(1,1),obstacle=False):
-        super().__init__(size=size,pos=pos,color=color,shape=shape,size_hint=size_hint,obstacle=obstacle)
+        super().__init__(size=size,pos=pos,color=color,speed=speed,shape=shape,size_hint=size_hint,obstacle=obstacle)
         self.transparentcolor = Color(0,0,0,0)
         self.init_collider()        
 
@@ -111,24 +111,24 @@ class Sprite(SimpleSprite):
             c = self.collider
             c.speed = self.speed
             c.pos = self.pos
-            c.size = (self.size[0]-2,self.size[1]-2)
+            c.size = self.size
             #c.size_hint = (None,None)
             c.move(newvector)
             if (c.collide_widget(widget)):
-                print('colllision with',widget,'using vector',newvector)
+                #print('colllision with',widget,'using vector',newvector)
                 newvector = (0,vector[1])
                 c.moveTo(self.pos)
                 c.move(newvector)
                 if (c.collide_widget(widget)):
-                    print('colllision with',widget,'using vector',newvector)
+                    #print('colllision with',widget,'using vector',newvector)
                     newvector = (vector[0],0)
                     c.moveTo(self.pos)
                     c.move(newvector)
                     if (c.collide_widget(widget)):
-                        print('colllision with',widget,'using vector',newvector)
+                        #print('colllision with',widget,'using vector',newvector)
                         newvector=(0,0)
                         c.moveTo(self.pos)
-                print('newvector is',newvector)
+                #print('newvector is',newvector)
             c.moveTo(self.pos)                    
         return newvector
         
@@ -161,18 +161,14 @@ class Floor(SimpleSprite):
 
 class Ball(Sprite):
     id = ObjectProperty(None)
-    def __init__(self,size=(16,16),pos=(0,0),color=Color(.75,0,0,1),size_hint=(None,None),speed = 1):
+    def __init__(self,size=(16,16),pos=(0,0),color=Color(.75,0,0,1),size_hint=(None,None),speed = 2):
         super().__init__(shape=Ellipse(size=size,pos=pos),color=color,size_hint=size_hint,speed=speed)
         self.id='ball'
 
 
-class Goal(SimpleSprite):  
+class Goal(Image):  
     id = ObjectProperty(None)     
 
-    def __init__(self,size=(16,16),pos=(0,0),textColordata=[0,.75,0,1],size_hint=(None,None)):
-        self.transparentColor = Color(0,0,0,0)
-        super().__init__(size=size,pos=pos,color=self.transparentColor,size_hint=size_hint)
-        self.id='goal'
-        l = Label(text='EXIT',text_size=self.size,pos=self.pos,color=textColordata) 
-        self.add_widget(l)  
+
+          
 

@@ -1,8 +1,7 @@
 # from https://github.com/BSolonenko/Maze-Generator
-
-import json
 import random
 import numpy as np
+from kivy.logger import Logger
 
 class EllerMaze(object):
 
@@ -83,18 +82,6 @@ class EllerMaze(object):
 
         return newgrid     
       
-    def ToJSON(self):
-        return json.dumps({
-            'Width': self.Width,
-            'Height': self.Height,
-            'Graph': self.m_EllerMaze
-            })
-
-    def FromJSON(self, jsonString):
-        data = json.loads(jsonString)
-        self.Width = data['Width']
-        self.Height = data['Height']
-        self.m_EllerMaze = data['Graph']
 
 # #####################################
 class EllerMazeGenerator(object):

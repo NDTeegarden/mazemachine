@@ -1,12 +1,9 @@
-#system imports
-import numpy as np
-import random as rn
-
 #kivy imports
 import kivy
 kivy.require('2.0.0')
 from kivy.config import Config
 Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
+from kivy.logger import Logger, LOG_LEVELS
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.uix.layout import Layout
@@ -17,12 +14,19 @@ from kivy.properties import (NumericProperty, BoundedNumericProperty, ReferenceL
 from kivy.vector import Vector
 from kivy.clock import Clock
 
+#plyer imports
+from plyer import accelerometer
+
 #local imports
 from ellermaze import EllerMaze
 from ellermaze import EllerMazeGenerator
 import humint as hi
 from mazesprites import (Cell, Wall, Floor, Ball, Goal)
 from menu import GameMenu
+
+#system imports
+import numpy as np
+import random as rn
 
 
 class MazeApp(App):
@@ -40,6 +44,7 @@ class MazeApp(App):
 
 
 class MazeGame(Widget):
+    Logger.setLevel(LOG_LEVELS["debug"])
     mazeGenerator = ObjectProperty(None)
     gridHeight = ObjectProperty(None)
     gridWidth = ObjectProperty(None)
@@ -52,31 +57,37 @@ class MazeGame(Widget):
         #print('MazeGame.start')
         self.playfield = Playfield()
         self.add_widget(self.playfield)
-        self.playfield.size = (640,640)
-        self.size = self.playfield.size
+        self.size = Window.size
+        w = self.size[0]
+        h = self.size[1]
+        psize = (0,0)
+        if w > h:
+            psize = (h,h)
+        else:
+            psize = (w,w)
+        self.playfield.size = psize
         bottom = 0
         left = 0 + 8
         self.playfield.pos = (left, bottom)
         self.difficulty = 3
         self.end_game(victory=False)
-        #self.new_game(difficulty=self.difficulty)
 
     def new_game(self,difficulty):
         dm = self.get_grid_size(difficulty)
         mg = EllerMazeGenerator(dm[0], dm[1])
-        self.playfield.hide_menu()
         self.playfield.DrawMaze(mg.GetMaze())
         self.playfield.PlaceGoal(self.playfield.end)
         self.playfield.PlaceBall(self.playfield.start)
+        self.accelerometer = accelerometer
         self.player1 = hi.HumInt(rootWidget=self)
         self.running = True
 
     def get_grid_size(self,difficulty):
         switcher = {
-            1: (10,10),
-            2: (12,12),
-            3: (14,14),
-            4: (16,16),
+            1: (7,7),
+            2: (9,9),
+            3: (12,12),
+            4: (15,15),
             5: (18,18)
             }
         item = switcher.get(difficulty,(12,12))
@@ -95,13 +106,14 @@ class MazeGame(Widget):
             self.end_game(victory)
 # ------------------------------------------------------
     def paused_update(self):
-        m = self.playfield.gameMenu
+        m = self.gameMenu
         m.update()
         if m.newFlag:
+            self.hide_menu()
             self.difficulty = m.difficulty
             self.new_game(self.difficulty) 
         elif m.quitFlag:
-            self.quit()    
+            sys.exit(0)   #this is redundant - menu widget should have done a sys.exit already
  # ------------------------------------------------------               
     def end_game(self, victory=True):
         if victory:
@@ -109,44 +121,27 @@ class MazeGame(Widget):
         else:
             text = 'Ready to begin?'
         self.running = False
-        self.playfield.show_menu(difficulty=self.difficulty, caption=text)
+        self.show_menu(difficulty=self.difficulty, caption=text)
 # ------------------------------------------------------
     def get_victory_text(self):
-        values = ('Nice job!','You win!','Good work!')
+        values = ('Nice job!','You win!','Well Done!','Victory!','Success!')
         r = rn.randrange(0, len(values))
         item = values[r]
         return item
 # ------------------------------------------------------
     def quit(self):
-        self.playfield.hide_menu()
+        self.hide_menu()
         print('Goodbye!')
-        exit()
+        sys.exit(0)
 # ------------------------------------------------------
-    #bind touch events to controller object
-    # def on_touch_down(self, touch):
-    #     #print('MazeGame.on_touch_down')
-    #     if self.running:
-    #         touch.grab(self)
-    #         if (self.player1 != None):
-    #             self.player1.handle_touch_down(touch)
-    #     return super().on_touch_down(touch)                
-# ------------------------------------------------------    
-#     def on_touch_move(self, touch):
-#         if self.running:
-#             if touch.grab_current is self:
-#                 # now we only handle moves which we have grabbed
-#                 if (self.player1 != None):
-#                     self.player1.handle_touch_move(touch)
-#         return super().on_touch_move(touch)                    
-# # ------------------------------------------------------
-#     def on_touch_up(self, touch):
-#         #print('MazeGame.on_touch_up')
-#         if self.running:
-#             if touch.grab_current is self:
-#                 touch.ungrab(self)
-#                 if (self.player1 != None):
-#                     self.player1.handle_touch_up(touch)
-#         return super().on_touch_up(touch)                    
+    def show_menu(self,difficulty,caption):
+        self.gameMenu = GameMenu(difficulty=difficulty,caption=caption)
+        self.gameMenu.size = Window.size
+        self.add_widget(self.gameMenu)
+# ------------------------------------------------------
+    def hide_menu(self):
+        self.remove_widget(self.gameMenu)           
+# ------------------------------------------------------                  
 
 # ######################################################
 class Playfield(FloatLayout):
@@ -183,14 +178,7 @@ class Playfield(FloatLayout):
 # ------------------------------------------------------
     def update_rect(self):
         self.rect.pos = self.pos
-        self.rect.size = self.size 
-# ------------------------------------------------------
-    def show_menu(self,difficulty,caption):
-        self.gameMenu = GameMenu(difficulty=difficulty,caption=caption)
-        self.add_widget(self.gameMenu)
-# ------------------------------------------------------
-    def hide_menu(self):
-        self.remove_widget(self.gameMenu)           
+        self.rect.size = self.size         
  # ------------------------------------------------------   
     def DrawMaze(self,maze):
         #print('Playfield.DrawMaze')
@@ -235,7 +223,7 @@ class Playfield(FloatLayout):
         width = int(cell.size[0] * .5)
         height = int(cell.size[1] * .5)
         #print(self.ballColor)
-        self.ball = Ball(size=(width,height),pos=(x,y),color=self.ballColor,size_hint=(None,None))
+        self.ball = Ball(size=(width,height),pos=(x,y),color=self.ballColor,speed=3,size_hint=(None,None))
         self.add_widget(self.ball)
 # ------------------------------------------------------
     def PlaceGoal(self,cell):
@@ -244,7 +232,7 @@ class Playfield(FloatLayout):
         x = cell.pos[0] #- int(w / 2 )
         y = cell.pos[1] #- int(h / 2) #- 8
         #print(cell.pos,cell.size)
-        self.goal = Goal(pos=(x,y),size=(w,h),textColordata=self.goalColordata)
+        self.goal = Goal(pos=(x,y),size=(w,h), source='assets/exit.png')
         cell.add_widget(self.goal)
         #self.goal.moveTo(cell.pos)       
 # ------------------------------------------------------

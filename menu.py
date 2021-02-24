@@ -24,13 +24,13 @@ class GameMenu(FloatLayout):
     def new_game(self,instance):
         self.newFlag = True
         self.quitFlag = False
-        #print('gameMenu.new_game','new=',self.newFlag,'quit=',self.quitFlag)
+        
 # ------------------------------------------------------
     def quit(self,instance):  
-        #print(self.quitButton.pos)  
         self.newFlag = False
         self.quitFlag = True
-        #print('gameMenu.quit','new=',self.newFlag,'quit=',self.quitFlag)
+        sys.exit(0) 
+        
 # ------------------------------------------------------
     def __init__(self, difficulty=3, caption='test', *args): 
         super().__init__(*args)
@@ -54,7 +54,7 @@ class GameMenu(FloatLayout):
 # ------------------------------------------------------
     def add_level_selector(self):
         #print (self.newButton.pos)
-        self.difSelector = Selector(size_hint=(.35,.75),pos_hint={'x': 0, 'top' : .85}) 
+        self.difSelector = Selector(size_hint=(.35,1),pos_hint={'x': 0, 'top' : .85}) 
         self.add_widget(self.difSelector)
         self.difSelector.build(min=1, max=5,value=self.difficulty,orientation='vertical',title='Difficulty',descriptors=['Easy','Moderate','Standard','Hard','Maximum'])
         #print(self.difSelector.shape.size)

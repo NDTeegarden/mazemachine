@@ -3,6 +3,7 @@ from kivy.uix.widget import Widget
 from kivy.properties import (
     NumericProperty, ReferenceListProperty, ObjectProperty
 )
+from kivy.logger import Logger
 from plyer import accelerometer
 
 class InputHandler():
@@ -34,16 +35,25 @@ class InputHandler():
 class KeyboardHandler(InputHandler):
     def __init__(self,rootWidget=None, active=True, parent=None):
         super().__init__(rootWidget=rootWidget, active=active, parent=parent)
-        self.rootWidget._keyboard = Window.request_keyboard(self._keyboard_closed, self, 'Keyboard Closed')
+        if active:
+            self.activate()
+# ------------------------------------------------------  
+    def activate(self):
+        self.active = True
+        self.rootWidget._keyboard = Window.request_keyboard(self._keyboard_closed, rootWidget, 'Keyboard Closed')
         self.rootWidget._keyboard.bind(on_key_down=self._on_keyboard_down)
+# ------------------------------------------------------  
+    def deactivate(self):
+        self.active = False
+        self.rootWidget._keyboard.unbind(on_key_down=self._on_keyboard_down)            
 # ------------------------------------------------------    
     def _keyboard_closed(self):
-        print('My keyboard have been closed!')
+        #print('My keyboard have been closed!')
         self.rootWidget._keyboard.unbind(on_key_down=self._on_keyboard_down)
         self.rootWidget._keyboard = None
 # ------------------------------------------------------    
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
-        print (keycode)
+        #print (keycode)
         x = self.vector[0]
         y = self.vector[1]
         t = keycode[1]
@@ -71,9 +81,20 @@ class KeyboardHandler(InputHandler):
 class TouchscreenHandler(InputHandler):
     def __init__(self,rootWidget=None, active=True, parent=None):
         super().__init__(rootWidget=rootWidget, active=active, parent=parent)
+        if active:
+            self.activate()
+# ------------------------------------------------------  
+    def activate(self):
+        self.active = True
         self.rootWidget.bind(on_touch_down=self._on_touch_down)
         self.rootWidget.bind(on_touch_move=self._on_touch_move)
         self.rootWidget.bind(on_touch_up=self._on_touch_up)
+# ------------------------------------------------------  
+    def deactivate(self):
+        self.active = False
+        self.rootWidget.unbind(on_touch_down=self._on_touch_down)
+        self.rootWidget.unbind(on_touch_move=self._on_touch_move)
+        self.rootWidget.unbind(on_touch_up=self._on_touch_up)                    
 # ------------------------------------------------------    
     def _on_touch_down(self,instance,touch):
         if self.rootWidget.running:
@@ -107,16 +128,18 @@ class TouchscreenHandler(InputHandler):
 # ------------------------------------------------------    
     def handle_touch_up(self, touch):
         self.pos = (touch.x,touch.y)
+        self.vector = self.GetSwipeVector(touch)
+        self.update_parent()  
         self.lastx = None
         self.lasty = None
 # ------------------------------------------------------    
     def handle_touch_move(self, touch):
         self.pos = (touch.x,touch.y)
-        self.vector = self.GetSwipeVector(touch)  
-        #print('self.vector=',self.vector)
-        self.lastx = touch.x
-        self.lasty = touch.y     
-        self.update_parent()         
+        # self.vector = self.GetSwipeVector(touch)  
+        # #print('self.vector=',self.vector)
+        # self.lastx = touch.x
+        # self.lasty = touch.y     
+        # self.update_parent()         
 # ------------------------------------------------------    
     def GetSwipeVector(self,touch):
         vx = 0
@@ -127,17 +150,17 @@ class TouchscreenHandler(InputHandler):
             x = touch.x
             y = touch.y
             if (x < self.lastx):
-                vx = -1
+                vy = 1
             elif (x > self.lastx):
+                vy = -1
+            else:
+                vy = 0
+            if (y < self.lasty):
+                vx = -1
+            elif (y > self.lasty):
                 vx = 1
             else:
-                vx = 0
-            if (y < self.lasty):
-                vy = -1
-            elif (y > self.lasty):
-                vy = 1
-            else:
-                vy=0
+                vx=0
         v = (vx,vy)                
         return v
 
@@ -145,60 +168,69 @@ class TouchscreenHandler(InputHandler):
 class AccelerometerHandler(InputHandler):
     def __init__(self,rootWidget=None, active=True, parent=None):
         super().__init__(rootWidget=rootWidget, active=active, parent=parent)
-        self.active = False
-        try:
-            self.rootWidget.accelerometer.enable()
-            self.accelerometer = self.rootWidget.accelerometer
-            #self.accelerometer.enable()
-            self.init_value()
-            self.active = True
-        except AttributeError:
-            import traceback
-            traceback.print_exc()
-            status = "Accelerometer is not implemented for your platform"
-            print(status)
+        if active:
+            try:
+                self.active = True
+                accelerometer.enable()
+            except NotImplementedError:
+                import traceback
+                traceback.print_exc()
+                status = "Accelerometer Handler: Accelerometer is not implemented for your platform"
+                Logger.info(status)
+                print(status)
+                self.active = False
+            if self.active:
+                self.init_value()
 # ------------------------------------------------------  
     def init_value(self):
-        self.value = self.accelerometer.acceleration[:3]
+        self.value = accelerometer.acceleration[:3]
         self.lastvalue = self.value
 # ------------------------------------------------------  
     def get_vector(self):
         if self.active:
-            self.value = self.accelerometer.acceleration[:3]
-            if not self.value == (None, None, None):
-                if self.value[0] < self.lastvalue[0]:
-                    x = -1
-                elif self.value[0] > self.lastvalue[0]:
-                    x = 1
-                else:
-                    x = 0
-                if self.value[1] < self.lastvalue[1]:
-                    y = -1
-                elif self.value[1] > self.lastvalue[1]:
-                    y = 1
-                else:
-                    y = 0
-                self.vector = (x,y)
+            a = 0
+            b = 0
+            lasta = a
+            lastb = b
+            self.value = accelerometer.acceleration[:3]
+            if self.value != (None, None, None):
+                a = round(self.value[0],1)
+                b = round(self.value[1],1)
+            if self.lastvalue != (None, None, None):
+                lasta = round(self.lastvalue[0],1)
+                lastb = round(self.lastvalue[1],1)
+            if b == lastb or b == 0:
+                x = 0
+            elif b < lastb:
+                x = -1
+            elif b > lastb:
+                x = 1
+            if a == lasta or a == 0:
+                y = 0
+            if a < lasta:
+                y = 1
+            elif a > lasta:
+                y = -1
+            self.vector = (x,y)
         return self.vector
-
+# ------------------------------------------------------  
+    def update(self):
+        if self.active:
+            self.vector = self.get_vector()
+            self.update_parent()
 # ######################################################
 class HumInt():
-    # lastVector = ObjectProperty(None)
-    # keyboard = ObjectProperty(None)
-    # touchscreen = ObjectProperty(None)
-    # mouse  = ObjectProperty(None)
-    # joystick = ObjectProperty(None)
-
-    def __init__(self,rootWidget,useKeyboard=True,useTouchscreen=True,useAccelerometer=True,useJoystick=False):
+    def __init__(self,rootWidget,useKeyboard=False,useTouchscreen=True,useAccelerometer=True,useJoystick=False):
         self.keyboard = KeyboardHandler(active=useKeyboard, rootWidget=rootWidget, parent=self)
         self.touchscreen = TouchscreenHandler(active=useTouchscreen,rootWidget=rootWidget,parent=self)
-        self.accelerometer = AccelerometerHandler(active=useAccelerometer,rootWidget=rootWidget,parent=self)
+        self.accControl = AccelerometerHandler(active=useAccelerometer,rootWidget=rootWidget,parent=self)
         #self.joystick = InputHandler(active=useJoystick)
         self.vector = (0,0)
         self.pos =  (0,0)
         self.lastVector = self.vector
 # ------------------------------------------------------    
     def get_vector(self):
+        self.accControl.update()
         v = self.vector
         return v
 # ------------------------------------------------------    
