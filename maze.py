@@ -57,7 +57,6 @@ class MazeGame(Widget):
     def start(self):
         #print('MazeGame.start')
         self.playfield = Playfield()
-        self.add_widget(self.playfield)
         self.size = Window.size
         w = self.size[0]
         h = self.size[1]
@@ -69,7 +68,9 @@ class MazeGame(Widget):
         self.playfield.size = psize
         bottom = 0
         left = int(w/2 - psize[0]/2)
-        self.playfield.pos = (left, bottom)
+        self.playfield.xoffset = left
+        self.playfield.yoffset = bottom
+        self.add_widget(self.playfield)
         self.difficulty = 3
         self.end_game(victory=False)
 # ------------------------------------------------------
@@ -89,7 +90,7 @@ class MazeGame(Widget):
             1: (7,7),
             2: (9,9),
             3: (12,12),
-            4: (15,15),
+            4: (14,14),
             5: (18,18)
             }
         item = switcher.get(difficulty,(12,12))
@@ -184,8 +185,7 @@ class Playfield(FloatLayout):
         self.rect.size = self.size         
  # ------------------------------------------------------   
     def draw_maze(self,maze):
-        #print('Playfield.draw_maze')
-        self.clear_widgets()
+        self.clear_maze()
         mtrx = maze.ToArray()
         
         w = mtrx.shape[0]  #number of cells wide
@@ -206,18 +206,29 @@ class Playfield(FloatLayout):
                     c.add_widget(Wall(pos=c.pos,size=(int(cw/5),int(ch + ch/5)),color=self.wallColor)) 
                 if (mtrx[x,y,1]):
                     c.add_widget(Floor(pos=c.pos,size=(cw,int(ch/5)),color=self.wallColor))
-
-        # for child in self.children:
-            # #print(child.x,',',child.y,',',child.canvas)
-        self.bottomRight = self.children[0]
+        self.bottomRight = self.children[1]
         self.bottomLeft = self.children[w-1]
         self.topLeft = self.children[(w-1)*h-1]
-        self.topRight = self.children[(w-2)*h+1]
-        self.start = self.topRight
-        self.end = self.bottomLeft
-        
+        self.topRight = self.children[(w-2)*h+1]   
+        self.select_corners()
 # ------------------------------------------------------
-    def clear_maze():
+    def select_corners(self):     
+        n = rn.randint(1,4)
+        Logger.debug('{}:n={}'.format(self,n))
+        if n == 1:
+            self.start = self.topRight
+            self.end = self.bottomLeft
+        elif n == 2:
+            self.start = self.topLeft
+            self.end = self.bottomRight
+        elif n == 3:
+            self.start = self.bottomLeft
+            self.end = self.topRight
+        else:
+            self.start = self.bottomRight
+            self.end = self.topLeft                  
+# ------------------------------------------------------
+    def clear_maze(self):
         self.clear_widgets()
 # ------------------------------------------------------
     def place_ball(self,cell,difficulty):
@@ -235,7 +246,7 @@ class Playfield(FloatLayout):
         x = cell.pos[0] #- int(w / 2 )
         y = cell.pos[1] #- int(h / 2) #- 8
         #print(cell.pos,cell.size)
-        self.goal = Goal(pos=(x+int(w/8),y),size=(w-2,h-2), source='assets/exit.png')
+        self.goal = Goal(pos=(x+int(w * .22),y+int(h * .22)),size=(int(w * .8),int(h * .8)), source='assets/exit.png')
         cell.add_widget(self.goal)
         #self.goal.moveTo(cell.pos)       
 # ------------------------------------------------------
