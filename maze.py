@@ -10,7 +10,7 @@ from kivy.uix.layout import Layout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.widget import Widget
 from kivy.graphics import Color, Rectangle, Ellipse
-from kivy.properties import (NumericProperty, BoundedNumericProperty, ReferenceListProperty, ObjectProperty)
+from kivy.properties import (BooleanProperty, NumericProperty, BoundedNumericProperty, ReferenceListProperty, ObjectProperty)
 from kivy.vector import Vector
 from kivy.clock import Clock
 
@@ -20,11 +20,12 @@ from plyer import accelerometer
 #local imports
 from ellermaze import EllerMaze
 from ellermaze import EllerMazeGenerator
-import humint as hi
+from humint import HumInt
 from mazesprites import (Cell, Wall, Floor, Ball, Goal)
 from menu import GameMenu
 
 #system imports
+import sys
 import numpy as np
 import random as rn
 
@@ -35,7 +36,6 @@ class MazeApp(App):
         #print('MazeApp.build')
         game = MazeGame()
         game.start()
-        Clock.schedule_interval(game.update, 1.0 / 60.0)
         return game
 
 # Cool colors:
@@ -50,9 +50,10 @@ class MazeGame(Widget):
     gridWidth = ObjectProperty(None)
     player1 = ObjectProperty(None)
     difficulty = BoundedNumericProperty(3, min=1, max=5)
-    running = False
+    running = BooleanProperty(None)
     playfield = ObjectProperty(None)
-
+    loopEvent = ObjectProperty(None)
+# ------------------------------------------------------
     def start(self):
         #print('MazeGame.start')
         self.playfield = Playfield()
@@ -71,17 +72,18 @@ class MazeGame(Widget):
         self.playfield.pos = (left, bottom)
         self.difficulty = 3
         self.end_game(victory=False)
-
-    def new_game(self,difficulty):
-        dm = self.get_grid_size(difficulty)
+# ------------------------------------------------------
+    def new_game(self):
+        self.difficulty = self.hide_menu()
+        dm = self.get_grid_size(self.difficulty)
         mg = EllerMazeGenerator(dm[0], dm[1])
         self.playfield.DrawMaze(mg.GetMaze())
         self.playfield.PlaceGoal(self.playfield.end)
         self.playfield.PlaceBall(self.playfield.start)
-        self.accelerometer = accelerometer
-        self.player1 = hi.HumInt(rootWidget=self)
+        self.player1 = HumInt(rootWidget=self)
         self.running = True
-
+        self.loopEvent = Clock.schedule_interval(self.update, 1.0 / 60.0)
+# ------------------------------------------------------
     def get_grid_size(self,difficulty):
         switcher = {
             1: (7,7),
@@ -96,8 +98,6 @@ class MazeGame(Widget):
     def update(self, dt):
         if (self.running):
             self.running_update()
-        else:
-            self.paused_update()
 # ------------------------------------------------------
     def running_update(self):
         self.playfield.MoveSprite(self.player1,self.playfield.ball)   
@@ -105,23 +105,28 @@ class MazeGame(Widget):
         if victory:
             self.end_game(victory)
 # ------------------------------------------------------
-    def paused_update(self):
-        m = self.gameMenu
-        m.update()
-        if m.newFlag:
-            self.hide_menu()
-            self.difficulty = m.difficulty
-            self.new_game(self.difficulty) 
-        elif m.quitFlag:
-            sys.exit(0)   #this is redundant - menu widget should have done a sys.exit already
+    # def paused_update(self):
+    #     m = self.gameMenu
+    #     m.update()
+    #     if m.newFlag:
+    #         self.hide_menu()
+    #         self.difficulty = m.difficulty
+    #         self.new_game(self.difficulty) 
+    #     elif m.quitFlag:
+    #         sys.exit(0)   #this is redundant - menu widget should have done a sys.exit already
  # ------------------------------------------------------               
     def end_game(self, victory=True):
-        if victory:
-            text = self.get_victory_text()
-        else:
-            text = 'Ready to begin?'
-        self.running = False
-        self.show_menu(difficulty=self.difficulty, caption=text)
+        try:
+            self.loopEvent.cancel()
+        except Exception:
+            pass
+        finally:
+            if victory:
+                text = self.get_victory_text()
+            else:
+                text = 'Ready to begin?'
+            self.running = False
+            self.show_menu(difficulty=self.difficulty, caption=text)
 # ------------------------------------------------------
     def get_victory_text(self):
         values = ('Nice job!','You win!','Well Done!','Victory!','Success!')
@@ -130,17 +135,25 @@ class MazeGame(Widget):
         return item
 # ------------------------------------------------------
     def quit(self):
-        self.hide_menu()
+        d = self.hide_menu()
         print('Goodbye!')
         sys.exit(0)
 # ------------------------------------------------------
     def show_menu(self,difficulty,caption):
         self.gameMenu = GameMenu(difficulty=difficulty,caption=caption)
         self.gameMenu.size = Window.size
+        def callback(value):
+            self.new_game()
+        self.gameMenu.newButton.bind(on_press=callback)
+        def callback(value):
+            self.quit()
+        self.gameMenu.quitButton.bind(on_press=callback)
         self.add_widget(self.gameMenu)
 # ------------------------------------------------------
     def hide_menu(self):
-        self.remove_widget(self.gameMenu)           
+        difficulty = self.gameMenu.difficulty
+        self.remove_widget(self.gameMenu)
+        return difficulty          
 # ------------------------------------------------------                  
 
 # ######################################################
@@ -232,7 +245,7 @@ class Playfield(FloatLayout):
         x = cell.pos[0] #- int(w / 2 )
         y = cell.pos[1] #- int(h / 2) #- 8
         #print(cell.pos,cell.size)
-        self.goal = Goal(pos=(x,y),size=(w,h), source='assets/exit.png')
+        self.goal = Goal(pos=(x+int(w/8),y),size=(w-2,h-2), source='assets/exit.png')
         cell.add_widget(self.goal)
         #self.goal.moveTo(cell.pos)       
 # ------------------------------------------------------

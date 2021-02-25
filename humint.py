@@ -175,9 +175,9 @@ class AccelerometerHandler(InputHandler):
             except NotImplementedError:
                 import traceback
                 traceback.print_exc()
-                status = "Accelerometer Handler: Accelerometer is not implemented for your platform"
+                status = "{}: Accelerometer is not implemented for your platform".format(self)
                 Logger.info(status)
-                print(status)
+                #print(status)
                 self.active = False
             if self.active:
                 self.init_value()
