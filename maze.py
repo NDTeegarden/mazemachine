@@ -68,7 +68,7 @@ class MazeGame(Widget):
             psize = (w,w)
         self.playfield.size = psize
         bottom = 0
-        left = 0 + 8
+        left = int(w/2 - psize[0]/2)
         self.playfield.pos = (left, bottom)
         self.difficulty = 3
         self.end_game(victory=False)
@@ -77,9 +77,9 @@ class MazeGame(Widget):
         self.difficulty = self.hide_menu()
         dm = self.get_grid_size(self.difficulty)
         mg = EllerMazeGenerator(dm[0], dm[1])
-        self.playfield.DrawMaze(mg.GetMaze())
-        self.playfield.PlaceGoal(self.playfield.end)
-        self.playfield.PlaceBall(self.playfield.start)
+        self.playfield.draw_maze(mg.GetMaze())
+        self.playfield.place_goal(self.playfield.end)
+        self.playfield.place_ball(cell=self.playfield.start,difficulty=self.difficulty)
         self.player1 = HumInt(rootWidget=self)
         self.running = True
         self.loopEvent = Clock.schedule_interval(self.update, 1.0 / 60.0)
@@ -100,20 +100,10 @@ class MazeGame(Widget):
             self.running_update()
 # ------------------------------------------------------
     def running_update(self):
-        self.playfield.MoveSprite(self.player1,self.playfield.ball)   
-        victory = self.playfield.CheckVictory(self.playfield.ball,self.playfield.goal)  
+        self.playfield.move_sprite(self.player1,self.playfield.ball)   
+        victory = self.playfield.check_victory(self.playfield.ball,self.playfield.goal)  
         if victory:
             self.end_game(victory)
-# ------------------------------------------------------
-    # def paused_update(self):
-    #     m = self.gameMenu
-    #     m.update()
-    #     if m.newFlag:
-    #         self.hide_menu()
-    #         self.difficulty = m.difficulty
-    #         self.new_game(self.difficulty) 
-    #     elif m.quitFlag:
-    #         sys.exit(0)   #this is redundant - menu widget should have done a sys.exit already
  # ------------------------------------------------------               
     def end_game(self, victory=True):
         try:
@@ -193,8 +183,8 @@ class Playfield(FloatLayout):
         self.rect.pos = self.pos
         self.rect.size = self.size         
  # ------------------------------------------------------   
-    def DrawMaze(self,maze):
-        #print('Playfield.DrawMaze')
+    def draw_maze(self,maze):
+        #print('Playfield.draw_maze')
         self.clear_widgets()
         mtrx = maze.ToArray()
         
@@ -227,19 +217,19 @@ class Playfield(FloatLayout):
         self.end = self.bottomLeft
         
 # ------------------------------------------------------
-    def ClearMaze():
+    def clear_maze():
         self.clear_widgets()
 # ------------------------------------------------------
-    def PlaceBall(self,cell):
+    def place_ball(self,cell,difficulty):
         x = cell.pos[0] + int(cell.size[0] / 2) - 6
         y = cell.pos[1] + int(cell.size[1] / 2) - 8
         width = int(cell.size[0] * .5)
         height = int(cell.size[1] * .5)
         #print(self.ballColor)
-        self.ball = Ball(size=(width,height),pos=(x,y),color=self.ballColor,speed=3,size_hint=(None,None))
+        self.ball = Ball(size=(width,height),pos=(x,y),color=self.ballColor,speed=int((difficulty+1)/2),size_hint=(None,None))
         self.add_widget(self.ball)
 # ------------------------------------------------------
-    def PlaceGoal(self,cell):
+    def place_goal(self,cell):
         w = int(cell.size[0])
         h = int(cell.size[1])        
         x = cell.pos[0] #- int(w / 2 )
@@ -249,7 +239,7 @@ class Playfield(FloatLayout):
         cell.add_widget(self.goal)
         #self.goal.moveTo(cell.pos)       
 # ------------------------------------------------------
-    def CheckCollissions(self,sprite,vector):
+    def check_collisions(self,sprite,vector):
         newvector = vector
         h=vector[0]
         v=vector[1]
@@ -272,14 +262,14 @@ class Playfield(FloatLayout):
         #print(newvector)
         return newvector 
 # ------------------------------------------------------
-    def CheckVictory(self,sprite,goal):
+    def check_victory(self,sprite,goal):
         item = sprite.collide_widget(goal)
         return item                                    
 # ------------------------------------------------------                      
-    def MoveSprite(self,player,sprite):
+    def move_sprite(self,player,sprite):
         v = player.get_vector()
         if v != (0,0):
-            newvector = self.CheckCollissions(sprite,v)
+            newvector = self.check_collisions(sprite,v)
             if newvector != (0,0) and newvector != None:
                 sprite.move(newvector)
                 player.SetVector(newvector)

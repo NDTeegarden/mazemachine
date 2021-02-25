@@ -1,7 +1,7 @@
 [app]
 
 # (str) Title of your application
-title = Maze Master Prototype
+title = Maze Machine Prototype
 
 # (str) Package name
 package.name = mazeapp
@@ -19,7 +19,7 @@ source.include_exts = py,png,jpg,kv,atlas
 source.include_patterns = assets/*,images/*.png
 
 # (list) Source files to exclude (let empty to not exclude anything)
-source.exclude_exts = .git,.gitignore
+source.exclude_exts = .git,.gitignore,.bak,.xcf
 
 # (list) List of directory to exclude (let empty to not exclude anything)
 #source.exclude_dirs = tests, bin, venv

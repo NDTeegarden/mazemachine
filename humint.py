@@ -199,18 +199,24 @@ class AccelerometerHandler(InputHandler):
             if self.lastvalue != (None, None, None):
                 lasta = round(self.lastvalue[0],1)
                 lastb = round(self.lastvalue[1],1)
+            adiff = int(abs(a-lasta))
+            if adiff > 6:
+                adiff = 6
+            bdiff = int(abs(b-lastb))
+            if bdiff > 6:
+                bdiff = 6
             if b == lastb or b == 0:
                 x = 0
             elif b < lastb:
-                x = -1
+                x = -1 - bdiff
             elif b > lastb:
-                x = 1
+                x = 1 + bdiff
             if a == lasta or a == 0:
                 y = 0
             if a < lasta:
-                y = 1
+                y = 1 + adiff 
             elif a > lasta:
-                y = -1
+                y = -1 - adiff 
             self.vector = (x,y)
         return self.vector
 # ------------------------------------------------------  
