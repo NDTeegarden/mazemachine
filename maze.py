@@ -203,9 +203,9 @@ class Playfield(FloatLayout):
                 self.add_widget(c)
                 #look up the grid position and see if we need to add a wall and/or floor to the cell
                 if (mtrx[x,y,0]):
-                    c.add_widget(Wall(pos=c.pos,size=(int(cw/5),int(ch + ch/5)),source='assets/wood_vertical.png')) # 'assets/bluewall.png'
+                    c.add_widget(Wall(pos=c.pos,size=(int(cw/5),int(ch + ch/5)),source='assets/bluewall2.png')) # 'assets/bluewall.png'
                 if (mtrx[x,y,1]):
-                    c.add_widget(Floor(pos=c.pos,size=(cw,int(ch/5)),source='assets/wood_horizontal.png'))   # 'assets/bluefloor.png'
+                    c.add_widget(Floor(pos=c.pos,size=(cw,int(ch/5)),source='assets/bluefloor2.png'))   # 'assets/bluefloor.png'
         self.bottomRight = self.children[1]
         self.bottomLeft = self.children[w-1]
         self.topLeft = self.children[(w-1)*h-1]
