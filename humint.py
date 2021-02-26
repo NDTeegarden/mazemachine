@@ -205,13 +205,13 @@ class AccelerometerHandler(InputHandler):
             bdiff = int(abs(b-lastb))
             if bdiff > 6:
                 bdiff = 6
-            if b == lastb or b == 0:
+            if b == lastb:
                 x = 0
             elif b < lastb:
                 x = -1 - bdiff
             elif b > lastb:
                 x = 1 + bdiff
-            if a == lasta or a == 0:
+            if a == lasta:
                 y = 0
             if a < lasta:
                 y = 1 + adiff 
