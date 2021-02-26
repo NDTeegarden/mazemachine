@@ -9,6 +9,7 @@ from kivy.core.window import Window
 from kivy.uix.layout import Layout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.widget import Widget
+from kivy.uix.image import Image
 from kivy.graphics import Color, Rectangle, Ellipse
 from kivy.properties import (BooleanProperty, NumericProperty, BoundedNumericProperty, ReferenceListProperty, ObjectProperty)
 from kivy.vector import Vector
@@ -149,8 +150,6 @@ class MazeGame(Widget):
 
 # ######################################################
 class Playfield(FloatLayout):
-    x_offset = 0
-    y_offset = 0
     topLeft = ObjectProperty(None)
     bottomLeft = ObjectProperty(None)
     topRight = ObjectProperty(None)
@@ -159,6 +158,8 @@ class Playfield(FloatLayout):
     start = ObjectProperty(None)
     end = ObjectProperty(None)
     gameMenu = ObjectProperty(None)
+    mazeSize = ObjectProperty(None)
+    mazePos = ObjectProperty(None)
 
     def __init__(self,*args,backColor=Color(32/256, 32/256, 43/256, .55),cellColor=Color(0,0,0,0),wallColor=Color(0,0,1,1),ballColor=Color(.7,0,0,1),goalColordata=[0,.8,0,1],xoffset = 32,yoffset = 24):
         super().__init__()
@@ -170,19 +171,20 @@ class Playfield(FloatLayout):
         self.goalColordata = goalColordata
         self.xoffset = xoffset
         self.yoffset = yoffset
-        with self.canvas:
+        self.mazeSize = self.size
+        self.mazePos = self.pos
+        with self.canvas.before:
             self.color = backColor
-            self.rect = Rectangle(pos=self.pos,size=self.size)
+            self.rect = Rectangle(pos=self.mazePos,size=self.mazeSize)
         self.bind(pos=self.update_canvas)
         self.bind(size=self.update_canvas)
 # ------------------------------------------------------
     def update_canvas(self,*args): 
-        #print('Playfield.update_canvas') 
         self.update_rect()    
 # ------------------------------------------------------
     def update_rect(self):
-        self.rect.pos = self.pos
-        self.rect.size = self.size         
+        self.rect.pos = self.mazePos
+        self.rect.size = self.mazeSize         
  # ------------------------------------------------------   
     def draw_maze(self,maze):
         self.clear_maze()
@@ -194,25 +196,38 @@ class Playfield(FloatLayout):
         ch = int(self.height / (h + 1))
         for y in range (h):
             for x in range (w):
-                ##print(x,',',y)
                 #add a blank cell to the layout
                 invy = h-y    #because kivy puts 0,0 on bottom left
-                #print('About to create a cell...')
                 c = Cell(pos=((x*cw)+self.xoffset,(invy*ch)-self.yoffset), size=(cw,ch),color=self.cellColor)
-                #print('done')
                 self.add_widget(c)
                 #look up the grid position and see if we need to add a wall and/or floor to the cell
                 if (mtrx[x,y,0]):
-                    c.add_widget(Wall(pos=c.pos,size=(int(cw/5),int(ch + ch/5)),source='assets/wood_vertical.png')) # 'assets/bluewall.png'
+                    c.add_widget(Wall(pos=c.pos,size=(int(cw/5),int(ch + int(ch/5))),source='assets/bluewall2.png')) # 'assets/bluewall.png'
                 if (mtrx[x,y,1]):
-                    c.add_widget(Floor(pos=c.pos,size=(cw,int(ch/5)),source='assets/wood_horizontal.png'))   # 'assets/bluefloor.png'
+                    c.add_widget(Floor(pos=c.pos,size=(cw,int(ch/5)),source='assets/bluefloor2.png'))   # 'assets/bluefloor.png'
         self.bottomRight = self.children[1]
         self.bottomLeft = self.children[w-1]
         self.topLeft = self.children[(w-1)*h-1]
         self.topRight = self.children[(w-2)*h+1]   
+        self.draw_background()
         self.select_corners()
+        
 # ------------------------------------------------------
-    def select_corners(self):     
+    def draw_background(self):
+        last = len(self.children) - 1
+        pos = self.bottomLeft.children[0].pos
+        self.mazePos = pos
+        w = self.children[0].children[0].pos[0] - pos[0]
+        item = self.topLeft.children[0]
+        h = item.pos[1] 
+        size = (w,h)
+        self.mazeSize = size
+        Logger.debug('{}:pos={}  size={}'.format(self,pos,size))
+        background = Image(source='assets/metalbackground1.png', allow_stretch=True, keep_ratio=False, size=size, pos=pos, size_hint=(None,None))
+        self.add_widget(background, last + 1)   #add to end so it's displayed on the bottom
+        self.update_rect
+# ------------------------------------------------------
+    def select_corners(self):    
         n = rn.randint(1,4)
         Logger.debug('{}:n={}'.format(self,n))
         if n == 1:
@@ -283,6 +298,8 @@ class Playfield(FloatLayout):
             if newvector != (0,0) and newvector != None:
                 sprite.move(newvector)
                 player.SetVector(newvector)
-
+# ------------------------------------------------------
+    def choose_spriteset(self):
+        pass
         
 
