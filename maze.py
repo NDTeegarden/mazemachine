@@ -77,25 +77,10 @@ class MazeGame(Widget):
 # ------------------------------------------------------
     def new_game(self):
         self.difficulty = self.hide_menu()
-        dm = self.get_grid_size(self.difficulty)
-        mg = EllerMazeGenerator(dm[0], dm[1])
-        self.playfield.draw_maze(mg.GetMaze())
-        self.playfield.place_goal(self.playfield.end)
-        self.playfield.place_ball(cell=self.playfield.start,difficulty=self.difficulty)
+        self.playfield.new_game(self.difficulty)
         self.player1 = HumInt(rootWidget=self)
         self.running = True
         self.loopEvent = Clock.schedule_interval(self.update, 1.0 / 60.0)
-# ------------------------------------------------------
-    def get_grid_size(self,difficulty):
-        switcher = {
-            1: (7,7),
-            2: (9,9),
-            3: (12,12),
-            4: (14,14),
-            5: (18,18)
-            }
-        item = switcher.get(difficulty,(12,12))
-        return item
 # ------------------------------------------------------
     def update(self, dt):
         if (self.running):
@@ -171,6 +156,7 @@ class Playfield(FloatLayout):
         self.goalColordata = goalColordata
         self.xoffset = xoffset
         self.yoffset = yoffset
+        self.cornerVar = -1     #this tells choose_corners to start with option 4 for the first game
         self.mazeSize = self.size
         self.mazePos = self.pos
         with self.canvas.before:
@@ -184,7 +170,25 @@ class Playfield(FloatLayout):
 # ------------------------------------------------------
     def update_rect(self):
         self.rect.pos = self.mazePos
-        self.rect.size = self.mazeSize         
+        self.rect.size = self.mazeSize 
+ # ------------------------------------------------------ 
+    def new_game(self,difficulty):   
+        dm = self.get_grid_size(difficulty)
+        mg = EllerMazeGenerator(dm[0], dm[1])
+        self.draw_maze(mg.GetMaze())
+        self.place_goal(self.end)
+        self.place_ball(cell=self.start,difficulty=difficulty)
+# ------------------------------------------------------
+    def get_grid_size(self,difficulty):
+        switcher = {
+            1: (7,7),
+            2: (9,9),
+            3: (12,12),
+            4: (14,14),
+            5: (18,18)
+            }
+        item = switcher.get(difficulty,(12,12))
+        return item
  # ------------------------------------------------------   
     def draw_maze(self,maze):
         self.clear_maze()
@@ -194,6 +198,8 @@ class Playfield(FloatLayout):
         h = mtrx.shape[1] #number of cells high
         cw = int(self.width / (w + 1))
         ch = int(self.height / (h + 1))
+        self.wallSize = (0,0)
+        self.floorSize = (0,0)
         for y in range (h):
             for x in range (w):
                 #add a blank cell to the layout
@@ -203,14 +209,28 @@ class Playfield(FloatLayout):
                 #look up the grid position and see if we need to add a wall and/or floor to the cell
                 if (mtrx[x,y,0]):
                     c.add_widget(Wall(pos=c.pos,size=(int(cw/5),int(ch + int(ch/5))),source='assets/bluewall2.png')) # 'assets/bluewall.png'
+                    if self.wallSize == (0,0):
+                        self.wallSize = c.children[0].size
                 if (mtrx[x,y,1]):
                     c.add_widget(Floor(pos=c.pos,size=(cw,int(ch/5)),source='assets/bluefloor2.png'))   # 'assets/bluefloor.png'
+                    if self.floorSize == (0,0):
+                        self.floorSize = c.children[0].size
         self.bottomRight = self.children[1]
         self.bottomLeft = self.children[w-1]
         self.topLeft = self.children[(w-1)*h-1]
-        self.topRight = self.children[(w-2)*h+1]   
+        self.topRight = self.children[(w-2)*h+1] 
         self.draw_background()
-        self.select_corners()
+        (self.start,self.end) = self.select_corners()
+ # ------------------------------------------------------
+    def get_wall_size(self,sprite):
+        (a,b) = sprite.size
+        if a < b:
+            w = a       #this is a wall
+            h = b
+        else:
+            w = b       #this is a floor so flip the dimensions
+            h = a
+        return (w,h)
         
 # ------------------------------------------------------
     def draw_background(self):
@@ -223,25 +243,21 @@ class Playfield(FloatLayout):
         size = (w,h)
         self.mazeSize = size
         Logger.debug('{}:pos={}  size={}'.format(self,pos,size))
-        background = Image(source='assets/metalbackground1.png', allow_stretch=True, keep_ratio=False, size=size, pos=pos, size_hint=(None,None))
+        background = Image(source='assets/dark-gray.png', allow_stretch=True, keep_ratio=False, size=size, pos=pos, size_hint=(None,None))
         self.add_widget(background, last + 1)   #add to end so it's displayed on the bottom
         self.update_rect
 # ------------------------------------------------------
     def select_corners(self):    
-        n = rn.randint(1,4)
-        Logger.debug('{}:n={}'.format(self,n))
-        if n == 1:
-            self.start = self.topRight
-            self.end = self.bottomLeft
-        elif n == 2:
-            self.start = self.topLeft
-            self.end = self.bottomRight
-        elif n == 3:
-            self.start = self.bottomLeft
-            self.end = self.topRight
-        else:
-            self.start = self.bottomRight
-            self.end = self.topLeft                  
+        n = rn.randint(2,4)
+        if (n == self.cornerVar) or (self.cornerVar < 0):
+            n = 1
+        switcher = {1: (self.topRight, self.bottomLeft),
+                    2: (self.topLeft, self.bottomRight),
+                    3: (self.bottomLeft, self.bottomRight),
+                    4: (self.bottomRight,self.topLeft)}        
+        item = switcher.get(n,(self.topRight, self.bottomLeft))  
+        self.cornerVar = n 
+        return item          
 # ------------------------------------------------------
     def clear_maze(self):
         self.clear_widgets()
@@ -254,15 +270,17 @@ class Playfield(FloatLayout):
         self.ball = Ball(size=(width,height),pos=(x,y),color=self.ballColor,speed=int((difficulty+1)/2),size_hint=(None,None))
         self.add_widget(self.ball)
 # ------------------------------------------------------
-    def place_goal(self,cell):
-        w = int(cell.size[0])
-        h = int(cell.size[1])        
-        x = cell.pos[0] #- int(w / 2 )
-        y = cell.pos[1] #- int(h / 2) #- 8
-        #print(cell.pos,cell.size)
-        self.goal = Goal(pos=(x+int(w * .22),y+int(h * .22)),size=(int(w * .8),int(h * .8)), source='assets/exit.png')
+    def place_goal(self,cell): 
+        x = cell.pos[0] + 5
+        y = cell.pos[1] 
+        w = self.floorSize[0]
+        h = self.floorSize[1] + 1
+        self.goal = Goal(pos=(x,y),size=(w,h), source='assets/blackbar.png', allow_stretch=True, keep_ratio = True)
         cell.add_widget(self.goal)
-        #self.goal.moveTo(cell.pos)       
+        for child in self.children:
+            for wf in child.children:
+                if wf.collide_widget(self.goal):
+                    wf.obstacle = False
 # ------------------------------------------------------
     def check_collisions(self,sprite,vector):
         newvector = vector
@@ -284,11 +302,14 @@ class Playfield(FloatLayout):
                     except Exception:
                         pass
         newvector = (h,v)
-        #print(newvector)
         return newvector 
 # ------------------------------------------------------
     def check_victory(self,sprite,goal):
         item = sprite.collide_widget(goal)
+        if item:
+            (x,y) = goal.pos
+            x = x + 6
+            sprite.moveTo((x,y))
         return item                                    
 # ------------------------------------------------------                      
     def move_sprite(self,player,sprite):

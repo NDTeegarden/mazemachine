@@ -40,12 +40,14 @@ class KeyboardHandler(InputHandler):
 # ------------------------------------------------------  
     def activate(self):
         self.active = True
-        self.rootWidget._keyboard = Window.request_keyboard(self._keyboard_closed, rootWidget, 'Keyboard Closed')
+        self.rootWidget._keyboard = Window.request_keyboard(self._keyboard_closed, self.rootWidget, 'Keyboard Closed')
         self.rootWidget._keyboard.bind(on_key_down=self._on_keyboard_down)
+        self.rootWidget._keyboard.bind(on_key_up=self._on_keyboard_up)
 # ------------------------------------------------------  
     def deactivate(self):
         self.active = False
-        self.rootWidget._keyboard.unbind(on_key_down=self._on_keyboard_down)            
+        self.rootWidget._keyboard.unbind(on_key_down=self._on_keyboard_down)
+        self.rootWidget._keyboard.unbind(on_key_up=self._on_keyboard_up)            
 # ------------------------------------------------------    
     def _keyboard_closed(self):
         #print('My keyboard have been closed!')
@@ -76,7 +78,19 @@ class KeyboardHandler(InputHandler):
         # Return True to accept the key. Otherwise, it will be used by
         # the system.
         return False    
+# ------------------------------------------------------   
+    def _on_keyboard_up(self, keyboard, keycode):
+        self.vector = (0,0)
+        self.update_parent()
 
+        # Keycode is composed of an integer + a string
+        # If we hit escape, release the keyboard
+        if keycode[1] == 'escape':
+            keyboard.release()
+
+        # Return True to accept the key. Otherwise, it will be used by
+        # the system.
+        return False    
 # #######################################################
 class TouchscreenHandler(InputHandler):
     def __init__(self,rootWidget=None, active=True, parent=None):
@@ -226,7 +240,7 @@ class AccelerometerHandler(InputHandler):
             self.update_parent()
 # ######################################################
 class HumInt():
-    def __init__(self,rootWidget,useKeyboard=False,useTouchscreen=True,useAccelerometer=True,useJoystick=False):
+    def __init__(self,rootWidget,useKeyboard=True,useTouchscreen=True,useAccelerometer=True,useJoystick=False):
         self.keyboard = KeyboardHandler(active=useKeyboard, rootWidget=rootWidget, parent=self)
         self.touchscreen = TouchscreenHandler(active=useTouchscreen,rootWidget=rootWidget,parent=self)
         self.accControl = AccelerometerHandler(active=useAccelerometer,rootWidget=rootWidget,parent=self)
