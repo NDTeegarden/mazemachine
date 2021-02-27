@@ -1,3 +1,4 @@
+KIVY_NO_ARGS=1
 import maze
 from kivy.logger import Logger
 

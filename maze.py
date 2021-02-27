@@ -1,3 +1,4 @@
+KIVY_NO_ARGS=1
 #kivy imports
 import kivy
 kivy.require('2.0.0')
@@ -34,9 +35,13 @@ import random as rn
 class MazeApp(App):
     def build(self):
         super().__init__()
-        #print('MazeApp.build')
+        opts = [opt for opt in sys.argv[1:] if opt.startswith("-")]
+        useKeyboard = False
+        for opt in opts:
+            if opt.startswith('-k'):
+                useKeyboard = True
         game = MazeGame()
-        game.start()
+        game.start(useKeyboard=useKeyboard)
         return game
 
 # Cool colors:
@@ -55,8 +60,8 @@ class MazeGame(Widget):
     playfield = ObjectProperty(None)
     loopEvent = ObjectProperty(None)
 # ------------------------------------------------------
-    def start(self):
-        #print('MazeGame.start')
+    def start(self,useKeyboard = False):
+        self.player1 = HumInt(rootWidget=self,useKeyboard=useKeyboard)
         self.playfield = Playfield()
         self.size = Window.size
         w = self.size[0]
@@ -78,7 +83,6 @@ class MazeGame(Widget):
     def new_game(self):
         self.difficulty = self.hide_menu()
         self.playfield.new_game(self.difficulty)
-        self.player1 = HumInt(rootWidget=self)
         self.running = True
         self.loopEvent = Clock.schedule_interval(self.update, 1.0 / 60.0)
 # ------------------------------------------------------
@@ -193,13 +197,14 @@ class Playfield(FloatLayout):
     def draw_maze(self,maze):
         self.clear_maze()
         mtrx = maze.ToArray()
-        
         w = mtrx.shape[0]  #number of cells wide
         h = mtrx.shape[1] #number of cells high
         cw = int(self.width / (w + 1))
         ch = int(self.height / (h + 1))
         self.wallSize = (0,0)
         self.floorSize = (0,0)
+        self.walls = []
+        self.floors = []
         for y in range (h):
             for x in range (w):
                 #add a blank cell to the layout
@@ -208,13 +213,15 @@ class Playfield(FloatLayout):
                 self.add_widget(c)
                 #look up the grid position and see if we need to add a wall and/or floor to the cell
                 if (mtrx[x,y,0]):
-                    c.add_widget(Wall(pos=c.pos,size=(int(cw/5),int(ch + int(ch/5))),source='assets/bluewall2.png')) # 'assets/bluewall.png'
-                    if self.wallSize == (0,0):
-                        self.wallSize = c.children[0].size
+                    item = Wall(pos=c.pos,size=(int(cw/5),int(ch + int(ch/5))),source='assets/bluewall2.png') 
+                    c.add_widget(item)
+                    self.walls.append(item)
                 if (mtrx[x,y,1]):
-                    c.add_widget(Floor(pos=c.pos,size=(cw,int(ch/5)),source='assets/bluefloor2.png'))   # 'assets/bluefloor.png'
-                    if self.floorSize == (0,0):
-                        self.floorSize = c.children[0].size
+                    item = Floor(pos=c.pos,size=(cw,int(ch/5)),source='assets/bluefloor2.png')
+                    c.add_widget(item)   
+                    self.floors.append(item)
+        self.wallSize = self.walls[0].size
+        self.floorSize = self.floors[0].size
         self.bottomRight = self.children[1]
         self.bottomLeft = self.children[w-1]
         self.topLeft = self.children[(w-1)*h-1]
@@ -253,7 +260,7 @@ class Playfield(FloatLayout):
             n = 1
         switcher = {1: (self.topRight, self.bottomLeft),
                     2: (self.topLeft, self.bottomRight),
-                    3: (self.bottomLeft, self.bottomRight),
+                    3: (self.bottomLeft, self.topRight),
                     4: (self.bottomRight,self.topLeft)}        
         item = switcher.get(n,(self.topRight, self.bottomLeft))  
         self.cornerVar = n 
@@ -271,16 +278,19 @@ class Playfield(FloatLayout):
         self.add_widget(self.ball)
 # ------------------------------------------------------
     def place_goal(self,cell): 
-        x = cell.pos[0] + 5
-        y = cell.pos[1] 
-        w = self.floorSize[0]
-        h = self.floorSize[1] + 1
-        self.goal = Goal(pos=(x,y),size=(w,h), source='assets/blackbar.png', allow_stretch=True, keep_ratio = True)
+        if cell == self.bottomRight or cell == self.bottomLeft:
+            x = cell.pos[0] + 5
+            y = cell.pos[1]
+        else:
+            x = cell.pos[0] + 5
+            y = cell.pos[1] + self.wallSize[1] - self.wallSize[0] - 1
+        w = self.floorSize[0] - 5
+        h = self.floorSize[1] * 2
+        self.goal = Goal(pos=(x,y),size=(w,h), source='assets/blackbar2.png', allow_stretch=True, keep_ratio = True)
         cell.add_widget(self.goal)
-        for child in self.children:
-            for wf in child.children:
-                if wf.collide_widget(self.goal):
-                    wf.obstacle = False
+        # for f in self.floors:
+        #     if f.collide_widget(self.goal):
+        #             f.obstacle = False
 # ------------------------------------------------------
     def check_collisions(self,sprite,vector):
         newvector = vector
