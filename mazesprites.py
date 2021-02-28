@@ -170,14 +170,16 @@ class Ball(Sprite):
 # ######################################################
 class Goal(Image):  
     id = ObjectProperty(None)
-    def __init__(self, *args):
-        super().__init__()
+    def __init__(self, size=(16,16),pos=(0,0), source=None, allow_stretch=True, keep_ratio = True):
+        super().__init__(size=size,pos=pos,source=source,allow_stretch=allow_stretch, keep_ratio=keep_ratio)
         self.id='goal'
         self.anim_delay = -1
     
-    def flash(self, anim_loop = 20, anim_delay = 0.10):
+    def flash(self, anim_loop = 8, anim_delay = 0.16):
         self.anim_delay = anim_delay
-        self.anim_loop: anim_loop
+        self.anim_loop = anim_loop
+
+
 
 
           

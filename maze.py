@@ -321,6 +321,7 @@ class Playfield(FloatLayout):
             (x,y) = goal.pos
             x = x + 6
             sprite.moveTo((x,y))
+            goal.flash()
         return item                                    
 # ------------------------------------------------------                      
     def move_sprite(self,player,sprite):
