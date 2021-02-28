@@ -45,12 +45,10 @@ class GameMenu(FloatLayout):
         def callback(instance,value):
             instance.text_size=instance.texture_size
         self.newButton.bind(texture_size=callback)
-        #self.newButton.bind(on_press=self.new_game)
         self.quitButton = Button(text='Quit',size_hint=(.3,.2),pos_hint={'x': .5,'top': .4},background_normal='assets/red_roundedrect.png',background_down='assets/gray_roundedrect.png')
         def callback(instance,value):
             instance.text_size=instance.texture_size
         self.quitButton.bind(texture_size=callback)
-        #self.quitButton.bind(on_press=self.quit)
 #
         self.add_widget(self.newButton)
         self.add_widget(self.quitButton)
@@ -157,12 +155,19 @@ class Selector(FloatLayout):
             t=descriptors[i-offset]
             y = (1 - sh) + (i-offset-1) * y_increment
             l = Label(text=t,pos_hint={'x': x,'y': y},size_hint=(.6,y_increment))
+            l.id = i
             l.disabled = (i != self.value)
+            l.bind(on_touch_down=self._on_touch_down)
             self.descLabels.append(l)
             self.add_widget(l)
         def callback(instance, value):
             self.update()
         self.slider.bind(value=callback)
+# ------------------------------------------------------
+    def _on_touch_down(self, instance, touch):
+        if instance.collide_point(touch.x,touch.y):  
+            self.slider.value = instance.id 
+        return False
 # ------------------------------------------------------
     def init_canvas(self):
         self.canvas.clear()
