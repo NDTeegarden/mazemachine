@@ -273,12 +273,15 @@ class Playfield(FloatLayout):
         if cell == self.bottomRight or cell == self.bottomLeft:
             x = cell.pos[0] + self.wallSize[0] - 1
             y = cell.pos[1] - int(self.floorSize[1]/2)
+            src = self.assetData['goal_bottom']
         else:
-            x = cell.pos[0] + self.wallSize[0] - 1
-            y = cell.pos[1] + self.wallSize[1] - self.wallSize[0] - 1
+            x = cell.pos[0] + self.wallSize[0] - 2
+            y = cell.pos[1] + self.wallSize[1] - self.wallSize[0] - 3
+            src = self.assetData['goal_top']
         w = self.floorSize[0]
-        h = self.floorSize[1] * 2
-        self.goal = Goal(pos=(x,y),size=(w,h), source='assets/blackbar3.png', allow_stretch=True, keep_ratio = True)
+        h = int(self.floorSize[1] * 2)
+        Logger.debug(self.assetData)
+        self.goal = Goal(pos=(x,y),size=(w,h), source=src, allow_stretch=True, keep_ratio = True)
         cell.add_widget(self.goal)
 # ------------------------------------------------------
     def check_collisions(self,sprite,vector):
