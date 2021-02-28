@@ -16,14 +16,12 @@ class SimpleSprite(Widget):
     speed = ObjectProperty(None)
 # ------------------------------------------------------    
     def set_variables(self,size,pos,color,speed,shape,size_hint,obstacle):
-        #print('Cell.set_variables')
         self.obstacle = obstacle
         self.speed = speed
         self.color = color
         self.size_hint = size_hint
         if shape != None:
             try:
-                #print('shape=',shape)
                 self.pos = shape.pos
                 self.size = shape.size
                 self.shape = shape
@@ -35,7 +33,6 @@ class SimpleSprite(Widget):
             self.shape = self.default_shape()
 # ------------------------------------------------------
     def __init__(self,size=(16,16),pos=(0,0),color=Color(0,0,0,0),speed = 1,shape=None,size_hint = (1,1),obstacle=False,image=None):
-        #print('Cell.__init__')
         super().__init__()
         self.set_variables(size=size,pos=pos,color=color,speed=speed,shape=shape,size_hint=size_hint,obstacle=obstacle)
         #print(self.color)
@@ -43,11 +40,9 @@ class SimpleSprite(Widget):
         self.post_init()
 # ------------------------------------------------------
     def post_init(self):
-        #print('Cell.post_init')
         pass        
 # ------------------------------------------------------
     def init_canvas(self):
-        #print('Cell.init_canvas')
         self.canvas.clear()
         self.canvas.add(self.color)
         self.canvas.add(self.shape)
@@ -55,7 +50,6 @@ class SimpleSprite(Widget):
         self.bind(size=self.update_canvas)        
 # ------------------------------------------------------
     def update_canvas(self,*args):
-        #print(self,'.update_canvas')
         try:
             self.update_shape()
         except Exception:
@@ -70,7 +64,6 @@ class SimpleSprite(Widget):
         return s
 # ------------------------------------------------------
     def move(self,vector):
-        ##print('moving with vector',vector)
         if (vector != (0,0)):
             s = self.speed
             try:
@@ -175,7 +168,7 @@ class Goal(Image):
         self.id='goal'
         self.anim_delay = -1
     
-    def flash(self, anim_loop = 8, anim_delay = 0.16):
+    def flash(self, anim_loop = 3, anim_delay = 0.18):
         self.anim_delay = anim_delay
         self.anim_loop = anim_loop
 
