@@ -25,6 +25,7 @@ from ellermaze import EllerMazeGenerator
 from humint import HumInt
 from mazesprites import (Cell, Wall, Floor, Ball, Goal)
 from menu import GameMenu
+from sets import AssetSet
 
 #system imports
 import sys
@@ -168,6 +169,7 @@ class Playfield(FloatLayout):
             self.rect = Rectangle(pos=self.mazePos,size=self.mazeSize)
         self.bind(pos=self.update_canvas)
         self.bind(size=self.update_canvas)
+        self.assets = AssetSet()
 # ------------------------------------------------------
     def update_canvas(self,*args): 
         self.update_rect()    
@@ -176,7 +178,8 @@ class Playfield(FloatLayout):
         self.rect.pos = self.mazePos
         self.rect.size = self.mazeSize 
  # ------------------------------------------------------ 
-    def new_game(self,difficulty):   
+    def new_game(self,difficulty):
+        self.assetData = self.assets.get_next()   
         dm = self.get_grid_size(difficulty)
         mg = EllerMazeGenerator(dm[0], dm[1])
         self.draw_maze(mg.GetMaze())
@@ -213,11 +216,11 @@ class Playfield(FloatLayout):
                 self.add_widget(c)
                 #look up the grid position and see if we need to add a wall and/or floor to the cell
                 if (mtrx[x,y,0]):
-                    item = Wall(pos=c.pos,size=(int(cw/5),int(ch + int(ch/5))),source='assets/bluewall2.png') 
+                    item = Wall(pos=c.pos,size=(int(cw/5),int(ch + int(ch/5))),source=self.assetData['wall']) 
                     c.add_widget(item)
                     self.walls.append(item)
                 if (mtrx[x,y,1]):
-                    item = Floor(pos=c.pos,size=(cw,int(ch/5)),source='assets/bluefloor2.png')
+                    item = Floor(pos=c.pos,size=(cw,int(ch/5)),source=self.assetData['floor'])
                     c.add_widget(item)   
                     self.floors.append(item)
         self.wallSize = self.walls[0].size
@@ -228,17 +231,6 @@ class Playfield(FloatLayout):
         self.topRight = self.children[(w-2)*h+1] 
         self.draw_background()
         (self.start,self.end) = self.select_corners()
- # ------------------------------------------------------
-    def get_wall_size(self,sprite):
-        (a,b) = sprite.size
-        if a < b:
-            w = a       #this is a wall
-            h = b
-        else:
-            w = b       #this is a floor so flip the dimensions
-            h = a
-        return (w,h)
-        
 # ------------------------------------------------------
     def draw_background(self):
         last = len(self.children) - 1
@@ -250,7 +242,7 @@ class Playfield(FloatLayout):
         size = (w,h)
         self.mazeSize = size
         Logger.debug('{}:pos={}  size={}'.format(self,pos,size))
-        background = Image(source='assets/dark-gray.png', allow_stretch=True, keep_ratio=False, size=size, pos=pos, size_hint=(None,None))
+        background = Image(source=self.assetData['background'], allow_stretch=True, keep_ratio=False, size=size, pos=pos, size_hint=(None,None))
         self.add_widget(background, last + 1)   #add to end so it's displayed on the bottom
         self.update_rect
 # ------------------------------------------------------
@@ -279,39 +271,43 @@ class Playfield(FloatLayout):
 # ------------------------------------------------------
     def place_goal(self,cell): 
         if cell == self.bottomRight or cell == self.bottomLeft:
-            x = cell.pos[0] + 5
-            y = cell.pos[1]
+            x = cell.pos[0] + self.wallSize[0] - 1
+            y = cell.pos[1] - int(self.floorSize[1]/2)
         else:
-            x = cell.pos[0] + 5
+            x = cell.pos[0] + self.wallSize[0] - 1
             y = cell.pos[1] + self.wallSize[1] - self.wallSize[0] - 1
-        w = self.floorSize[0] - 5
+        w = self.floorSize[0]
         h = self.floorSize[1] * 2
-        self.goal = Goal(pos=(x,y),size=(w,h), source='assets/blackbar2.png', allow_stretch=True, keep_ratio = True)
+        self.goal = Goal(pos=(x,y),size=(w,h), source='assets/blackbar3.png', allow_stretch=True, keep_ratio = True)
         cell.add_widget(self.goal)
-        # for f in self.floors:
-        #     if f.collide_widget(self.goal):
-        #             f.obstacle = False
 # ------------------------------------------------------
     def check_collisions(self,sprite,vector):
         newvector = vector
-        h=vector[0]
-        v=vector[1]
-        for c in self.children:     # all the cells
-            if c != sprite:
-                for g in c.children:    #each wall and floor within the cell
-                    try:
-                        if g.obstacle:
-                            newvector = sprite.check_collision(g,vector)
-                            if newvector != vector:     #this code is supposed to allow us to check every sprite without overwriting vectors we already set to 0
-                                if newvector[0] == 0:
-                                    #print('setting h to 0')
-                                    h=0
-                                if newvector[1] == 0:
-                                    #print('setting v to 0')
-                                    v=0 
-                    except Exception:
-                        pass
-        newvector = (h,v)
+        x=vector[0]
+        y=vector[1]
+        for item in self.walls:
+                try:
+                    if item.obstacle:
+                        newvector = sprite.check_collision(item,vector)
+                        if newvector != vector:     #this code is supposed to allow us to check every sprite without overwriting vectors we already set to 0
+                            if newvector[0] == 0:
+                                x=0
+                            if newvector[1] == 0:
+                                y=0 
+                except Exception:
+                    Logger.Exception('{}: some kind of problem checking wall collisions'.format(self))
+        for item in self.floors:
+                try:
+                    if item.obstacle:
+                        newvector = sprite.check_collision(item,vector)
+                        if newvector != vector:     
+                            if newvector[0] == 0:
+                                x=0
+                            if newvector[1] == 0:
+                                y=0 
+                except Exception:
+                    Logger.Exception('{}: some kind of problem checking floor collisions'.format(self))                   
+        newvector = (x,y)
         return newvector 
 # ------------------------------------------------------
     def check_victory(self,sprite,goal):
