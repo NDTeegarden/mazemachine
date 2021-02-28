@@ -284,6 +284,7 @@ class Playfield(FloatLayout):
         Logger.debug(self.assetData)
         self.goal = Goal(pos=(x,y),size=(w,h), source=src, allow_stretch=True, keep_ratio = True)
         cell.add_widget(self.goal)
+        self.goal.flash()
 # ------------------------------------------------------
     def check_collisions(self,sprite,vector):
         newvector = vector

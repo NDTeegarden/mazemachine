@@ -8,6 +8,7 @@ from kivy.properties import (
 )
 from kivy.vector import Vector
 from kivy.logger import Logger
+from kivy.clock import Clock
 
 class SimpleSprite(Widget):
     color = ObjectProperty(None)
@@ -168,7 +169,15 @@ class Ball(Sprite):
 
 # ######################################################
 class Goal(Image):  
-    id = ObjectProperty(None)     
+    id = ObjectProperty(None)
+    def __init__(self, *args):
+        super().__init__()
+        self.id='goal'
+        self.anim_delay = -1
+    
+    def flash(self, anim_loop = 20, anim_delay = 0.10):
+        self.anim_delay = anim_delay
+        self.anim_loop: anim_loop
 
 
           
