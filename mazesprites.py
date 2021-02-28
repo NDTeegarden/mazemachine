@@ -32,10 +32,9 @@ class SimpleSprite(Widget):
             self.pos = pos
             self.shape = self.default_shape()
 # ------------------------------------------------------
-    def __init__(self,size=(16,16),pos=(0,0),color=Color(0,0,0,0),speed = 1,shape=None,size_hint = (1,1),obstacle=False,image=None):
+    def __init__(self,size=(16,16),pos=(0,0),color=Color(0,0,0,0),speed = 1,shape=None,size_hint = (1,1),obstacle=False):
         super().__init__()
         self.set_variables(size=size,pos=pos,color=color,speed=speed,shape=shape,size_hint=size_hint,obstacle=obstacle)
-        #print(self.color)
         self.init_canvas()
         self.post_init()
 # ------------------------------------------------------
@@ -49,7 +48,7 @@ class SimpleSprite(Widget):
         self.bind(pos=self.update_canvas)
         self.bind(size=self.update_canvas)        
 # ------------------------------------------------------
-    def update_canvas(self,*args):
+    def update_canvas(self, *args):
         try:
             self.update_shape()
         except Exception:
@@ -77,25 +76,31 @@ class SimpleSprite(Widget):
             self.pos = (x,y)
 # ------------------------------------------------------
     def moveTo(self,pos):
-        self.pos = (pos)                             
-        
+        self.pos = (pos)          
+
 # ######################################################
-class Sprite(SimpleSprite):
+class Cell(SimpleSprite):
+# ------------------------------------------------------
+    def __init__(self,size=(16,16),pos=(0,0),color=Color(0,0,0,0)):
+        super().__init__(size=size,pos=pos,color=color)
+      
+# ######################################################
+class Sprite(Image):
     transparentcolor = ObjectProperty(None) 
-    speed = ObjectProperty
+    speed = ObjectProperty(None)
     collider = ObjectProperty(None)
 # ------------------------------------------------------
-    # By default will draw a blue square. 
-    def __init__(self,size=(16,16),pos=(0,0),color=Color(0,0,1,0),speed=1,shape=None,size_hint=(1,1),obstacle=False):
-        super().__init__(size=size,pos=pos,color=color,speed=speed,shape=shape,size_hint=size_hint,obstacle=obstacle)
+    def __init__(self,source,pos,size,size_hint=(None,None),allow_stretch=False,keep_ratio=True,speed=1,**kwargs):
+        super().__init__(size=size,pos=pos,source=source,allow_stretch=allow_stretch, keep_ratio=keep_ratio,**kwargs)
         self.transparentcolor = Color(0,0,0,0)
+        self.speed = speed
         self.init_collider()        
 # ------------------------------------------------------
     def init_collider(self):
         ##print('initializing collider')
         if self.collider != None:
             self.remove_widget(self.collider)
-        self.collider = SimpleSprite(shape=self.shape,color=Color(1,0,0,1),speed=self.speed,size_hint = self.size_hint)
+        self.collider = SimpleSprite(color=self.transparentcolor,speed=self.speed,size_hint = self.size_hint)
         self.add_widget(self.collider)
 # ------------------------------------------------------
     def check_collision(self,widget,vector):
@@ -125,12 +130,22 @@ class Sprite(SimpleSprite):
             c.moveTo(self.pos)                    
         return newvector
 # ------------------------------------------------------        
-# ######################################################
-class Cell(SimpleSprite):
-    def __init__(self,size=(16,16),pos=(0,0),color=Color(175/256,176/256,148/256,0)):
-        #print('Cell.__init__')
-        super().__init__(size=size,pos=pos,color=color)
+    def move(self,vector):
+        if (vector != (0,0)):
+            s = self.speed
+            try:
+                dx = vector[0] * s
+                dy = vector[1] * s
+            except Exception:
+                dx = 0
+                dy = 0
+            x = self.pos[0] + dx
+            y = self.pos[1] + dy
+            self.pos = (x,y)
 # ------------------------------------------------------
+    def moveTo(self,pos):
+        self.pos = (pos)   
+
 # ######################################################
 class Wall(Image):
     blockHoriz = ObjectProperty(None)
@@ -156,8 +171,8 @@ class Floor(Image):
 # ######################################################
 class Ball(Sprite):
     id = ObjectProperty(None)
-    def __init__(self,size=(16,16),pos=(0,0),color=Color(.75,0,0,1),size_hint=(None,None),speed = 2):
-        super().__init__(shape=Ellipse(size=size,pos=pos),color=color,size_hint=size_hint,speed=speed)
+    def __init__(self,size_hint=(None,None),speed = 2,pos=(0,0), size=(16,16),source=None,**kwargs):
+        super().__init__(size_hint=size_hint,speed=speed,pos=pos,size=size,source=source,**kwargs)
         self.id='ball'
 
 # ######################################################

@@ -171,7 +171,7 @@ class Playfield(FloatLayout):
         self.bind(size=self.update_canvas)
         self.assets = AssetSet()
 # ------------------------------------------------------
-    def update_canvas(self,*args): 
+    def update_canvas(self,instance,value): 
         self.update_rect()    
 # ------------------------------------------------------
     def update_rect(self):
@@ -267,8 +267,8 @@ class Playfield(FloatLayout):
         width = int(cell.size[0] * .5) - 1
         height = int(cell.size[1] * .5) - 1
         speed = int((difficulty+2)/2)
-        self.ball = Ball(size=(width,height),pos=(x,y),color=self.ballColor,speed=speed,size_hint=(None,None))
-        self.add_widget(self.ball)
+        self.ball = Ball(speed=speed,size_hint=(None,None),source=self.assetData['ball'],size=(width,height),pos=(x,y),allow_stretch=True)
+        cell.add_widget(self.ball)
 # ------------------------------------------------------
     def place_goal(self,cell): 
         if cell == self.bottomRight or cell == self.bottomLeft:
