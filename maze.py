@@ -266,7 +266,8 @@ class Playfield(FloatLayout):
         y = cell.pos[1] + int(cell.size[1] / 2) - 8
         width = int(cell.size[0] * .5) - 1
         height = int(cell.size[1] * .5) - 1
-        self.ball = Ball(size=(width,height),pos=(x,y),color=self.ballColor,speed=int((difficulty+1)/2),size_hint=(None,None))
+        speed = int((difficulty+2)/2)
+        self.ball = Ball(size=(width,height),pos=(x,y),color=self.ballColor,speed=speed,size_hint=(None,None))
         self.add_widget(self.ball)
 # ------------------------------------------------------
     def place_goal(self,cell): 
