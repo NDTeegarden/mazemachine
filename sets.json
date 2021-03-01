@@ -4,23 +4,35 @@
         , "background": "assets/dark-gray.png"
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip" 
-        ,  "ball": "assets/redball.png"}
+        ,  "ball": "assets/peach_ball.zip"}
     ,{ "wall": "assets/wood_vertical.png"
         , "floor": "assets/wood_horizontal.png"
-        , "background": "assets/brick_background3.png"         
+        , "background": "assets/IMGP5487_seamless_background.png"         
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip"  
-        ,  "ball": "assets/redball.png"}
-    ,{ "wall": "assets/brickwall2.png"
-        , "floor": "assets/brickfloor2.png"
-        , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip"
-        , "goal_top": "assets/exit-up.zip"  
-        ,  "ball": "assets/redball.png"}
+        ,  "ball": "assets/gray_ball.zip"}
     ,{ "wall": "assets/ice4e_wall.png"
         , "floor": "assets/ice4e_floor.png"
+        , "background": "assets/slate-gray.png" 
+        , "goal_bottom": "assets/exit-down.zip"
+        , "goal_top": "assets/exit-up.zip"  
+        ,  "ball": "assets/gray_ball.zip"}
+    ,{ "wall": "assets/concrete_wall.png"
+        , "floor": "assets/concrete_floor.png"
+        , "background": "assets/ice8c_background.png" 
+        , "goal_bottom": "assets/exit-down.zip"
+        , "goal_top": "assets/exit-up.zip"  
+        ,  "ball": "assets/gray_ball.zip"}
+    ,{ "wall": "assets/sandstonewall.png"
+        , "floor": "assets/sandstonefloor.png"
+        , "background": "assets/brick_background3.png" 
+        , "goal_bottom": "assets/exit-down.zip"
+        , "goal_top": "assets/exit-up.zip"  
+        ,  "ball": "assets/peach_ball.zip"}  
+    ,{ "wall": "assets/aggregate_wall.png"
+        , "floor": "assets/aggregate_floor.png"
         , "background": "assets/dark-gray.png" 
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip"  
-        ,  "ball": "assets/redball.png"}
+        ,  "ball": "assets/peach_ball.zip"}               
 ]

@@ -188,9 +188,9 @@ class Playfield(FloatLayout):
 # ------------------------------------------------------
     def get_grid_size(self,difficulty):
         switcher = {
-            1: (7,7),
-            2: (9,9),
-            3: (12,12),
+            1: (6,6),
+            2: (8,8),
+            3: (10,10),
             4: (14,14),
             5: (18,18)
             }
@@ -276,8 +276,8 @@ class Playfield(FloatLayout):
             y = cell.pos[1] - int(self.floorSize[1]/2)
             src = self.assetData['goal_bottom']
         else:
-            x = cell.pos[0] + self.wallSize[0] - 2
-            y = cell.pos[1] + self.wallSize[1] - self.wallSize[0] - 3
+            x = cell.pos[0] + self.wallSize[0] - 4
+            y = cell.pos[1] + self.wallSize[1] - self.wallSize[0] - 4
             src = self.assetData['goal_top']
         w = self.floorSize[0]
         h = int(self.floorSize[1] * 2)
@@ -328,9 +328,11 @@ class Playfield(FloatLayout):
         v = player.get_vector()
         if v != (0,0):
             newvector = self.check_collisions(sprite,v)
-            if newvector != (0,0) and newvector != None:
-                sprite.move(newvector)
-                player.SetVector(newvector)
+        else:
+            newvector = v
+        sprite.move(newvector)  #we have to call the move method even if vector is 0,0 so ball will stop rolling when it's not moving.
+        if v != newvector:
+            player.SetVector(newvector)
 # ------------------------------------------------------
     def choose_spriteset(self):
         pass

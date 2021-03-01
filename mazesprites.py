@@ -3,9 +3,7 @@ from kivy.uix.image import Image
 #from kivy.core.image import Image as CoreImage
 from kivy.uix.label import Label
 from kivy.graphics import Color, Rectangle, Ellipse
-from kivy.properties import (
-    NumericProperty, ReferenceListProperty, ObjectProperty
-)
+from kivy.properties import BooleanProperty, NumericProperty, ReferenceListProperty, ObjectProperty
 from kivy.vector import Vector
 from kivy.logger import Logger
 from kivy.clock import Clock
@@ -89,12 +87,28 @@ class Sprite(Image):
     transparentcolor = ObjectProperty(None) 
     speed = ObjectProperty(None)
     collider = ObjectProperty(None)
+    moving = ObjectProperty(None)
 # ------------------------------------------------------
     def __init__(self,source,pos,size,size_hint=(None,None),allow_stretch=False,keep_ratio=True,speed=1,**kwargs):
         super().__init__(size=size,pos=pos,source=source,allow_stretch=allow_stretch, keep_ratio=keep_ratio,**kwargs)
         self.transparentcolor = Color(0,0,0,0)
         self.speed = speed
-        self.init_collider()        
+        self.init_collider()  
+        self.init_image_animation()    
+# ------------------------------------------------------
+    def init_image_animation(self):
+        self.moving = False
+        self.anim_delay = -1
+        self.anim_loop = 0 
+# ------------------------------------------------------
+    def start_animating(self):
+        if self.anim_delay == -1:
+            self.anim_delay = .5 / self.speed
+            self.anim_loop = 0            
+# ------------------------------------------------------
+    def stop_animating(self):
+        self.anim_delay = -1
+
 # ------------------------------------------------------
     def init_collider(self):
         ##print('initializing collider')
@@ -142,6 +156,11 @@ class Sprite(Image):
             x = self.pos[0] + dx
             y = self.pos[1] + dy
             self.pos = (x,y)
+            self.moving = True
+            self.start_animating()
+        else:
+            self.moving = False
+            self.stop_animating()
 # ------------------------------------------------------
     def moveTo(self,pos):
         self.pos = (pos)   
@@ -174,6 +193,7 @@ class Ball(Sprite):
     def __init__(self,size_hint=(None,None),speed = 2,pos=(0,0), size=(16,16),source=None,**kwargs):
         super().__init__(size_hint=size_hint,speed=speed,pos=pos,size=size,source=source,**kwargs)
         self.id='ball'
+        self.anim_delay = -1
 
 # ######################################################
 class Goal(Image):  
