@@ -13,7 +13,7 @@
         ,  "ball": "assets/gray_ball.zip"}
     ,{ "wall": "assets/ice4e_wall.png"
         , "floor": "assets/ice4e_floor.png"
-        , "background": "assets/slate-gray.png" 
+        , "background": "assets/dark-gray.png" 
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip"  
         ,  "ball": "assets/gray_ball.zip"}
@@ -22,7 +22,7 @@
         , "background": "assets/ice8c_background.png" 
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip"  
-        ,  "ball": "assets/gray_ball.zip"}
+        ,  "ball": "assets/peach_ball.zip"}
     ,{ "wall": "assets/sandstonewall.png"
         , "floor": "assets/sandstonefloor.png"
         , "background": "assets/brick_background3.png" 
