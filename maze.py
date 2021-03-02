@@ -84,6 +84,7 @@ class MazeGame(Widget):
     def new_game(self):
         self.difficulty = self.hide_menu()
         self.playfield.new_game(self.difficulty)
+        self.player1.SetVector((0,0))
         self.running = True
         self.loopEvent = Clock.schedule_interval(self.update, 1.0 / 60.0)
 # ------------------------------------------------------
@@ -190,9 +191,9 @@ class Playfield(FloatLayout):
         switcher = {
             1: (6,6),
             2: (8,8),
-            3: (10,10),
+            3: (11,11),
             4: (14,14),
-            5: (18,18)
+            5: (17,17)
             }
         item = switcher.get(difficulty,(12,12))
         return item
@@ -220,7 +221,7 @@ class Playfield(FloatLayout):
                     c.add_widget(item)
                     self.walls.append(item)
                 if (mtrx[x,y,1]):
-                    item = Floor(pos=c.pos,size=(cw,int(ch/5)),source=self.assetData['floor'])
+                    item = Floor(pos=(c.pos[0]+2,c.pos[1]),size=(cw,int(ch/5)),source=self.assetData['floor'])
                     c.add_widget(item)   
                     self.floors.append(item)
         self.wallSize = self.walls[0].size
@@ -269,21 +270,26 @@ class Playfield(FloatLayout):
         speed = int((difficulty+2)/2)
         self.ball = Ball(speed=speed,size_hint=(None,None),source=self.assetData['ball'],size=(width,height),pos=(x,y),allow_stretch=True)
         cell.add_widget(self.ball)
+        #todo: down-right and up-left animations
 # ------------------------------------------------------
     def place_goal(self,cell): 
         if cell == self.bottomRight or cell == self.bottomLeft:
-            x = cell.pos[0] + self.wallSize[0] - 1
+            x = cell.pos[0] + self.wallSize[0]
             y = cell.pos[1] - int(self.floorSize[1]/2)
             src = self.assetData['goal_bottom']
         else:
-            x = cell.pos[0] + self.wallSize[0] - 4
+            x = cell.pos[0] + self.wallSize[0]
             y = cell.pos[1] + self.wallSize[1] - self.wallSize[0] - 4
             src = self.assetData['goal_top']
-        w = self.floorSize[0]
+        w = self.floorSize[0] - self.wallSize[0]
         h = int(self.floorSize[1] * 2)
         Logger.debug(self.assetData)
         self.goal = Goal(pos=(x,y),size=(w,h), source=src, allow_stretch=True, keep_ratio = True)
         cell.add_widget(self.goal)
+        for item in (self.floors):
+            if item.collide_widget(self.goal) and item.pos[0] <= self.goal.pos[0]:
+                item.parent.remove_widget(item)
+                break
         self.goal.flash()
 # ------------------------------------------------------
     def check_collisions(self,sprite,vector):

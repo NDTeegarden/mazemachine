@@ -4,35 +4,41 @@
         , "background": "assets/dark-gray.png"
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip" 
-        ,  "ball": "assets/peach_ball.zip"}
+        ,  "ball": "assets/red-ball.zip"}
     ,{ "wall": "assets/wood_vertical.png"
         , "floor": "assets/wood_horizontal.png"
         , "background": "assets/IMGP5487_seamless_background.png"         
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip"  
-        ,  "ball": "assets/gray_ball.zip"}
+        ,  "ball": "assets/black-ball.zip"}
     ,{ "wall": "assets/ice4e_wall.png"
         , "floor": "assets/ice4e_floor.png"
-        , "background": "assets/dark-gray.png" 
+        , "background": "assets/brick_background2.png" 
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip"  
-        ,  "ball": "assets/gray_ball.zip"}
-    ,{ "wall": "assets/concrete_wall.png"
-        , "floor": "assets/concrete_floor.png"
+        ,  "ball": "assets/red-ball.zip"}
+    ,{ "wall": "assets/metal-wall.png"
+        , "floor": "assets/metal-floor.png"
         , "background": "assets/ice8c_background.png" 
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip"  
-        ,  "ball": "assets/peach_ball.zip"}
+        ,  "ball": "assets/red-ball.zip"}
     ,{ "wall": "assets/sandstonewall.png"
         , "floor": "assets/sandstonefloor.png"
         , "background": "assets/brick_background3.png" 
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip"  
-        ,  "ball": "assets/peach_ball.zip"}  
+        ,  "ball": "assets/black-ball.zip"}  
     ,{ "wall": "assets/aggregate_wall.png"
         , "floor": "assets/aggregate_floor.png"
-        , "background": "assets/dark-gray.png" 
+        , "background": "assets/desert_mntn_s.png" 
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip"  
-        ,  "ball": "assets/peach_ball.zip"}               
+        ,  "ball": "assets/red-ball.zip"}  
+    ,{ "wall": "assets/bluewall2.png"
+        , "floor": "assets/bluefloor2.png"
+        , "background": "assets/ice7b_background.png" 
+        , "goal_bottom": "assets/exit-down.zip"
+        , "goal_top": "assets/exit-up.zip"  
+        ,  "ball": "assets/white-ballA.zip"}                        
 ]
