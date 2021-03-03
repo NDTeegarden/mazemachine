@@ -8,21 +8,21 @@
     }
     ,{ "wall": "assets/wood-vertical.png"
         , "floor": "assets/wood-horizontal.png"
-        , "background": "assets/brick-background2.png"         
+        , "background": "assets/dark-gray.png"         
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip"  
         ,  "ball": ["assets/blue-ball-left.zip","assets/blue-ball-right.zip"]
     }
     ,{ "wall": "assets/metal-wall.png"
         , "floor": "assets/metal-floor.png"
-        , "background": "assets/IMGP5487_seamless-background.png" 
+        , "background": "assets/dark-gray.png" 
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip"  
         ,  "ball": ["assets/red-ball-left.zip","assets/red-ball-right.zip"]
     }
     ,{ "wall": "assets/pebble-wall.png"
         , "floor": "assets/pebble-floor.png"
-        , "background": "assets/brick-background3.png" 
+        , "background": "assets/IMGP5487_seamless-background.png" 
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip"  
         ,  "ball": ["assets/blue-ball-left.zip","assets/blue-ball-right.zip"]
@@ -36,7 +36,7 @@
     }  
     ,{ "wall": "assets/brickwall3.png"
         , "floor": "assets/brickfloor3.png"
-        , "background": "assets/ice7b-background.png" 
+        , "background": "assets/dark-gray.png" 
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip"  
         ,  "ball": ["assets/white-ballA-left.zip","assets/white-ballA-right.zip"]

@@ -51,7 +51,7 @@ class MazeApp(App):
 
 
 class MazeGame(Widget):
-    Logger.setLevel(LOG_LEVELS["debug"])
+    Logger.setLevel(LOG_LEVELS["info"])
     mazeGenerator = ObjectProperty(None)
     gridHeight = ObjectProperty(None)
     gridWidth = ObjectProperty(None)
@@ -106,6 +106,7 @@ class MazeGame(Widget):
         finally:
             if victory:
                 text = self.get_victory_text()
+                # rem show victory banner with a delay
             else:
                 text = 'Ready to begin?'
             self.running = False
@@ -116,6 +117,9 @@ class MazeGame(Widget):
         r = rn.randrange(0, len(values))
         item = values[r]
         return item
+# ------------------------------------------------------
+    def show_banner(self,text):
+        pass
 # ------------------------------------------------------
     def quit(self):
         d = self.hide_menu()
