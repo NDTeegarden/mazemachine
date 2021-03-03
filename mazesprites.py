@@ -89,13 +89,21 @@ class Sprite(Image):
     collider = ObjectProperty(None)
     moving = ObjectProperty(None)
 # ------------------------------------------------------
-    def __init__(self,source,pos,size,size_hint=(None,None),allow_stretch=False,keep_ratio=True,speed=1,**kwargs):
+    def __init__(self,source,pos,size,size_hint=(None,None),allow_stretch=False,keep_ratio=True,speed=1,altSources=[], **kwargs):
         super().__init__(size=size,pos=pos,source=source,allow_stretch=allow_stretch, keep_ratio=keep_ratio,**kwargs)
+        self.sources = altSources
+        self.sources.insert(0,source)
         self.transparentcolor = Color(0,0,0,0)
         self.speed = speed
         self.init_collider()  
         self.init_image_animation()    
 # ------------------------------------------------------
+    def set_animation(self, index):
+        if index >= len(self.sources):
+            index = 0
+        self.source = self.sources[index]
+
+#------------------------------------------------------
     def init_image_animation(self):
         self.moving = False
         self.anim_delay = -1
@@ -146,6 +154,11 @@ class Sprite(Image):
 # ------------------------------------------------------        
     def move(self,vector):
         if (vector != (0,0)):
+            if len(self.sources) > 1:
+                if (vector[0] < 0) or (vector[1] > 0):
+                    self.set_animation(0)   # left or up
+                else:
+                    self.set_animation(1)   # right or down
             s = self.speed
             try:
                 dx = vector[0] * s

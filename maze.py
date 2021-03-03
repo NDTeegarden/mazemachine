@@ -205,8 +205,8 @@ class Playfield(FloatLayout):
         h = mtrx.shape[1] #number of cells high
         cw = int(self.width / (w + 1))
         ch = int(self.height / (h + 1))
-        self.wallSize = (0,0)
-        self.floorSize = (0,0)
+        self.wallSize = (int(cw/5),ch)    #ch + int(ch/5)
+        self.floorSize = (cw,int(ch/5))
         self.walls = []
         self.floors = []
         for y in range (h):
@@ -216,14 +216,14 @@ class Playfield(FloatLayout):
                 c = Cell(pos=((x*cw)+self.xoffset,(invy*ch)-self.yoffset), size=(cw,ch),color=self.cellColor)
                 self.add_widget(c)
                 #look up the grid position and see if we need to add a wall and/or floor to the cell
+                if (mtrx[x,y,1]):
+                    item = Floor(pos=(c.pos[0]+2,c.pos[1]),size=(cw,int(ch/5)),source=self.assetData['floor'])
+                    c.add_widget(item)   
+                    self.floors.append(item)                
                 if (mtrx[x,y,0]):
                     item = Wall(pos=c.pos,size=(int(cw/5),int(ch + int(ch/5))),source=self.assetData['wall']) 
                     c.add_widget(item)
                     self.walls.append(item)
-                if (mtrx[x,y,1]):
-                    item = Floor(pos=(c.pos[0]+2,c.pos[1]),size=(cw,int(ch/5)),source=self.assetData['floor'])
-                    c.add_widget(item)   
-                    self.floors.append(item)
         self.wallSize = self.walls[0].size
         self.floorSize = self.floors[0].size
         self.bottomRight = self.children[1]
@@ -248,13 +248,12 @@ class Playfield(FloatLayout):
         self.update_rect
 # ------------------------------------------------------
     def select_corners(self):    
-        n = rn.randint(2,4)
-        if (n == self.cornerVar) or (self.cornerVar < 0):
+        if (self.cornerVar < 0):
             n = 1
+        else:
+            n = rn.randint(1,2)
         switcher = {1: (self.topRight, self.bottomLeft),
-                    2: (self.topLeft, self.bottomRight),
-                    3: (self.bottomLeft, self.topRight),
-                    4: (self.bottomRight,self.topLeft)}        
+                    2: (self.topLeft, self.bottomRight)}        
         item = switcher.get(n,(self.topRight, self.bottomLeft))  
         self.cornerVar = n 
         return item          
@@ -268,22 +267,25 @@ class Playfield(FloatLayout):
         width = int(cell.size[0] * .5) - 1
         height = int(cell.size[1] * .5) - 1
         speed = int((difficulty+2)/2)
-        self.ball = Ball(speed=speed,size_hint=(None,None),source=self.assetData['ball'],size=(width,height),pos=(x,y),allow_stretch=True)
+        asset = self.assetData['ball']
+        self.ball = Ball(speed=speed,size_hint=(None,None),source=asset[0],size=(width,height),pos=(x,y),allow_stretch=True,altSources=[asset[1]])
         cell.add_widget(self.ball)
         #todo: down-right and up-left animations
 # ------------------------------------------------------
-    def place_goal(self,cell): 
+    def place_goal(self,cell):
+        w = int(self.floorSize[0] / 2)
+        h = w
         if cell == self.bottomRight or cell == self.bottomLeft:
-            x = cell.pos[0] + self.wallSize[0]
-            y = cell.pos[1] - int(self.floorSize[1]/2)
+            x = cell.pos[0] + (w / 2) + (self.wallSize[0] / 2)
+            y = cell.pos[1] - (h / 2)
+            Logger.debug('y={}   cell.pos={}'.format(y,cell.pos))
             src = self.assetData['goal_bottom']
         else:
             x = cell.pos[0] + self.wallSize[0]
             y = cell.pos[1] + self.wallSize[1] - self.wallSize[0] - 4
             src = self.assetData['goal_top']
-        w = self.floorSize[0] - self.wallSize[0]
-        h = int(self.floorSize[1] * 2)
-        Logger.debug(self.assetData)
+
+        #Logger.debug(self.assetData)
         self.goal = Goal(pos=(x,y),size=(w,h), source=src, allow_stretch=True, keep_ratio = True)
         cell.add_widget(self.goal)
         for item in (self.floors):
@@ -327,6 +329,7 @@ class Playfield(FloatLayout):
             (x,y) = goal.pos
             x = x + 6
             sprite.moveTo((x,y))
+            sprite.stop_animating()
             goal.flash()
         return item                                    
 # ------------------------------------------------------                      
@@ -343,4 +346,3 @@ class Playfield(FloatLayout):
     def choose_spriteset(self):
         pass
         
-

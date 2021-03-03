@@ -109,7 +109,7 @@ class GameMenu(FloatLayout):
         except Exception:
             Logger.warning('{}: failed to update_shape'.format(self))             
 
-
+# #######################################################
 class Selector(FloatLayout):
     slider = ObjectProperty(None)
     descriptors = ListProperty(None)
