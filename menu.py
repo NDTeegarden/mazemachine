@@ -63,7 +63,7 @@ class GameMenu(FloatLayout):
         self.difSelector.bind(value=callback)
 # ------------------------------------------------------
     def add_caption(self):
-        l = Label(text=self.caption,size_hint=(1,.2),pos_hint={'center_x': .5,'top': 1}) #,text_size=(self.width,None)
+        l = Label(text=self.caption,size_hint=(1,.2),pos_hint={'center_x': .5,'top': 1}, font_size='36sp') 
         self.add_widget(l)
 # ------------------------------------------------------
     def build(self,difficulty,caption):

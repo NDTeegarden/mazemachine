@@ -118,9 +118,6 @@ class MazeGame(Widget):
         item = values[r]
         return item
 # ------------------------------------------------------
-    def show_banner(self,text):
-        pass
-# ------------------------------------------------------
     def quit(self):
         d = self.hide_menu()
         print('Goodbye!')
