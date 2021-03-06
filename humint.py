@@ -14,7 +14,8 @@ class InputHandler():
         self.lastx = None
         self.lasty = None
         self.vector = (0,0)
-        self.active = active
+        if active:
+            self.activate()
         self.pos = (None,None)
         self.hasPrecedence = False
 # ------------------------------------------------------    
@@ -173,6 +174,58 @@ class TouchscreenHandler(InputHandler):
                 vy=0
         v = (vx,vy) 
         return v               
+# #######################################################
+class TouchWidgetHandler(InputHandler):
+        def __init__(self,rootWidget=None, active=True, parent=None,widget=None):
+        super().__init__(rootWidget=rootWidget, active=active, parent=parent)
+        if active:
+            self.activate(widget)
+# ------------------------------------------------------  
+    def SetWidget(self, widget):
+        self.widget = widget
+
+# ------------------------------------------------------  
+    def activate(self, widget=None):
+        if widget != None:
+            self.SetWidget(widget)
+        self.active = True
+        if self.widget != None:
+            self.widget.bind(on_touch_down=self._on_touch_down)
+            self.widget.bind(on_touch_up=self._on_touch_up)
+# ------------------------------------------------------  
+    def deactivate(self):
+        self.active = False
+        if self.widget != None:
+            self.widget.unbind(on_touch_down=self._on_touch_down)
+            self.widget.unbind(on_touch_up=self._on_touch_up)                    
+# ------------------------------------------------------    
+    def _on_touch_down(self,instance,touch):
+        if self.active and self.widget != None:
+            touch.grab(self.widget)
+            self.handle_touch_down(touch)
+        return False  
+# ------------------------------------------------------                
+    def handle_touch_down(self, touch):
+        target = self.widget.pos
+        x = 0
+        y = 0        
+        if (touch.x > target.pos[0]):
+            x = 1
+        elif (touch.x < target.pos[0]):
+            x = -1
+        else:
+            x = 0
+        if (touch.y > target.pos[1]):
+            y = 1
+        elif (touch.y < target.pos[1]):
+            yield = -1
+        else:
+            y = 0            
+        self.vector = (x,y)
+# ------------------------------------------------------
+    def _on_touch_up(self,instance, touch):
+        touch.ungrab(self.widget)
+        return False     
 
 # #######################################################
 class AccelerometerHandler(InputHandler):
@@ -234,9 +287,10 @@ class AccelerometerHandler(InputHandler):
             self.vector = self.get_vector()
 # ######################################################
 class HumInt():
-    def __init__(self,rootWidget,useKeyboard=True,useTouchscreen=True,useAccelerometer=True,useJoystick=False):
+    def __init__(self,rootWidget,useKeyboard=True,useTouchscreen=False,useAccelerometer=True,useJoystick=False,useTouchWidget=True,widget=None):
         self.keyboard = KeyboardHandler(active=useKeyboard, rootWidget=rootWidget, parent=self)
         self.touchscreen = TouchscreenHandler(active=useTouchscreen,rootWidget=rootWidget,parent=self)
+        self.touchWidget = TouchWidgetHandler(active=useTouchWidget,widget=widget,parent=self)
         self.accControl = AccelerometerHandler(active=useAccelerometer,rootWidget=rootWidget,parent=self)
         #self.joystick = InputHandler(active=useJoystick)
         self.vector = (0,0)
@@ -258,4 +312,6 @@ class HumInt():
         self.vector = v
         if (self.touchscreen.active):
             self.touchscreen.SetVector(v)   
-
+# ------------------------------------------------------
+    def SetWidget(self,widget):
+        self.touchWidget.SetWidget(widget)

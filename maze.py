@@ -88,6 +88,7 @@ class MazeGame(Widget):
         self.difficulty = self.hide_menu()
         self.playfield.new_game(self.difficulty)
         self.player1.SetVector((0,0))
+        self.player1.touchWidget.activate(widget=self.playfield.ball)
         self.running = True
         self.loopEvent = Clock.schedule_interval(self.update, 1.0 / 60.0)
 # ------------------------------------------------------
