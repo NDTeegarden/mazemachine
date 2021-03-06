@@ -209,27 +209,38 @@ class TouchWidgetHandler(InputHandler):
 # ------------------------------------------------------                
     def handle_touch_down(self, touch):
         self.hasPrecedence = True
-        target = self.widget.pos
-        x = 0
-        y = 0        
-        if (touch.x > target[0]):
-            x = 2
-        elif (touch.x < target[0]):
-            x = -2
-        else:
-            x = 0
-        if (touch.y > target[1]):
-            y = 2
-        elif (touch.y < target[1]):
-            y = -2
-        else:
-            y = 0            
-        self.vector = (x,y)
+        self.pos = touch.pos
+        self.get_vector()
 # ------------------------------------------------------
     def _on_touch_up(self,instance, touch):
         touch.ungrab(self.widget)
+        if self.active and self.widget != None:
+            self.handle_touch_up(touch)
+        return False  
+# ------------------------------------------------------
+    def handle_touch_up(self, touch):
         self.hasPrecedence = False
-        return False     
+        self.pos = self.widget.pos
+# ------------------------------------------------------    
+    def get_vector(self):
+        targetPos = self.widget.pos
+        touchPos = self.pos
+        x = 0
+        y = 0        
+        if (touchPos[0] > targetPos[0]):
+            x = 2
+        elif (touchPos[0] < targetPos[0]):
+            x = -2
+        else:
+            x = 0
+        if (touchPos[1] > targetPos[1]):
+            y = 2
+        elif (touchPos[1] < targetPos[1]):
+            y = -2
+        else:
+            y = 0            
+        self.vector = (x,y)        
+        return self.vector             
 # ######################################################
 class JoystickHandler(InputHandler):
 # ------------------------------------------------------  
