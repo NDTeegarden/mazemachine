@@ -60,12 +60,13 @@ class SimpleSprite(Widget):
         s = Rectangle(size=self.size,pos=self.pos) 
         return s
 # ------------------------------------------------------
-    def move(self,vector):
-        if (vector != (0,0)):
-            s = self.speed
+    def move(self,vector,speed=0):
+        if speed == 0:
+            speed = self.speed
+        if (vector != (0,0)) and (speed != 0):
             try:
-                dx = vector[0] * s
-                dy = vector[1] * s
+                dx = vector[0] * speed
+                dy = vector[1] * speed
             except Exception:
                 dx = 0
                 dy = 0
@@ -122,35 +123,42 @@ class Sprite(Image):
         ##print('initializing collider')
         if self.collider != None:
             self.remove_widget(self.collider)
-        self.collider = SimpleSprite(color=self.transparentcolor,speed=self.speed,size_hint = self.size_hint)
+        self.collider = SimpleSprite(color=self.transparentcolor,speed=self.speed,size_hint=self.size_hint)
         self.add_widget(self.collider)
 # ------------------------------------------------------
     def check_collision(self,widget,vector):
         newvector = vector
-        if not newvector == (0,0):
+        if newvector != (0,0):
             c = self.collider
             c.speed = self.speed
-            c.pos = self.pos
-            c.size = self.size
-            #c.size_hint = (None,None)
-            c.move(newvector)
-            if (c.collide_widget(widget)):
-                #print('colllision with',widget,'using vector',newvector)
-                newvector = (0,vector[1])
-                c.moveTo(self.pos)
-                c.move(newvector)
-                if (c.collide_widget(widget)):
-                    #print('colllision with',widget,'using vector',newvector)
-                    newvector = (vector[0],0)
-                    c.moveTo(self.pos)
-                    c.move(newvector)
-                    if (c.collide_widget(widget)):
-                        #print('colllision with',widget,'using vector',newvector)
-                        newvector=(0,0)
-                        c.moveTo(self.pos)
-                #print('newvector is',newvector)
-            c.moveTo(self.pos)                    
+            c.pos = ((self.pos[0]+2),(self.pos[1]+2))
+            c.size = ((self.size[0]-2),(self.size[1]-2))
+            # First pass
+            newvector = self.get_collision_vector(collider=c, widget=widget, vector=vector, divisor=1)
+            if c.speed > 1 and newvector == (0,0):
+                # Second pass
+                newvector = self.get_collision_vector(collider=c, widget=widget, vector=vector, divisor=2)       
         return newvector
+# ------------------------------------------------------ 
+    def get_collision_vector(self, collider, widget, vector, divisor):
+        c = collider
+        newvector = ((vector[0] / divisor),(vector[1] / divisor))
+        oldpos = c.pos
+        c.move(vector=newvector)
+        if (c.collide_widget(widget)):
+            newvector = (0,vector[1])
+            c.moveTo(oldpos)
+            c.move(vector=newvector)
+            if (c.collide_widget(widget)):
+                newvector = (vector[0],0)
+                c.moveTo(oldpos)
+                c.move(vector=newvector)
+                if (c.collide_widget(widget)):
+                    newvector=(0,0)
+                    c.moveTo(oldpos)
+        c.moveTo(oldpos)  
+        return newvector        
+
 # ------------------------------------------------------        
     def move(self,vector):
         if (vector != (0,0)):

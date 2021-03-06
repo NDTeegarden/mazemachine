@@ -295,7 +295,9 @@ class Playfield(FloatLayout):
         cell.add_widget(self.goal)
         for item in (self.floors):
             if item.collide_widget(self.goal) and item.pos[0] <= self.goal.pos[0]:
+                item.obstacle = False
                 item.parent.remove_widget(item)
+                self.floors.remove(item)
                 break
         self.goal.flash()
 # ------------------------------------------------------
@@ -313,7 +315,7 @@ class Playfield(FloatLayout):
                             if newvector[1] == 0:
                                 y=0 
                 except Exception:
-                    Logger.Exception('{}: some kind of problem checking wall collisions'.format(self))
+                    Logger.exception('{}: some kind of problem checking wall collisions'.format(self))
         for item in self.floors:
                 try:
                     if item.obstacle:
@@ -324,7 +326,7 @@ class Playfield(FloatLayout):
                             if newvector[1] == 0:
                                 y=0 
                 except Exception:
-                    Logger.Exception('{}: some kind of problem checking floor collisions'.format(self))                   
+                    Logger.exception('{}: some kind of problem checking floor collisions'.format(self))                   
         newvector = (x,y)
         return newvector 
 # ------------------------------------------------------
@@ -348,7 +350,4 @@ class Playfield(FloatLayout):
         sprite.move(newvector)  #we have to call the move method even if vector is 0,0 so ball will stop rolling when it's not moving.
         if v != newvector:
             player.SetVector(newvector)
-# ------------------------------------------------------
-    def choose_spriteset(self):
-        pass
-        
+
