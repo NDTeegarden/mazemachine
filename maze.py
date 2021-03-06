@@ -247,7 +247,7 @@ class Playfield(FloatLayout):
         h = item.pos[1] 
         size = (w,h)
         self.mazeSize = size
-        Logger.debug('{}:pos={}  size={}'.format(self,pos,size))
+        #Logger.debug('{}:pos={}  size={}'.format(self,pos,size))
         background = Image(source=self.assetData['background'], allow_stretch=True, keep_ratio=False, size=size, pos=pos, size_hint=(None,None))
         self.add_widget(background, last + 1)   #add to end so it's displayed on the bottom
         self.update_rect
@@ -283,14 +283,14 @@ class Playfield(FloatLayout):
         if cell == self.bottomRight or cell == self.bottomLeft:
             x = cell.pos[0] + (w / 2) + (self.wallSize[0] / 2)
             y = cell.pos[1] - (h / 2)
-            Logger.debug('y={}   cell.pos={}'.format(y,cell.pos))
+            #.debug('y={}   cell.pos={}'.format(y,cell.pos))
             src = self.assetData['goal_bottom']
         else:
             x = cell.pos[0] + self.wallSize[0]
             y = cell.pos[1] + self.wallSize[1] - self.wallSize[0] - 4
             src = self.assetData['goal_top']
 
-        #Logger.debug(self.assetData)
+        Logger.debug(src)
         self.goal = Goal(pos=(x,y),size=(w,h), source=src, allow_stretch=True, keep_ratio = True)
         cell.add_widget(self.goal)
         for item in (self.floors):
@@ -340,7 +340,7 @@ class Playfield(FloatLayout):
 # ------------------------------------------------------                      
     def move_sprite(self,player,sprite):
         v = player.get_vector()
-        Logger.debug('v={}'.format(v))
+        #Logger.debug('v={}'.format(v))
         if v != (0,0) and v != (None,None):
             newvector = self.check_collisions(sprite,v)
         else:

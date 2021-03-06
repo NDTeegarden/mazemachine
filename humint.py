@@ -16,6 +16,8 @@ class InputHandler():
         self.vector = (0,0)
         if active:
             self.activate()
+        else:
+            self.active = False
         self.pos = (None,None)
         self.hasPrecedence = False
 # ------------------------------------------------------    
@@ -138,7 +140,7 @@ class TouchscreenHandler(InputHandler):
         self.lastx = touch.x
         self.lasty = touch.y
         self.pos = (touch.x,touch.y)
-        Logger.debug('{}.handle_touch_down: vector={}'.format(self,self.vector))
+        #Logger.debug('{}.handle_touch_down: vector={}'.format(self,self.vector))
 # ------------------------------------------------------    
     def handle_touch_up(self, touch):
         self.pos = (touch.x,touch.y)  
@@ -151,7 +153,7 @@ class TouchscreenHandler(InputHandler):
         self.vector = self.GetSwipeVector(touch)  
         self.lastx = touch.x
         self.lasty = touch.y    
-        Logger.debug('{}.handle_touch_move: vector={}'.format(self,self.vector))          
+        #Logger.debug('{}.handle_touch_move: vector={}'.format(self,self.vector))          
 # ------------------------------------------------------    
     def GetSwipeVector(self,touch,orientation='landscape'):
         vx = 0
@@ -176,7 +178,7 @@ class TouchscreenHandler(InputHandler):
         return v               
 # #######################################################
 class TouchWidgetHandler(InputHandler):
-        def __init__(self,rootWidget=None, active=True, parent=None,widget=None):
+    def __init__(self,rootWidget=None, active=True, parent=None,widget=None):
         super().__init__(rootWidget=rootWidget, active=active, parent=parent)
         if active:
             self.activate(widget)
@@ -206,27 +208,59 @@ class TouchWidgetHandler(InputHandler):
         return False  
 # ------------------------------------------------------                
     def handle_touch_down(self, touch):
+        self.hasPrecedence = True
         target = self.widget.pos
         x = 0
         y = 0        
-        if (touch.x > target.pos[0]):
-            x = 1
-        elif (touch.x < target.pos[0]):
-            x = -1
+        if (touch.x > target[0]):
+            x = 2
+        elif (touch.x < target[0]):
+            x = -2
         else:
             x = 0
-        if (touch.y > target.pos[1]):
-            y = 1
-        elif (touch.y < target.pos[1]):
-            yield = -1
+        if (touch.y > target[1]):
+            y = 2
+        elif (touch.y < target[1]):
+            y = -2
         else:
             y = 0            
         self.vector = (x,y)
 # ------------------------------------------------------
     def _on_touch_up(self,instance, touch):
         touch.ungrab(self.widget)
+        self.hasPrecedence = False
         return False     
-
+# ######################################################
+class JoystickHandler(InputHandler):
+# ------------------------------------------------------  
+    def activate(self):
+        self.active = True
+        Window.bind(on_joy_axis=self._on_joy_axis)
+        Window.bind(on_joy_hat=self._on_joy_hat)
+# ------------------------------------------------------
+    def _on_joy_hat(self, win, arg1, arg2, value):
+        self.handle_hat(arg1=arg1, arg2=arg2, value=value)
+# ------------------------------------------------------  
+    def handle_hat(self, arg1, arg2, value):
+        self.vector = value  
+        self.hasPrecedence = True   
+        #Logger.debug('{}: arg1={}  arg2={}  value={}'.format(self, arg1, arg2, value))       
+# ------------------------------------------------------  
+    def _on_joy_axis(self, win, stickid, axisid, value):
+        self.handle_stick(stickid=stickid, axisid=axisid, value=value) 
+# ------------------------------------------------------  
+    def handle_stick(self, stickid, axisid, value):   
+        Logger.debug('{}: stick={}  axis={}  value={}'.format(self, stickid, axisid, value))  
+# ------------------------------------------------------  
+    def deactivate(self):
+        self.active = False
+        Window.unbind(on_joy_axis=self._on_joy_axis)
+# ------------------------------------------------------    
+    def get_vector(self):
+        v = self.vector
+        if v == (0,0):
+            self.hasPrecedence = False
+        return v         
 # #######################################################
 class AccelerometerHandler(InputHandler):
     def __init__(self,rootWidget=None, active=True, parent=None):
@@ -287,12 +321,12 @@ class AccelerometerHandler(InputHandler):
             self.vector = self.get_vector()
 # ######################################################
 class HumInt():
-    def __init__(self,rootWidget,useKeyboard=True,useTouchscreen=False,useAccelerometer=True,useJoystick=False,useTouchWidget=True,widget=None):
+    def __init__(self,rootWidget,useKeyboard=True,useTouchscreen=False,useAccelerometer=True,useJoystick=True,useTouchWidget=False,widget=None):
         self.keyboard = KeyboardHandler(active=useKeyboard, rootWidget=rootWidget, parent=self)
         self.touchscreen = TouchscreenHandler(active=useTouchscreen,rootWidget=rootWidget,parent=self)
         self.touchWidget = TouchWidgetHandler(active=useTouchWidget,widget=widget,parent=self)
         self.accControl = AccelerometerHandler(active=useAccelerometer,rootWidget=rootWidget,parent=self)
-        #self.joystick = InputHandler(active=useJoystick)
+        self.joystick = JoystickHandler(active=useJoystick)
         self.vector = (0,0)
         self.pos =  (0,0)
         self.lastVector = self.vector
@@ -301,6 +335,10 @@ class HumInt():
         v = (0,0)
         if self.keyboard.active and self.keyboard.hasPrecedence:
             v = self.keyboard.get_vector()
+        elif self.joystick.active and self.joystick.hasPrecedence:
+            v = self.joystick.get_vector()
+        elif self.touchWidget.active and self.touchWidget.hasPrecedence:
+            v = self.touchWidget.get_vector()
         elif self.touchscreen.active and self.touchscreen.hasPrecedence:
             v = self.touchscreen.get_vector()
         elif self.accControl.active:
