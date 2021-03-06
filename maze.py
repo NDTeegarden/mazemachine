@@ -35,12 +35,16 @@ import random as rn
 
 class MazeApp(App):
     def build(self):
+        Logger.setLevel(LOG_LEVELS["info"])
         super().__init__()
         opts = [opt for opt in sys.argv[1:] if opt.startswith("-")]
         useKeyboard = False
         for opt in opts:
-            if opt.startswith('-k'):
+            if opt.startswith('-k'):    #keyboard active
                 useKeyboard = True
+            if opt.startswith('-d'):    #debug mode
+                useKeyboard = True
+                Logger.setLevel(LOG_LEVELS["debug"]) 
         game = MazeGame()
         game.start(useKeyboard=useKeyboard)
         return game
@@ -51,7 +55,6 @@ class MazeApp(App):
 
 
 class MazeGame(Widget):
-    Logger.setLevel(LOG_LEVELS["info"])
     mazeGenerator = ObjectProperty(None)
     gridHeight = ObjectProperty(None)
     gridWidth = ObjectProperty(None)
@@ -336,7 +339,8 @@ class Playfield(FloatLayout):
 # ------------------------------------------------------                      
     def move_sprite(self,player,sprite):
         v = player.get_vector()
-        if v != (0,0):
+        Logger.debug('v={}'.format(v))
+        if v != (0,0) and v != (None,None):
             newvector = self.check_collisions(sprite,v)
         else:
             newvector = v

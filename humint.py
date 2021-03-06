@@ -16,21 +16,19 @@ class InputHandler():
         self.vector = (0,0)
         self.active = active
         self.pos = (None,None)
+        self.hasPrecedence = False
 # ------------------------------------------------------    
     def get_vector(self):
         return self.vector  
 # ------------------------------------------------------    
     def GetPos(self):
         return self.pos 
-# ------------------------------------------------------    
-    def update_parent(self):
-        if self.parent != None:
-            try:
-                self.parent.vector = self.vector
-                #print(self.parent,self.parent.vector)
-            except Exception:
-                pass
-
+# ------------------------------------------------------  
+    def deactivate(self):
+        self.active = False
+# ------------------------------------------------------  
+    def activate(self):
+        self.active = True
 # ######################################################
 class KeyboardHandler(InputHandler):
     def __init__(self,rootWidget=None, active=True, parent=None):
@@ -55,7 +53,7 @@ class KeyboardHandler(InputHandler):
         self.rootWidget._keyboard = None
 # ------------------------------------------------------    
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
-        #print (keycode)
+        self.hasPrecedence = True
         x = self.vector[0]
         y = self.vector[1]
         t = keycode[1]
@@ -68,7 +66,6 @@ class KeyboardHandler(InputHandler):
         elif t == 'down':
             y = -1
         self.vector = (x,y)
-        self.update_parent()
 
         # Keycode is composed of an integer + a string
         # If we hit escape, release the keyboard
@@ -81,7 +78,7 @@ class KeyboardHandler(InputHandler):
 # ------------------------------------------------------   
     def _on_keyboard_up(self, keyboard, keycode):
         self.vector = (0,0)
-        self.update_parent()
+        self.hasPrecedence = False
 
         # Keycode is composed of an integer + a string
         # If we hit escape, release the keyboard
@@ -111,7 +108,7 @@ class TouchscreenHandler(InputHandler):
         self.rootWidget.unbind(on_touch_up=self._on_touch_up)                    
 # ------------------------------------------------------    
     def _on_touch_down(self,instance,touch):
-        if self.rootWidget.running:
+        if self.rootWidget.running and self.active:
             touch.grab(self.rootWidget)
             self.handle_touch_down(touch)
         return False
@@ -126,8 +123,8 @@ class TouchscreenHandler(InputHandler):
     def _on_touch_up(self,instance, touch):
         if self.rootWidget.running:
             if touch.grab_current is self.rootWidget:
-                touch.ungrab(self.rootWidget)
                 self.handle_touch_up(touch)
+                touch.ungrab(self.rootWidget)
         return False                     
 # ------------------------------------------------------    
     def SetVector(self,v):
@@ -136,47 +133,46 @@ class TouchscreenHandler(InputHandler):
         self.lasty = None
 # ------------------------------------------------------    
     def handle_touch_down(self, touch):
+        self.hasPrecedence = True
         self.lastx = touch.x
         self.lasty = touch.y
         self.pos = (touch.x,touch.y)
+        Logger.debug('{}.handle_touch_down: vector={}'.format(self,self.vector))
 # ------------------------------------------------------    
     def handle_touch_up(self, touch):
-        self.pos = (touch.x,touch.y)
-        self.vector = self.GetSwipeVector(touch)
-        self.update_parent()  
+        self.pos = (touch.x,touch.y)  
         self.lastx = None
         self.lasty = None
+        self.hasPrecedence = True
 # ------------------------------------------------------    
     def handle_touch_move(self, touch):
         self.pos = (touch.x,touch.y)
-        # self.vector = self.GetSwipeVector(touch)  
-        # #print('self.vector=',self.vector)
-        # self.lastx = touch.x
-        # self.lasty = touch.y     
-        # self.update_parent()         
+        self.vector = self.GetSwipeVector(touch)  
+        self.lastx = touch.x
+        self.lasty = touch.y    
+        Logger.debug('{}.handle_touch_move: vector={}'.format(self,self.vector))          
 # ------------------------------------------------------    
-    def GetSwipeVector(self,touch):
+    def GetSwipeVector(self,touch,orientation='landscape'):
         vx = 0
         vy = 0
-        #print('before getting swipe vector')
         if (self.lastx != None) and (self.lasty != None):
             #print('getting swipe vector')
             x = touch.x
             y = touch.y
             if (x < self.lastx):
-                vy = 1
-            elif (x > self.lastx):
-                vy = -1
-            else:
-                vy = 0
-            if (y < self.lasty):
                 vx = -1
-            elif (y > self.lasty):
+            elif (x > self.lastx):
                 vx = 1
             else:
-                vx=0
-        v = (vx,vy)                
-        return v
+                vx = 0
+            if (y < self.lasty):
+                vy = -1
+            elif (y > self.lasty):
+                vy = 1
+            else:
+                vy=0
+        v = (vx,vy) 
+        return v               
 
 # #######################################################
 class AccelerometerHandler(InputHandler):
@@ -191,7 +187,6 @@ class AccelerometerHandler(InputHandler):
                 traceback.print_exc()
                 status = "{}: Accelerometer is not implemented for your platform".format(self)
                 Logger.info(status)
-                #print(status)
                 self.active = False
             if self.active:
                 self.init_value()
@@ -237,7 +232,6 @@ class AccelerometerHandler(InputHandler):
     def update(self):
         if self.active:
             self.vector = self.get_vector()
-            self.update_parent()
 # ######################################################
 class HumInt():
     def __init__(self,rootWidget,useKeyboard=True,useTouchscreen=True,useAccelerometer=True,useJoystick=False):
@@ -250,8 +244,14 @@ class HumInt():
         self.lastVector = self.vector
 # ------------------------------------------------------    
     def get_vector(self):
-        self.accControl.update()
-        v = self.vector
+        v = (0,0)
+        if self.keyboard.active and self.keyboard.hasPrecedence:
+            v = self.keyboard.get_vector()
+        elif self.touchscreen.active and self.touchscreen.hasPrecedence:
+            v = self.touchscreen.get_vector()
+        elif self.accControl.active:
+            v = self.accControl.get_vector()
+        self.vector = v
         return v
 # ------------------------------------------------------    
     def SetVector(self,v):
