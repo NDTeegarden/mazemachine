@@ -214,29 +214,39 @@ class TouchWidgetHandler(InputHandler):
 # ------------------------------------------------------
     def _on_touch_up(self,instance, touch):
         touch.ungrab(self.widget)
+        self.hasPrecedence = False
         if self.active and self.widget != None:
             self.handle_touch_up(touch)
         return False  
 # ------------------------------------------------------
     def handle_touch_up(self, touch):
-        self.hasPrecedence = False
         self.pos = self.widget.pos
 # ------------------------------------------------------    
     def get_vector(self):
         targetPos = self.widget.pos
         touchPos = self.pos
+        xdiff = touchPos[0] - targetPos[0]
+        ydiff = touchPos[1] - targetPos[1]
+        # if abs(xdiff) <= self.widget.size[0]:
+        #     xdiff = 0
+        # if abs(ydiff) <= self.widget.size[1]:
+        #     ydiff = 0
+        if (abs(xdiff)-self.widget.size[0]/2) > abs(ydiff):
+            ydiff = 0
+        elif (abs(ydiff)-self.widget.size[1]/2) > abs(xdiff):
+            xdiff = 0
         x = 0
         y = 0        
-        if (touchPos[0] > targetPos[0]):
-            x = 2
-        elif (touchPos[0] < targetPos[0]):
-            x = -2
+        if (xdiff > 0):
+            x = 1
+        elif (xdiff < 0):
+            x = -1
         else:
             x = 0
-        if (touchPos[1] > targetPos[1]):
-            y = 2
-        elif (touchPos[1] < targetPos[1]):
-            y = -2
+        if (ydiff > 0 ):
+            y = 1
+        elif (ydiff < 0):
+            y = -1
         else:
             y = 0            
         self.vector = (x,y)        
