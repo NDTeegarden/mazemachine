@@ -135,9 +135,9 @@ class Sprite(Image):
             c.size = ((self.size[0]-2),(self.size[1]-2))
             # First pass
             newvector = self.get_collision_vector(collider=c, widget=widget, vector=vector, divisor=1)
-            if c.speed > 1 and newvector == (0,0):
-                # Second pass
-                newvector = self.get_collision_vector(collider=c, widget=widget, vector=vector, divisor=2)       
+            # if c.speed > 1 and newvector == (0,0):
+            #     # Second pass
+            #     newvector = self.get_collision_vector(collider=c, widget=widget, vector=vector, divisor=2)       
         return newvector
 # ------------------------------------------------------ 
     def get_collision_vector(self, collider, widget, vector, divisor):
@@ -145,15 +145,21 @@ class Sprite(Image):
         newvector = ((vector[0] / divisor),(vector[1] / divisor))
         oldpos = c.pos
         c.move(vector=newvector)
+        #Logger.debug('Checking collissions with widget {} and vector {}'.format(widget, newvector))
         if (c.collide_widget(widget)):
-            newvector = (0,vector[1])
+            #Logger.debug('Collided with {}'.format(widget))
+            newvector = (0,(vector[1]/divisor))
+            #Logger.debug('Checking collissions with vector {}'.format(newvector))
             c.moveTo(oldpos)
             c.move(vector=newvector)
             if (c.collide_widget(widget)):
-                newvector = (vector[0],0)
+                #Logger.debug('Collided with {}'.format(widget))
+                newvector = (vector[0]/divisor,0)
                 c.moveTo(oldpos)
                 c.move(vector=newvector)
+                #Logger.debug('Checking collissions with vector {}'.format(newvector))
                 if (c.collide_widget(widget)):
+                    #Logger.debug('Collided with {}'.format(widget))
                     newvector=(0,0)
                     c.moveTo(oldpos)
         c.moveTo(oldpos)  

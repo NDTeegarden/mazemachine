@@ -86,8 +86,9 @@ class MazeGame(Widget):
 # ------------------------------------------------------
     def new_game(self):
         self.difficulty = self.hide_menu()
+        self.player1.enable()
         self.playfield.new_game(self.difficulty)
-        self.player1.SetVector((0,0))
+        self.player1.set_vector((0,0))
         self.player1.touchWidget.activate(widget=self.playfield.ball)
         self.running = True
         self.loopEvent = Clock.schedule_interval(self.update, 1.0 / 60.0)
@@ -114,6 +115,7 @@ class MazeGame(Widget):
             else:
                 text = 'Ready to begin?'
             self.running = False
+            self.player1.disable()
             self.show_menu(difficulty=self.difficulty, caption=text)
 # ------------------------------------------------------
     def get_victory_text(self):
@@ -303,31 +305,10 @@ class Playfield(FloatLayout):
 # ------------------------------------------------------
     def check_collisions(self,sprite,vector):
         newvector = vector
-        x=vector[0]
-        y=vector[1]
-        for item in self.walls:
-                try:
-                    if item.obstacle:
-                        newvector = sprite.check_collision(item,vector)
-                        if newvector != vector:     #this code is supposed to allow us to check every sprite without overwriting vectors we already set to 0
-                            if newvector[0] == 0:
-                                x=0
-                            if newvector[1] == 0:
-                                y=0 
-                except Exception:
-                    Logger.exception('{}: some kind of problem checking wall collisions'.format(self))
-        for item in self.floors:
-                try:
-                    if item.obstacle:
-                        newvector = sprite.check_collision(item,vector)
-                        if newvector != vector:     
-                            if newvector[0] == 0:
-                                x=0
-                            if newvector[1] == 0:
-                                y=0 
-                except Exception:
-                    Logger.exception('{}: some kind of problem checking floor collisions'.format(self))                   
-        newvector = (x,y)
+        items = self.walls + self.floors
+        for item in items:
+            if item.obstacle:
+                newvector = sprite.check_collision(widget=item,vector=newvector)
         return newvector 
 # ------------------------------------------------------
     def check_victory(self,sprite,goal):
@@ -349,5 +330,5 @@ class Playfield(FloatLayout):
             newvector = v
         sprite.move(newvector)  #we have to call the move method even if vector is 0,0 so ball will stop rolling when it's not moving.
         if v != newvector:
-            player.SetVector(newvector)
+            player.set_vector(newvector)
 

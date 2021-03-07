@@ -3,7 +3,7 @@ from kivy.uix.widget import Widget
 from kivy.properties import (
     NumericProperty, ReferenceListProperty, ObjectProperty
 )
-from kivy.logger import Logger
+from kivy.logger import Logger, LOG_LEVELS
 from plyer import accelerometer
 
 class InputHandler():
@@ -56,24 +56,25 @@ class KeyboardHandler(InputHandler):
         self.rootWidget._keyboard = None
 # ------------------------------------------------------    
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
-        self.hasPrecedence = True
-        x = self.vector[0]
-        y = self.vector[1]
-        t = keycode[1]
-        if t == 'left':
-            x = -1
-        elif t == 'right':
-            x = 1
-        if t == 'up':
-            y = 1
-        elif t == 'down':
-            y = -1
-        self.vector = (x,y)
+        if self.parent.enabled and self.active:
+            self.hasPrecedence = True
+            x = self.vector[0]
+            y = self.vector[1]
+            t = keycode[1]
+            if t == 'left':
+                x = -1
+            elif t == 'right':
+                x = 1
+            if t == 'up':
+                y = 1
+            elif t == 'down':
+                y = -1
+            self.vector = (x,y)
 
         # Keycode is composed of an integer + a string
         # If we hit escape, release the keyboard
-        if keycode[1] == 'escape':
-            keyboard.release()
+            if keycode[1] == 'escape':
+                keyboard.release()
 
         # Return True to accept the key. Otherwise, it will be used by
         # the system.
@@ -130,7 +131,7 @@ class TouchscreenHandler(InputHandler):
                 touch.ungrab(self.rootWidget)
         return False                     
 # ------------------------------------------------------    
-    def SetVector(self,v):
+    def set_vector(self,v):
         self.vector = v
         self.lastx = None
         self.lasty = None
@@ -183,13 +184,12 @@ class TouchWidgetHandler(InputHandler):
         if active:
             self.activate(widget)
 # ------------------------------------------------------  
-    def SetWidget(self, widget):
+    def set_widget(self, widget):
         self.widget = widget
-
 # ------------------------------------------------------  
     def activate(self, widget=None):
         if widget != None:
-            self.SetWidget(widget)
+            self.set_widget(widget)
         self.active = True
         if self.widget != None:
             self.widget.bind(on_touch_down=self._on_touch_down)
@@ -202,7 +202,7 @@ class TouchWidgetHandler(InputHandler):
             self.widget.unbind(on_touch_up=self._on_touch_up)                    
 # ------------------------------------------------------    
     def _on_touch_down(self,instance,touch):
-        if self.active and self.widget != None:
+        if self.parent.enabled and self.active and self.widget != None:
             touch.grab(self.widget)
             self.handle_touch_down(touch)
         return False  
@@ -215,7 +215,7 @@ class TouchWidgetHandler(InputHandler):
     def _on_touch_up(self,instance, touch):
         touch.ungrab(self.widget)
         self.hasPrecedence = False
-        if self.active and self.widget != None:
+        if self.parent.enabled and self.active and self.widget != None:
             self.handle_touch_up(touch)
         return False  
 # ------------------------------------------------------
@@ -260,7 +260,8 @@ class JoystickHandler(InputHandler):
         Window.bind(on_joy_hat=self._on_joy_hat)
 # ------------------------------------------------------
     def _on_joy_hat(self, win, arg1, arg2, value):
-        self.handle_hat(arg1=arg1, arg2=arg2, value=value)
+        if self.parent.enabled and self.active:
+            self.handle_hat(arg1=arg1, arg2=arg2, value=value)
 # ------------------------------------------------------  
     def handle_hat(self, arg1, arg2, value):
         self.vector = value  
@@ -304,7 +305,7 @@ class AccelerometerHandler(InputHandler):
         self.lastvalue = self.value
 # ------------------------------------------------------  
     def get_vector(self):
-        if self.active:
+        if self.parent.enabled and self.active:
             a = 0
             b = 0
             lasta = a
@@ -351,6 +352,7 @@ class HumInt():
         self.vector = (0,0)
         self.pos =  (0,0)
         self.lastVector = self.vector
+        self.enabled = False
 # ------------------------------------------------------    
     def get_vector(self):
         v = (0,0)
@@ -367,10 +369,16 @@ class HumInt():
         self.vector = v
         return v
 # ------------------------------------------------------    
-    def SetVector(self,v):
+    def set_vector(self,v):
         self.vector = v
         if (self.touchscreen.active):
-            self.touchscreen.SetVector(v)   
+            self.touchscreen.set_vector(v)   
 # ------------------------------------------------------
-    def SetWidget(self,widget):
-        self.touchWidget.SetWidget(widget)
+    def set_widget(self,widget):
+        self.touchWidget.set_widget(widget)
+# ------------------------------------------------------ 
+    def enable(self):
+        self.enabled = True
+# ------------------------------------------------------ 
+    def disable(self):
+        self.enabled = False       
