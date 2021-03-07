@@ -135,9 +135,9 @@ class Sprite(Image):
             c.size = ((self.size[0]-4),(self.size[1]-4))
             # First pass
             newvector = self.get_collision_vector(collider=c, widget=widget, vector=vector, divisor=1)
-            # if c.speed > 1 and newvector == (0,0):
-            #     # Second pass
-            #     newvector = self.get_collision_vector(collider=c, widget=widget, vector=vector, divisor=2)       
+            if c.speed >= 2 and newvector == (0,0):
+                # Second pass
+                newvector = self.get_collision_vector(collider=c, widget=widget, vector=vector, divisor=2)       
         return newvector
 # ------------------------------------------------------ 
     def get_collision_vector(self, collider, widget, vector, divisor):
