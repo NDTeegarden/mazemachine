@@ -131,8 +131,8 @@ class Sprite(Image):
         if newvector != (0,0):
             c = self.collider
             c.speed = self.speed
-            c.pos = ((self.pos[0]+2),(self.pos[1]+2))
-            c.size = ((self.size[0]-2),(self.size[1]-2))
+            c.pos = ((self.pos[0]+4),(self.pos[1]+4))
+            c.size = ((self.size[0]-4),(self.size[1]-4))
             # First pass
             newvector = self.get_collision_vector(collider=c, widget=widget, vector=vector, divisor=1)
             # if c.speed > 1 and newvector == (0,0):

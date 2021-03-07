@@ -59,7 +59,7 @@ class MazeGame(Widget):
     gridHeight = ObjectProperty(None)
     gridWidth = ObjectProperty(None)
     player1 = ObjectProperty(None)
-    difficulty = BoundedNumericProperty(3, min=1, max=5)
+    difficulty = BoundedNumericProperty(2, min=1, max=5)
     running = BooleanProperty(None)
     playfield = ObjectProperty(None)
     loopEvent = ObjectProperty(None)
@@ -81,7 +81,7 @@ class MazeGame(Widget):
         self.playfield.xoffset = left
         self.playfield.yoffset = bottom
         self.add_widget(self.playfield)
-        self.difficulty = 3
+        self.difficulty = 2
         self.end_game(victory=False)
 # ------------------------------------------------------
     def new_game(self):
@@ -271,8 +271,8 @@ class Playfield(FloatLayout):
     def place_ball(self,cell,difficulty):
         x = cell.pos[0] + int(cell.size[0] / 2) - 6
         y = cell.pos[1] + int(cell.size[1] / 2) - 8
-        width = int(cell.size[0] * .5) - 1
-        height = int(cell.size[1] * .5) - 1
+        width = int(cell.size[0] * .5) - 2
+        height = int(cell.size[1] * .5) - 2
         speed = int((difficulty+2)/2)
         asset = self.assetData['ball']
         self.ball = Ball(speed=speed,size_hint=(None,None),source=asset[0],size=(width,height),pos=(x,y),allow_stretch=True,altSources=[asset[1]])

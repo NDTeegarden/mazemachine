@@ -60,7 +60,7 @@
         , "background": "assets/dark-gray.png" 
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip"  
-        ,  "ball": ["assets/white-ballB-left.zip","assets/white-ballB-right.zip"]
+        ,  "ball": ["assets/red-ball-left.zip","assets/red-ball-right.zip"]
     }      
     ,{ "wall": "assets/mntn-wall.png"
         , "floor": "assets/mntn-floor.png"
@@ -95,7 +95,7 @@
         , "background": "assets/dark-gray.png" 
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip"  
-        ,  "ball": ["assets/red-ball-left.zip","assets/red-ball-right.zip"]
+        ,  "ball": ["assets/pink-ball-left.zip","assets/pink-ball-right.zip"]
     }  
     ,{ "wall": "assets/jade-wall.png"
         , "floor": "assets/jade-floor.png"
@@ -103,7 +103,14 @@
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip"  
         ,  "ball": ["assets/red-ball-left.zip","assets/red-ball-right.zip"]
-    } 
+    }
+    ,{ "wall": "assets/temple-wall.png"
+        , "floor": "assets/temple-floor.png"
+        , "background": "assets/dark-gray.png" 
+        , "goal_bottom": "assets/exit-down.zip"
+        , "goal_top": "assets/exit-up.zip"  
+        ,  "ball": ["assets/red-ball-left.zip","assets/red-ball-right.zip"]
+    }       
     ,{ "wall": "assets/gnarly-wall.png"
         , "floor": "assets/gnarly-floor.png"
         , "background": "assets/dark-gray.png" 
@@ -116,6 +123,20 @@
         , "background": "assets/dark-gray.png" 
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip"  
-        ,  "ball": ["assets/pink-ball-left.zip","assets/pink-ball-right.zip"]
-    }                                                                             
+        ,  "ball": ["assets/red-left.zip","assets/red-right.zip"]
+    }
+    ,{ "wall": "assets/swirly-wall.png"
+        , "floor": "assets/swirly-floor.png"
+        , "background": "assets/dark-gray.png" 
+        , "goal_bottom": "assets/exit-down.zip"
+        , "goal_top": "assets/exit-up.zip"  
+        ,  "ball": ["assets/red-ball-left.zip","assets/red-ball-right.zip"]
+    } 
+    ,{ "wall": "assets/transtube-wall.zip"
+        , "floor": "assets/transtube-floor.zip"
+        , "background": "assets/dark-gray.png" 
+        , "goal_bottom": "assets/exit-down.zip"
+        , "goal_top": "assets/exit-up.zip"  
+        ,  "ball": ["assets/red-ball-left.zip","assets/red-ball-right.zip"]
+    }                                                                                           
 ]

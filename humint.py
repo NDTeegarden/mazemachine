@@ -238,15 +238,15 @@ class TouchWidgetHandler(InputHandler):
         x = 0
         y = 0        
         if (xdiff > 0):
-            x = 1
+            x = 2
         elif (xdiff < 0):
-            x = -1
+            x = -2
         else:
             x = 0
         if (ydiff > 0 ):
-            y = 1
+            y = 2
         elif (ydiff < 0):
-            y = -1
+            y = -2
         else:
             y = 0            
         self.vector = (x,y)        
@@ -258,25 +258,56 @@ class JoystickHandler(InputHandler):
         self.active = True
         Window.bind(on_joy_axis=self._on_joy_axis)
         Window.bind(on_joy_hat=self._on_joy_hat)
+        Window.bind(on_joy_button_down=self._on_joy_button_down)
+        Window.bind(on_joy_up_down=self._on_joy_button_up)
 # ------------------------------------------------------
     def _on_joy_hat(self, win, arg1, arg2, value):
         if self.parent.enabled and self.active:
             self.handle_hat(arg1=arg1, arg2=arg2, value=value)
 # ------------------------------------------------------  
     def handle_hat(self, arg1, arg2, value):
-        self.vector = value  
-        self.hasPrecedence = True   
-        #Logger.debug('{}: arg1={}  arg2={}  value={}'.format(self, arg1, arg2, value))       
+        vector = value
+        self.vector = vector  
+        self.hasPrecedence = True        
+# ------------------------------------------------------  
+    def _on_joy_button_down(self, win, arg1, number):
+        if self.parent.enabled and self.active:
+            self.handle_button_down(arg1, number)
+# ------------------------------------------------------  
+    def handle_button_down(self, arg1, number):
+        if number==11:
+            self.vector = (0,1)
+        elif number==12:
+            self.vector = (0,-1)
+        elif number==13:
+            self.vector = (-1,0)    
+        elif number==14:
+            self.vector = (1,0)
+        else:
+            Logger.debug('Joystick {} button {} pressed.'.format(arg1, number))   
+# ------------------------------------------------------  
+    def handle_button_up(self, arg1, number):
+        if number >= 11 and number <= 14:
+            self.vector = (0,0)
+        else:
+            Logger.debug('Joystick {} button {} released.'.format(arg1, number))                       
+# ------------------------------------------------------  
+    def _on_joy_button_up(self, win, arg1, number):
+        if self.parent.enabled and self.active:
+            self.handle_button_up(arg1, number)   
 # ------------------------------------------------------  
     def _on_joy_axis(self, win, stickid, axisid, value):
         self.handle_stick(stickid=stickid, axisid=axisid, value=value) 
 # ------------------------------------------------------  
     def handle_stick(self, stickid, axisid, value):   
         Logger.debug('{}: stick={}  axis={}  value={}'.format(self, stickid, axisid, value))  
-# ------------------------------------------------------  
+# ------------------------------------------------------ 
     def deactivate(self):
         self.active = False
         Window.unbind(on_joy_axis=self._on_joy_axis)
+        Window.unbind(on_joy_hat=self._on_joy_hat)
+        Window.unbind(on_joy_button_down=self._on_joy_button_down)
+        Window.unbind(on_joy_up_down=self._on_joy_button_up)        
 # ------------------------------------------------------    
     def get_vector(self):
         v = self.vector
@@ -326,21 +357,17 @@ class AccelerometerHandler(InputHandler):
             if b == lastb:
                 x = 0
             elif b < lastb:
-                x = -1 - bdiff
+                x = -1 * bdiff
             elif b > lastb:
-                x = 1 + bdiff
+                x = bdiff
             if a == lasta:
                 y = 0
             if a < lasta:
-                y = 1 + adiff 
+                y = adiff 
             elif a > lasta:
-                y = -1 - adiff 
+                y = -1 * adiff 
             self.vector = (x,y)
         return self.vector
-# ------------------------------------------------------  
-    def update(self):
-        if self.active:
-            self.vector = self.get_vector()
 # ######################################################
 class HumInt():
     def __init__(self,rootWidget,useKeyboard=True,useTouchscreen=False,useAccelerometer=True,useJoystick=True,useTouchWidget=False,widget=None):
@@ -348,7 +375,7 @@ class HumInt():
         self.touchscreen = TouchscreenHandler(active=useTouchscreen,rootWidget=rootWidget,parent=self)
         self.touchWidget = TouchWidgetHandler(active=useTouchWidget,widget=widget,parent=self)
         self.accControl = AccelerometerHandler(active=useAccelerometer,rootWidget=rootWidget,parent=self)
-        self.joystick = JoystickHandler(active=useJoystick)
+        self.joystick = JoystickHandler(active=useJoystick, parent=self)
         self.vector = (0,0)
         self.pos =  (0,0)
         self.lastVector = self.vector
