@@ -1,6 +1,6 @@
 [
-    {   "wall": "assets/bluewall3.png"
-        , "floor": "assets/bluefloor3.png"
+    {   "wall": "assets/bluewall2.png"
+        , "floor": "assets/bluefloor2.png"
         , "background": "assets/dark-gray.png"
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip" 
