@@ -78,10 +78,10 @@
     } 
     ,{ "wall": "assets/sandstone-wall.png"
         , "floor": "assets/sandstone-floor.png"
-        , "background": "assets/dark-gray.png" 
+        , "background": "assets/dark-wood-background.png" 
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip"  
-        ,  "ball": ["assets/red-ball-left.zip","assets/red-ball-right.zip"]
+        ,  "ball": ["assets/pink-ball-left.zip","assets/pink-ball-right.zip"]
     }    
     ,{ "wall": "assets/paver-wall.png"
         , "floor": "assets/paver-floor.png"
@@ -138,5 +138,12 @@
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip"  
         ,  "ball": ["assets/red-ball-left.zip","assets/red-ball-right.zip"]
-    }                                                                                           
+    }  
+    ,{ "wall": "assets/aggtest-wall.zip"
+        , "floor": "assets/aggtest-floor.zip"
+        , "background": "assets/dark-gray.png" 
+        , "goal_bottom": "assets/exit-down.zip"
+        , "goal_top": "assets/exit-up.zip"  
+        ,  "ball": ["assets/red-ball-left.zip","assets/red-ball-right.zip"]
+    }                                                                                                
 ]

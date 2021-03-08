@@ -31,7 +31,8 @@ from sets import AssetSet
 import sys
 import numpy as np
 import random as rn
-
+import threading as th
+import concurrent.futures as cf
 
 class MazeApp(App):
     def build(self):
@@ -89,17 +90,16 @@ class MazeGame(Widget):
         self.player1.enable()
         self.playfield.new_game(self.difficulty)
         self.player1.set_vector((0,0))
-        self.player1.touchWidget.activate(widget=self.playfield.ball)
+        #self.player1.touchWidget.activate(widget=self.playfield.ball)
         self.running = True
-        self.loopEvent = Clock.schedule_interval(self.update, 1.0 / 60.0)
+        self.loopEvent = Clock.schedule_interval(self.update, .016)
 # ------------------------------------------------------
     def update(self, dt):
         if (self.running):
             self.running_update()
 # ------------------------------------------------------
     def running_update(self):
-        self.playfield.move_sprite(self.player1,self.playfield.ball)   
-        victory = self.playfield.check_victory(self.playfield.ball,self.playfield.goal)  
+        victory = self.playfield.update_game(player=self.player1)
         if victory:
             self.end_game(victory)
  # ------------------------------------------------------               
@@ -192,7 +192,12 @@ class Playfield(FloatLayout):
         mg = EllerMazeGenerator(dm[0], dm[1])
         self.draw_maze(mg.GetMaze())
         self.place_goal(self.end)
-        self.place_ball(cell=self.start,difficulty=difficulty)
+        self.place_ball(cell=self.start,difficulty=difficulty)          
+ # ------------------------------------------------------ 
+    def update_game(self, player):
+        self.move_sprite(player,self.ball)   
+        victory = self.check_victory(self.ball,self.goal)   
+        return victory    
 # ------------------------------------------------------
     def get_grid_size(self,difficulty):
         switcher = {
@@ -273,7 +278,9 @@ class Playfield(FloatLayout):
         y = cell.pos[1] + int(cell.size[1] / 2) - 8
         width = int(cell.size[0] * .5) - 2
         height = int(cell.size[1] * .5) - 2
-        speed = int((difficulty+2)/2)
+        speed = int((difficulty+1)/2)
+        if speed <= 1:
+            speed = 2
         asset = self.assetData['ball']
         self.ball = Ball(speed=speed,size_hint=(None,None),source=asset[0],size=(width,height),pos=(x,y),allow_stretch=True,altSources=[asset[1]])
         cell.add_widget(self.ball)
@@ -306,9 +313,17 @@ class Playfield(FloatLayout):
     def check_collisions(self,sprite,vector):
         newvector = vector
         items = self.walls + self.floors
-        for item in items:
-            if item.obstacle:
-                newvector = sprite.check_collision(widget=item,vector=newvector)
+        futures = []
+        with cf.ThreadPoolExecutor() as executor:
+            for item in items:
+                if item.obstacle:
+                    futures.append(executor.submit(sprite.check_collision, item, newvector))
+        for f in futures:
+            result = f.result()
+            if result != newvector:
+                newvector = result
+                if newvector == (0,0):
+                    break
         return newvector 
 # ------------------------------------------------------
     def check_victory(self,sprite,goal):

@@ -5,6 +5,7 @@ from kivy.properties import (
 )
 from kivy.logger import Logger, LOG_LEVELS
 from plyer import accelerometer
+import threading as th
 
 class InputHandler():
 
@@ -91,92 +92,7 @@ class KeyboardHandler(InputHandler):
 
         # Return True to accept the key. Otherwise, it will be used by
         # the system.
-        return False    
-# #######################################################
-class TouchscreenHandler(InputHandler):
-    def __init__(self,rootWidget=None, active=True, parent=None):
-        super().__init__(rootWidget=rootWidget, active=active, parent=parent)
-        if active:
-            self.activate()
-# ------------------------------------------------------  
-    def activate(self):
-        self.active = True
-        self.rootWidget.bind(on_touch_down=self._on_touch_down)
-        self.rootWidget.bind(on_touch_move=self._on_touch_move)
-        self.rootWidget.bind(on_touch_up=self._on_touch_up)
-# ------------------------------------------------------  
-    def deactivate(self):
-        self.active = False
-        self.rootWidget.unbind(on_touch_down=self._on_touch_down)
-        self.rootWidget.unbind(on_touch_move=self._on_touch_move)
-        self.rootWidget.unbind(on_touch_up=self._on_touch_up)                    
-# ------------------------------------------------------    
-    def _on_touch_down(self,instance,touch):
-        if self.rootWidget.running and self.active:
-            touch.grab(self.rootWidget)
-            self.handle_touch_down(touch)
-        return False
-# ------------------------------------------------------    
-    def _on_touch_move(self,instance,touch):
-        if self.rootWidget.running:
-            if touch.grab_current is self.rootWidget:
-                # now we only handle moves which we have grabbed
-                self.handle_touch_move(touch)
-        return False                    
-# ------------------------------------------------------
-    def _on_touch_up(self,instance, touch):
-        if self.rootWidget.running:
-            if touch.grab_current is self.rootWidget:
-                self.handle_touch_up(touch)
-                touch.ungrab(self.rootWidget)
-        return False                     
-# ------------------------------------------------------    
-    def set_vector(self,v):
-        self.vector = v
-        self.lastx = None
-        self.lasty = None
-# ------------------------------------------------------    
-    def handle_touch_down(self, touch):
-        self.hasPrecedence = True
-        self.lastx = touch.x
-        self.lasty = touch.y
-        self.pos = (touch.x,touch.y)
-        #Logger.debug('{}.handle_touch_down: vector={}'.format(self,self.vector))
-# ------------------------------------------------------    
-    def handle_touch_up(self, touch):
-        self.pos = (touch.x,touch.y)  
-        self.lastx = None
-        self.lasty = None
-        self.hasPrecedence = True
-# ------------------------------------------------------    
-    def handle_touch_move(self, touch):
-        self.pos = (touch.x,touch.y)
-        self.vector = self.GetSwipeVector(touch)  
-        self.lastx = touch.x
-        self.lasty = touch.y    
-        #Logger.debug('{}.handle_touch_move: vector={}'.format(self,self.vector))          
-# ------------------------------------------------------    
-    def GetSwipeVector(self,touch,orientation='landscape'):
-        vx = 0
-        vy = 0
-        if (self.lastx != None) and (self.lasty != None):
-            #print('getting swipe vector')
-            x = touch.x
-            y = touch.y
-            if (x < self.lastx):
-                vx = -1
-            elif (x > self.lastx):
-                vx = 1
-            else:
-                vx = 0
-            if (y < self.lasty):
-                vy = -1
-            elif (y > self.lasty):
-                vy = 1
-            else:
-                vy=0
-        v = (vx,vy) 
-        return v               
+        return False             
 # #######################################################
 class TouchWidgetHandler(InputHandler):
     def __init__(self,rootWidget=None, active=True, parent=None,widget=None):
@@ -202,25 +118,21 @@ class TouchWidgetHandler(InputHandler):
             self.widget.unbind(on_touch_up=self._on_touch_up)                    
 # ------------------------------------------------------    
     def _on_touch_down(self,instance,touch):
-        if self.parent.enabled and self.active and self.widget != None:
-            touch.grab(self.widget)
-            self.handle_touch_down(touch)
+        thread = th.Thread(target=self.handle_touch_down, args=(touch.pos,))
+        thread.start()
         return False  
 # ------------------------------------------------------                
-    def handle_touch_down(self, touch):
-        self.hasPrecedence = True
-        self.pos = touch.pos
-        self.get_vector()
+    def handle_touch_down(self, pos):
+        if self.parent.enabled and self.active and self.widget != None:        
+            self.hasPrecedence = True
+            self.pos = pos
 # ------------------------------------------------------
     def _on_touch_up(self,instance, touch):
-        touch.ungrab(self.widget)
-        self.hasPrecedence = False
-        if self.parent.enabled and self.active and self.widget != None:
-            self.handle_touch_up(touch)
-        return False  
+        self.hasPrecedence = False 
+        return False    
 # ------------------------------------------------------
-    def handle_touch_up(self, touch):
-        self.pos = self.widget.pos
+    def handle_touch_up(self):
+        pass
 # ------------------------------------------------------    
     def get_vector(self):
         targetPos = self.widget.pos
@@ -262,48 +174,56 @@ class JoystickHandler(InputHandler):
         Window.bind(on_joy_up_down=self._on_joy_button_up)
 # ------------------------------------------------------
     def _on_joy_hat(self, win, arg1, arg2, value):
-        if self.parent.enabled and self.active:
-            self.handle_hat(arg1=arg1, arg2=arg2, value=value)
+        thread = th.Thread(target=self.handle_hat, args=(arg1, arg2, value))
+        thread.start()
+        return False
 # ------------------------------------------------------  
     def handle_hat(self, arg1, arg2, value):
-        vector = value
-        self.vector = vector  
-        self.hasPrecedence = True        
+        if self.parent.enabled and self.active:
+            vector = value
+            self.vector = vector  
+            self.hasPrecedence = True        
 # ------------------------------------------------------  
     def _on_joy_button_down(self, win, arg1, number):
-        if self.parent.enabled and self.active:
-            self.handle_button_down(arg1, number)
+        thread = th.Thread(target=self.handle_button_down, args=(arg1, number))
+        thread.start()
+        return False
 # ------------------------------------------------------  
     def handle_button_down(self, arg1, number):
-        if number==11:
-            self.vector = (0,1)
-        elif number==12:
-            self.vector = (0,-1)
-        elif number==13:
-            self.vector = (-1,0)    
-        elif number==14:
-            self.vector = (1,0)
-        else:
-            Logger.debug('Joystick {} button {} pressed.'.format(arg1, number))   
+        if self.parent.enabled and self.active:
+            if number==11:
+                self.vector = (0,1)
+            elif number==12:
+                self.vector = (0,-1)
+            elif number==13:
+                self.vector = (-1,0)    
+            elif number==14:
+                self.vector = (1,0)
+            else:
+                Logger.debug('Joystick {} button {} pressed.'.format(arg1, number))   
 # ------------------------------------------------------  
     def handle_button_up(self, arg1, number):
-        if number >= 11 and number <= 14:
-            self.vector = (0,0)
-        else:
-            Logger.debug('Joystick {} button {} released.'.format(arg1, number))                       
+        if self.parent.enabled and self.active:
+            if number >= 11 and number <= 14:
+                self.vector = (0,0)
+            else:
+                Logger.debug('Joystick {} button {} released.'.format(arg1, number))                       
 # ------------------------------------------------------  
     def _on_joy_button_up(self, win, arg1, number):
-        if self.parent.enabled and self.active:
-            self.handle_button_up(arg1, number)   
+        self.hasPrecedence = False
+        thread = th.Thread(target=self.handle_button_up, args=(arg1, number) )
+        thread.start()
+        return False 
 # ------------------------------------------------------  
     def _on_joy_axis(self, win, stickid, axisid, value):
-        self.handle_stick(stickid=stickid, axisid=axisid, value=value) 
+        return False
 # ------------------------------------------------------  
     def handle_stick(self, stickid, axisid, value):   
         Logger.debug('{}: stick={}  axis={}  value={}'.format(self, stickid, axisid, value))  
 # ------------------------------------------------------ 
     def deactivate(self):
         self.active = False
+        self.hasPrecedence = False
         Window.unbind(on_joy_axis=self._on_joy_axis)
         Window.unbind(on_joy_hat=self._on_joy_hat)
         Window.unbind(on_joy_button_down=self._on_joy_button_down)
@@ -337,6 +257,7 @@ class AccelerometerHandler(InputHandler):
 # ------------------------------------------------------  
     def get_vector(self):
         if self.parent.enabled and self.active:
+            maxdiff = 5
             a = 0
             b = 0
             lasta = a
@@ -349,11 +270,15 @@ class AccelerometerHandler(InputHandler):
                 lasta = round(self.lastvalue[0],1)
                 lastb = round(self.lastvalue[1],1)
             adiff = int(abs(a-lasta))
-            if adiff > 6:
-                adiff = 6
+            if adiff > maxdiff:
+                adiff = maxdiff
+            if adiff < 2:
+                adiff = 2
             bdiff = int(abs(b-lastb))
-            if bdiff > 6:
-                bdiff = 6
+            if bdiff > maxdiff:
+                bdiff = maxdiff
+            if bdiff < 1:
+                bdiff = 1
             if b == lastb:
                 x = 0
             elif b < lastb:
@@ -370,9 +295,8 @@ class AccelerometerHandler(InputHandler):
         return self.vector
 # ######################################################
 class HumInt():
-    def __init__(self,rootWidget,useKeyboard=True,useTouchscreen=False,useAccelerometer=True,useJoystick=True,useTouchWidget=False,widget=None):
+    def __init__(self,rootWidget,useKeyboard=True,useAccelerometer=True,useJoystick=True,useTouchWidget=False,widget=None):
         self.keyboard = KeyboardHandler(active=useKeyboard, rootWidget=rootWidget, parent=self)
-        self.touchscreen = TouchscreenHandler(active=useTouchscreen,rootWidget=rootWidget,parent=self)
         self.touchWidget = TouchWidgetHandler(active=useTouchWidget,widget=widget,parent=self)
         self.accControl = AccelerometerHandler(active=useAccelerometer,rootWidget=rootWidget,parent=self)
         self.joystick = JoystickHandler(active=useJoystick, parent=self)
@@ -389,8 +313,6 @@ class HumInt():
             v = self.joystick.get_vector()
         elif self.touchWidget.active and self.touchWidget.hasPrecedence:
             v = self.touchWidget.get_vector()
-        elif self.touchscreen.active and self.touchscreen.hasPrecedence:
-            v = self.touchscreen.get_vector()
         elif self.accControl.active:
             v = self.accControl.get_vector()
         self.vector = v
@@ -398,8 +320,6 @@ class HumInt():
 # ------------------------------------------------------    
     def set_vector(self,v):
         self.vector = v
-        if (self.touchscreen.active):
-            self.touchscreen.set_vector(v)   
 # ------------------------------------------------------
     def set_widget(self,widget):
         self.touchWidget.set_widget(widget)
