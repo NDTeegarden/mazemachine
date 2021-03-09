@@ -128,49 +128,23 @@ class Sprite(Image):
         self.collider.pos = self.pos #((self.pos[0]+4),(self.pos[1]+4))
         self.collider.size = self.size #((self.size[0]-4),(self.size[1]-4))
         self.add_widget(self.collider)
-# ------------------------------------------------------ 
-    def get_collision_vector(self, collider, widget, vector):
-        c = collider
-        newvector = vector
-        oldpos = c.pos
-        c.move(vector=newvector)
-        #Logger.debug('Checking collissions with widget {} and vector {}'.format(widget, newvector))
-        if (c.collide_widget(widget)):
-            #Logger.debug('Collided with {}'.format(widget))
-            newvector = (0,vector[1])
-            #Logger.debug('Checking collissions with vector {}'.format(newvector))
-            c.moveTo(oldpos)
-            c.move(vector=newvector)
-            if (c.collide_widget(widget)):
-                #Logger.debug('Collided with {}'.format(widget))
-                newvector = (vector[0],0)
-                c.moveTo(oldpos)
-                c.move(vector=newvector)
-                #Logger.debug('Checking collissions with vector {}'.format(newvector))
-                if (c.collide_widget(widget)):
-                    #Logger.debug('Collided with {}'.format(widget))
-                    newvector=(0,0)
-                    c.moveTo(oldpos)
-        c.moveTo(oldpos)  
-        return newvector        
-
 # ------------------------------------------------------        
     def move(self,vector,obstacles=[]):
+        if vector == (None,None):
+            return
+        # multiply vector times speed
+        s = self.speed
+        dx = vector[0] * s
+        dy = vector[1] * s
+        adjvector = (dx,dy)
         # check for obstacles
-        newvector = self.check_collisions(vector,obstacles)
+        newvector = self.check_collisions(adjvector,obstacles)
+        Logger.debug('move: newvector={}'.format(newvector))
         if (newvector != (0,0)):
             # handle animation if any
             self.select_animation(newvector)
-            s = self.speed
-            # multiply vector times speed
-            try:
-                dx = newvector[0] * s
-            except Exception:
-                dx = 0  
-            try:              
-                dy = newvector[1] * s
-            except Exception:
-                dy = 0
+            dx = newvector[0]
+            dy = newvector[1]
             x = self.pos[0] + dx
             y = self.pos[1] + dy
             self.pos = (x,y)
@@ -193,24 +167,70 @@ class Sprite(Image):
 # ------------------------------------------------------
     def check_collisions(self,vector,obstacles):
         newvector = vector
-        c = self.collider
-        c.speed = self.speed
+        c = self.collider    
         c.pos = self.pos
         collisions = []
-        c.move(vector)
+        c.move(vector, speed=1)      #vector has already been adjusted for speed
         for item in obstacles:
             if c.collide_widget(item):
                 collisions.append(item)
+                Logger.debug('collided with {}'.format(item))
+        futures = []
+        c.pos = self.pos                   
         with cf.ThreadPoolExecutor() as executor:
-            futures = []
             for item in collisions:
                 futures.append(executor.submit(self.get_collision_vector, c, item, vector))
-        for future in futures:
-            newvector = future.result()
-            if newvector == (0,0):
-                break 
+        vectors = []
+        for future in cf.as_completed(futures):
+            pv = future.result()
+            vectors.append(pv)
+            if pv == (0,0):
+                newvector = pv
+                break
+        newx=vector[0]
+        newy=vector[1]
+        for v in vectors:
+            Logger.debug('v={}'.format(v))
+            if newx != 0 and abs(newx) > abs(v[0]):
+                newx = v[0]
+            if newy != 0 and abs(newy) > abs(v[1]):
+                newy = v[1]
+        newvector = (newx,newy)
         return newvector            
-
+# ------------------------------------------------------ 
+    def get_collision_vector(self, collider, widget, vector):
+        c = collider
+        oldpos = c.pos
+        clear = False
+        newvector = self.decrement_vector(vector)
+        Logger.debug('decrementing to {}'.format(newvector))
+        while newvector != (0,0) and not clear:
+            c.moveTo(oldpos)
+            c.move(vector=newvector,speed=1)           
+            if (c.collide_widget(widget)):
+                newvector = self.decrement_vector(vector)
+                Logger.debug('decrementing to {}'.format(newvector))
+            else:
+                clear = True 
+        c.moveTo(oldpos) 
+        Logger.debug('return vector {}'.format(newvector)) 
+        return newvector    
+# ------------------------------------------------------ 
+    def decrement_vector(self, vector):
+        newx = vector[0]
+        newy = vector[1]
+        Logger.debug('before decrementing: newx={}  newy={}',format(newx,newy))
+        if newx < 0:
+            newx = newx + 1
+        elif newx > 0:
+            newx = newx - 1
+        if newy < 0:
+            newy = newy + 1
+        elif newy > 0:
+            newy = newy - 1 
+        Logger.debug('after decrementing: newx={}  newy={}',format(newx,newy))            
+        newvector = (newx,newy)
+        return newvector
 # ######################################################
 class Wall(Image):
     blockHoriz = ObjectProperty(None)
@@ -220,7 +240,8 @@ class Wall(Image):
         super().__init__(source=source,pos=pos,size=size,allow_stretch=allow_stretch,keep_ratio=keep_ratio)
         self.obstacle = obstacle
         self.blockVert = False
-        self.blockHoriz = True        
+        self.blockHoriz = True   
+        self.anim_delay = .25     
 
 # ######################################################
 class Floor(Image):
@@ -232,6 +253,7 @@ class Floor(Image):
         self.obstacle = obstacle
         self.blockHoriz = False
         self.blockVert = True
+        self.anim_delay = .25
 
 # ######################################################
 class Ball(Sprite):
