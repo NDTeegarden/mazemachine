@@ -272,6 +272,8 @@ class Playfield(FloatLayout):
 # ------------------------------------------------------
     def clear_maze(self):
         self.clear_widgets()
+        self.walls = []
+        self.floors = []        
 # ------------------------------------------------------
     def place_ball(self,cell,difficulty):
         x = cell.pos[0] + int(cell.size[0] / 2) - 6
@@ -310,21 +312,21 @@ class Playfield(FloatLayout):
                 break
         self.goal.flash()
 # ------------------------------------------------------
-    def check_collisions(self,sprite,vector):
-        newvector = vector
-        items = self.walls + self.floors
-        futures = []
-        with cf.ThreadPoolExecutor() as executor:
-            for item in items:
-                if item.obstacle:
-                    futures.append(executor.submit(sprite.check_collision, item, newvector))
-        for f in futures:
-            result = f.result()
-            if result != newvector:
-                newvector = result
-                if newvector == (0,0):
-                    break
-        return newvector 
+    # def check_collisions(self,sprite,vector):
+    #     newvector = vector
+    #     items = self.walls + self.floors
+    #     futures = []
+    #     with cf.ThreadPoolExecutor() as executor:
+    #         for item in items:
+    #             if item.obstacle:
+    #                 futures.append(executor.submit(sprite.check_collision, item, newvector))
+    #     for f in futures:
+    #         result = f.result()
+    #         if result != newvector:
+    #             newvector = result
+    #             if newvector == (0,0):
+    #                 break
+    #     return newvector 
 # ------------------------------------------------------
     def check_victory(self,sprite,goal):
         item = sprite.collide_widget(goal)
@@ -338,12 +340,6 @@ class Playfield(FloatLayout):
 # ------------------------------------------------------                      
     def move_sprite(self,player,sprite):
         v = player.get_vector()
-        #Logger.debug('v={}'.format(v))
-        if v != (0,0) and v != (None,None):
-            newvector = self.check_collisions(sprite,v)
-        else:
-            newvector = v
-        sprite.move(newvector)  #we have to call the move method even if vector is 0,0 so ball will stop rolling when it's not moving.
-        if v != newvector:
-            player.set_vector(newvector)
+        o = self.walls + self.floors
+        sprite.move(vector=v, obstacles=o)  #we have to call the move method even if vector is 0,0 so ball will stop rolling when it's not moving.
 

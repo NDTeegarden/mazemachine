@@ -8,6 +8,8 @@ from kivy.vector import Vector
 from kivy.logger import Logger
 from kivy.clock import Clock
 
+import concurrent.futures as cf
+
 class SimpleSprite(Widget):
     color = ObjectProperty(None)
     shape = ObjectProperty(None)
@@ -120,23 +122,12 @@ class Sprite(Image):
 
 # ------------------------------------------------------
     def init_collider(self):
-        ##print('initializing collider')
         if self.collider != None:
             self.remove_widget(self.collider)
         self.collider = SimpleSprite(color=self.transparentcolor,speed=self.speed,size_hint=self.size_hint)
         self.collider.pos = self.pos #((self.pos[0]+4),(self.pos[1]+4))
         self.collider.size = self.size #((self.size[0]-4),(self.size[1]-4))
         self.add_widget(self.collider)
-# ------------------------------------------------------
-    def check_collision(self,widget,vector):
-        newvector = vector
-        if newvector != (0,0):
-            c = self.collider
-            c.speed = self.speed
-            c.pos = self.pos
-            # First pass
-            newvector = self.get_collision_vector(collider=c, widget=widget, vector=vector)    
-        return newvector
 # ------------------------------------------------------ 
     def get_collision_vector(self, collider, widget, vector):
         c = collider
@@ -164,19 +155,21 @@ class Sprite(Image):
         return newvector        
 
 # ------------------------------------------------------        
-    def move(self,vector):
-        if (vector != (0,0)):
-            if len(self.sources) > 1:
-                if (vector[0] < 0) or (vector[1] > 0):
-                    self.set_animation(0)   # left or up
-                else:
-                    self.set_animation(1)   # right or down
+    def move(self,vector,obstacles=[]):
+        # check for obstacles
+        newvector = self.check_collisions(vector,obstacles)
+        if (newvector != (0,0)):
+            # handle animation if any
+            self.select_animation(newvector)
             s = self.speed
+            # multiply vector times speed
             try:
-                dx = vector[0] * s
-                dy = vector[1] * s
+                dx = newvector[0] * s
             except Exception:
-                dx = 0
+                dx = 0  
+            try:              
+                dy = newvector[1] * s
+            except Exception:
                 dy = 0
             x = self.pos[0] + dx
             y = self.pos[1] + dy
@@ -189,7 +182,34 @@ class Sprite(Image):
             self.stop_animating()
 # ------------------------------------------------------
     def moveTo(self,pos):
-        self.pos = (pos)   
+        self.pos = (pos)
+# ------------------------------------------------------
+    def select_animation(self, vector):
+        if len(self.sources) > 1:
+            if (vector[0] < 0) or (vector[1] > 0):
+                self.set_animation(0)   # left or up
+            else:
+                self.set_animation(1)   # right or down
+# ------------------------------------------------------
+    def check_collisions(self,vector,obstacles):
+        newvector = vector
+        c = self.collider
+        c.speed = self.speed
+        c.pos = self.pos
+        collisions = []
+        c.move(vector)
+        for item in obstacles:
+            if c.collide_widget(item):
+                collisions.append(item)
+        with cf.ThreadPoolExecutor() as executor:
+            futures = []
+            for item in collisions:
+                futures.append(executor.submit(self.get_collision_vector, c, item, vector))
+        for future in futures:
+            newvector = future.result()
+            if newvector == (0,0):
+                break 
+        return newvector            
 
 # ######################################################
 class Wall(Image):
