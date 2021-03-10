@@ -114,12 +114,11 @@ class Sprite(Image):
 # ------------------------------------------------------
     def start_animating(self):
         if self.anim_delay == -1:
-            self.anim_delay = .5 / self.speed
+            self.anim_delay = .2
             self.anim_loop = 0            
 # ------------------------------------------------------
     def stop_animating(self):
         self.anim_delay = -1
-
 # ------------------------------------------------------
     def init_collider(self):
         if self.collider != None:
@@ -132,23 +131,26 @@ class Sprite(Image):
     def move(self,vector,obstacles=[]):
         if vector == (None,None):
             return
-        # multiply vector times speed
-        s = self.speed
-        dx = vector[0] * s
-        dy = vector[1] * s
-        adjvector = (dx,dy)
-        # check for obstacles
-        newvector = self.check_collisions(adjvector,obstacles)
-        Logger.debug('move: newvector={}'.format(newvector))
-        if (newvector != (0,0)):
-            # handle animation if any
-            self.select_animation(newvector)
-            dx = newvector[0]
-            dy = newvector[1]
-            x = self.pos[0] + dx
-            y = self.pos[1] + dy
-            self.pos = (x,y)
-            self.collider.pos = (x,y)
+        if vector == (0,0):
+            self.moving = False
+            self.stop_animating()
+            return
+        else:
+            # multiply vector times speed
+            s = self.speed
+            dx = vector[0] * s
+            dy = vector[1] * s
+            adjvector = (dx,dy)
+            # check for obstacles - in a separate thread to keep Android OS happy
+            with cf.ThreadPoolExecutor() as executor:
+                future = executor.submit(self.get_new_pos,adjvector,obstacles)
+            newpos = future.result()
+            Logger.debug('move: newpos={}'.format(newpos))
+        # handle animation if any            
+        if (newpos != self.pos):
+            self.select_animation(vector)
+            self.pos = newpos
+            self.collider.pos = newpos
             self.moving = True
             self.start_animating()
         else:
@@ -158,77 +160,68 @@ class Sprite(Image):
     def moveTo(self,pos):
         self.pos = (pos)
 # ------------------------------------------------------
+    def get_new_pos(self, vector, obstacles):
+        oldx = self.pos[0]
+        oldy = self.pos[1]
+        dx = int(vector[0])
+        dy = int(vector[1])
+        newx = oldx + dx
+        newy = oldy + dy
+        c = self.collider
+        c.moveTo(pos=(newx,newy))
+        collisions = self.get_collisions(widget=c, obstacles=obstacles)
+        if len(collisions) > 0:
+            if (dx != 0):                
+                newx = oldx + dx
+                newy = oldy  
+                c.moveTo(pos=(newx,newy))
+                newlist = self.get_collisions(widget=c, obstacles=collisions)
+                if len(newlist) == 0:
+                    collisions = newlist 
+            if (dy != 0) and len(collisions) > 0:
+                newx = oldx
+                newy = oldy + dy
+                c.moveTo(pos=(newx,newy))
+                newlist = self.get_collisions(widget=c, obstacles=collisions)
+                if len(newlist) == 0:
+                    collisions = newlist 
+            if len(collisions) > 0:
+                newx = oldx
+                newy = oldy
+        newpos = (newx, newy)
+        return newpos
+# ------------------------------------------------------
+    def get_collisions(self, widget, obstacles):
+        collisions = []
+        for item in obstacles:
+            if widget.collide_widget(item):
+                collisions.append(item)
+        return collisions       
+# ------------------------------------------------------
     def select_animation(self, vector):
         if len(self.sources) > 1:
             if (vector[0] < 0) or (vector[1] > 0):
                 self.set_animation(0)   # left or up
             else:
                 self.set_animation(1)   # right or down
-# ------------------------------------------------------
-    def check_collisions(self,vector,obstacles):
-        newvector = vector
-        c = self.collider    
-        c.pos = self.pos
-        collisions = []
-        c.move(vector, speed=1)      #vector has already been adjusted for speed
-        for item in obstacles:
-            if c.collide_widget(item):
-                collisions.append(item)
-                Logger.debug('collided with {}'.format(item))
-        futures = []
-        c.pos = self.pos                   
-        with cf.ThreadPoolExecutor() as executor:
-            for item in collisions:
-                futures.append(executor.submit(self.get_collision_vector, c, item, vector))
-        vectors = []
-        for future in cf.as_completed(futures):
-            pv = future.result()
-            vectors.append(pv)
-            if pv == (0,0):
-                newvector = pv
-                break
-        newx=vector[0]
-        newy=vector[1]
-        for v in vectors:
-            Logger.debug('v={}'.format(v))
-            if newx != 0 and abs(newx) > abs(v[0]):
-                newx = v[0]
-            if newy != 0 and abs(newy) > abs(v[1]):
-                newy = v[1]
-        newvector = (newx,newy)
-        return newvector            
-# ------------------------------------------------------ 
-    def get_collision_vector(self, collider, widget, vector):
-        c = collider
-        oldpos = c.pos
-        clear = False
-        newvector = self.decrement_vector(vector)
-        Logger.debug('decrementing to {}'.format(newvector))
-        while newvector != (0,0) and not clear:
-            c.moveTo(oldpos)
-            c.move(vector=newvector,speed=1)           
-            if (c.collide_widget(widget)):
-                newvector = self.decrement_vector(vector)
-                Logger.debug('decrementing to {}'.format(newvector))
-            else:
-                clear = True 
-        c.moveTo(oldpos) 
-        Logger.debug('return vector {}'.format(newvector)) 
-        return newvector    
-# ------------------------------------------------------ 
+# ------------------------------------------------------                
     def decrement_vector(self, vector):
         newx = vector[0]
         newy = vector[1]
-        Logger.debug('before decrementing: newx={}  newy={}',format(newx,newy))
-        if newx < 0:
+        Logger.debug('before decrementing: newx={}  newy={}'.format(newx,newy))
+        if newx <= -1:
             newx = newx + 1
-        elif newx > 0:
+        elif newx >= 1:
             newx = newx - 1
-        if newy < 0:
+        else:
+            newx = 0
+        if newy <= -1:
             newy = newy + 1
-        elif newy > 0:
-            newy = newy - 1 
-        Logger.debug('after decrementing: newx={}  newy={}',format(newx,newy))            
+        elif newy >= 1:
+            newy = newy - 1
+        else:
+            newy = 0
+        Logger.debug('after decrementing: newx={}  newy={}'.format(newx,newy))            
         newvector = (newx,newy)
         return newvector
 # ######################################################

@@ -257,7 +257,7 @@ class AccelerometerHandler(InputHandler):
 # ------------------------------------------------------  
     def get_vector(self):
         if self.parent.enabled and self.active:
-            maxdiff = 5
+            maxdiff = 4
             a = 0
             b = 0
             lasta = a
@@ -269,28 +269,18 @@ class AccelerometerHandler(InputHandler):
             if self.lastvalue != (None, None, None):
                 lasta = round(self.lastvalue[0],1)
                 lastb = round(self.lastvalue[1],1)
-            adiff = int(abs(a-lasta))
-            if adiff > maxdiff:
-                adiff = maxdiff
-            if adiff < 2:
-                adiff = 2
-            bdiff = int(abs(b-lastb))
-            if bdiff > maxdiff:
-                bdiff = maxdiff
-            if bdiff < 1:
-                bdiff = 1
             if b == lastb:
                 x = 0
             elif b < lastb:
-                x = -1 * bdiff
+                x = -2 
             elif b > lastb:
-                x = bdiff
+                x = 2
             if a == lasta:
                 y = 0
             if a < lasta:
-                y = adiff 
+                y = 2
             elif a > lasta:
-                y = -1 * adiff 
+                y = -2
             self.vector = (x,y)
         return self.vector
 # ######################################################

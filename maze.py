@@ -24,7 +24,7 @@ from ellermaze import EllerMaze
 from ellermaze import EllerMazeGenerator
 from humint import HumInt
 from mazesprites import (Cell, Wall, Floor, Ball, Goal)
-from menu import GameMenu
+from menu import GameMenu, PauseMenu
 from sets import AssetSet
 
 #system imports
@@ -83,6 +83,7 @@ class MazeGame(Widget):
         self.playfield.yoffset = bottom
         self.add_widget(self.playfield)
         self.difficulty = 2
+        self.interval = 0.24
         self.end_game(victory=False)
 # ------------------------------------------------------
     def new_game(self):
@@ -90,9 +91,13 @@ class MazeGame(Widget):
         self.player1.enable()
         self.playfield.new_game(self.difficulty)
         self.player1.set_vector((0,0))
-        #self.player1.touchWidget.activate(widget=self.playfield.ball)
+        self.player1.touchWidget.activate(widget=self.playfield.ball)
+        def callback(value):
+            self.show_pause_menu()
+            return False
+        Window.bind(on_request_close=callback)
         self.running = True
-        self.loopEvent = Clock.schedule_interval(self.update, .016)
+        self.loopEvent = Clock.schedule_once(self.update, self.interval)
 # ------------------------------------------------------
     def update(self, dt):
         if (self.running):
@@ -102,6 +107,8 @@ class MazeGame(Widget):
         victory = self.playfield.update_game(player=self.player1)
         if victory:
             self.end_game(victory)
+        else:
+            self.loopEvent = Clock.schedule_once(self.update, self.interval)
  # ------------------------------------------------------               
     def end_game(self, victory=True):
         try:
@@ -119,7 +126,7 @@ class MazeGame(Widget):
             self.show_menu(difficulty=self.difficulty, caption=text)
 # ------------------------------------------------------
     def get_victory_text(self):
-        values = ('Nice job!','You win!','Well Done!','Victory!','Success!')
+        values = ('Nice job!','You win!','Well Done!','Victory!','Success!', 'Outstanding!')
         r = rn.randrange(0, len(values))
         item = values[r]
         return item
@@ -144,8 +151,26 @@ class MazeGame(Widget):
         difficulty = self.gameMenu.difficulty
         self.remove_widget(self.gameMenu)
         return difficulty          
-# ------------------------------------------------------                  
-
+# ------------------------------------------------------  
+    def resume_game(self, menu):
+        self.remove_widget(menu)
+        self.running = True
+        self.loopEvent = Clock.schedule_once(self.update, self.interval)            
+# ------------------------------------------------------
+    def show_pause_menu(self,caption):
+        self.running = False
+        menu = PauseMenu()
+        menu.size = Window.size
+        def callback(value):
+            self.resume_game(menu=value)
+        menu.resButton.bind(on_press=callback)
+        def callback(value):
+            self.remove_widget(value)
+            self.new_game()
+        def callback(value):
+            self.quit()
+        menu.quitButton.bind(on_press=callback)
+        self.add_widget(menu)
 # ######################################################
 class Playfield(FloatLayout):
     topLeft = ObjectProperty(None)
@@ -205,7 +230,7 @@ class Playfield(FloatLayout):
             2: (8,8),
             3: (11,11),
             4: (14,14),
-            5: (17,17)
+            5: (16,16)
             }
         item = switcher.get(difficulty,(12,12))
         return item
@@ -280,7 +305,7 @@ class Playfield(FloatLayout):
         y = cell.pos[1] + int(cell.size[1] / 2) - 8
         width = int(cell.size[0] * .5) - 2
         height = int(cell.size[1] * .5) - 2
-        speed = int((difficulty+1)/2)
+        speed = 2
         if speed <= 1:
             speed = 2
         asset = self.assetData['ball']
@@ -311,22 +336,6 @@ class Playfield(FloatLayout):
                 self.floors.remove(item)
                 break
         self.goal.flash()
-# ------------------------------------------------------
-    # def check_collisions(self,sprite,vector):
-    #     newvector = vector
-    #     items = self.walls + self.floors
-    #     futures = []
-    #     with cf.ThreadPoolExecutor() as executor:
-    #         for item in items:
-    #             if item.obstacle:
-    #                 futures.append(executor.submit(sprite.check_collision, item, newvector))
-    #     for f in futures:
-    #         result = f.result()
-    #         if result != newvector:
-    #             newvector = result
-    #             if newvector == (0,0):
-    #                 break
-    #     return newvector 
 # ------------------------------------------------------
     def check_victory(self,sprite,goal):
         item = sprite.collide_widget(goal)

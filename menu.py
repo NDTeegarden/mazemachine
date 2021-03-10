@@ -23,18 +23,7 @@ class GameMenu(FloatLayout):
     newFlag = BooleanProperty(None)
     quitFlag = BooleanProperty(None)
     caption = StringProperty(None)
-    captionLabel = ObjectProperty(None)
-# ------------------------------------------------------
-#     def new_game(self,instance):
-#         self.newFlag = True
-#         self.quitFlag = False
-        
-# # ------------------------------------------------------
-#     def quit(self,instance):  
-#         self.newFlag = False
-#         self.quitFlag = True
-#         sys.exit(0) 
-        
+    captionLabel = ObjectProperty(None)      
 # ------------------------------------------------------
     def __init__(self, difficulty=3, caption='test', *args): 
         super().__init__(*args)
@@ -205,5 +194,79 @@ class Selector(FloatLayout):
             except Exception:
                 Logger.warning('{}: failed to update_shape'.format(self))  
 # -----------------------------------------------------
-
+class PauseMenu(FloatLayout):
+    resumeButton = ObjectProperty(None)
+    quitButton = ObjectProperty(None)
+    mainButton = ObjectProperty(None)
+    resumeFlag = BooleanProperty(None)
+    quitFlag = BooleanProperty(None)
+    caption = StringProperty(None)
+    captionLabel = ObjectProperty(None)      
+# ------------------------------------------------------
+    def __init__(self, caption='Paused', *args): 
+        super().__init__(*args)
+        self.build(caption=caption)
+# ------------------------------------------------------
+    def add_buttons(self):
+        self.resButton = Button(text='Resume',size_hint=(.3,.2),pos_hint={'x': .5,'top': .9},background_normal='assets/green_roundedrect.png',background_down='assets/gray_roundedrect.png')
+        def callback(instance,value):
+            instance.text_size=instance.texture_size
+        self.resButton.bind(texture_size=callback)
+        self.mainButton = Button(text='Quit Game',size_hint=(.3,.2),pos_hint={'x': .5,'top': .6},background_normal='assets/blue_roundedrect.png',background_down='assets/gray_roundedrect.png')
+        def callback(instance,value):
+            instance.text_size=instance.texture_size
+        self.mainButton.bind(texture_size=callback)        
+        self.quitButton = Button(text='Quit App',size_hint=(.3,.2),pos_hint={'x': .5,'top': .3},background_normal='assets/red_roundedrect.png',background_down='assets/gray_roundedrect.png')
+        def callback(instance,value):
+            instance.text_size=instance.texture_size
+        self.quitButton.bind(texture_size=callback)
+#
+        self.add_widget(self.resButton)
+        self.add_widget(self.mainButton)        
+        self.add_widget(self.quitButton)
+# ------------------------------------------------------
+    def add_caption(self):
+        l = Label(text=self.caption,size_hint=(1,.2),pos_hint={'center_x': .5,'top': 1}, font_size='36sp') 
+        self.add_widget(l)
+# ------------------------------------------------------
+    def build(self,caption):
+        self.size_hint = (.75,.75) 
+        self.pos_hint = {'center_x': .5, 'center_y': .5}
+        self.anchor_x = 'center'
+        self.anchor_y = 'top'
+        self.newFlag = False
+        self.quitFlag = False
+        self.caption = caption
+        self.init_canvas()
+        self.add_caption()
+        self.add_buttons()
+        self.canvas.ask_update()
+# ------------------------------------------------------
+    def init_canvas(self,color=Color(0,0,0,.8),shape=None):
+        self.color = color
+        if shape == None:
+            shape = self.default_shape()
+        self.shape = shape
+        self.canvas.clear()
+        self.canvas.before.add(self.color)
+        self.canvas.before.add(self.shape)
+        self.bind(pos=self.update_canvas)
+        self.bind(size=self.update_canvas)  
+# ------------------------------------------------------
+    def update(self):
+        self.canvas.ask_update()
+# ------------------------------------------------------
+    def default_shape(self):
+        s = Rectangle(size=self.size,pos=self.pos) 
+        return s
+# ------------------------------------------------------
+    def update_shape(self):
+        self.shape.pos = self.pos
+        self.shape.size = self.size
+# ------------------------------------------------------
+    def update_canvas(self,*args):
+        try:
+            self.update_shape()
+        except Exception:
+            Logger.warning('{}: failed to update_shape'.format(self))             
 
