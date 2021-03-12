@@ -14,6 +14,8 @@ from kivy.properties import (NumericProperty, BoundedNumericProperty, ObjectProp
 #system imports
 import sys
 
+BUTTON_SIZE_HINT = (.3,.15)
+
 class GameMenu(FloatLayout):
     difficulty = BoundedNumericProperty(3, min=1, max=5)
     newButton = ObjectProperty(None)
@@ -30,11 +32,11 @@ class GameMenu(FloatLayout):
         self.build(difficulty=difficulty,caption=caption)
 # ------------------------------------------------------
     def add_buttons(self):
-        self.newButton = Button(text='New Maze',size_hint=(.3,.2),pos_hint={'x': .5,'top': .8},background_normal='assets/green_roundedrect.png',background_down='assets/gray_roundedrect.png')
+        self.newButton = Button(text='New Maze',size_hint=BUTTON_SIZE_HINT,pos_hint={'x': .5,'top': .75},background_normal='assets/green_roundedrect.png',background_down='assets/gray_roundedrect.png')
         def callback(instance,value):
             instance.text_size=instance.texture_size
         self.newButton.bind(texture_size=callback)
-        self.quitButton = Button(text='Quit',size_hint=(.3,.2),pos_hint={'x': .5,'top': .4},background_normal='assets/red_roundedrect.png',background_down='assets/gray_roundedrect.png')
+        self.quitButton = Button(text='Quit',size_hint=BUTTON_SIZE_HINT,pos_hint={'x': .5,'top': .45},background_normal='assets/red_roundedrect.png',background_down='assets/gray_roundedrect.png')
         def callback(instance,value):
             instance.text_size=instance.texture_size
         self.quitButton.bind(texture_size=callback)
@@ -208,15 +210,15 @@ class PauseMenu(FloatLayout):
         self.build(caption=caption)
 # ------------------------------------------------------
     def add_buttons(self):
-        self.resButton = Button(text='Resume',size_hint=(.3,.2),pos_hint={'x': .5,'top': .9},background_normal='assets/green_roundedrect.png',background_down='assets/gray_roundedrect.png')
+        self.resButton = Button(text='Resume',size_hint=BUTTON_SIZE_HINT,pos_hint={'x': .5,'top': .8},background_normal='assets/green_roundedrect.png',background_down='assets/gray_roundedrect.png')
         def callback(instance,value):
             instance.text_size=instance.texture_size
         self.resButton.bind(texture_size=callback)
-        self.mainButton = Button(text='Quit Game',size_hint=(.3,.2),pos_hint={'x': .5,'top': .6},background_normal='assets/blue_roundedrect.png',background_down='assets/gray_roundedrect.png')
+        self.mainButton = Button(text='New Game',size_hint=BUTTON_SIZE_HINT,pos_hint={'x': .5,'top': .55},background_normal='assets/blue_roundedrect.png',background_down='assets/gray_roundedrect.png')
         def callback(instance,value):
             instance.text_size=instance.texture_size
         self.mainButton.bind(texture_size=callback)        
-        self.quitButton = Button(text='Quit App',size_hint=(.3,.2),pos_hint={'x': .5,'top': .3},background_normal='assets/red_roundedrect.png',background_down='assets/gray_roundedrect.png')
+        self.quitButton = Button(text='Quit',size_hint=BUTTON_SIZE_HINT,pos_hint={'x': .5,'top': .3},background_normal='assets/red_roundedrect.png',background_down='assets/gray_roundedrect.png')
         def callback(instance,value):
             instance.text_size=instance.texture_size
         self.quitButton.bind(texture_size=callback)

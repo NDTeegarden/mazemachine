@@ -113,12 +113,13 @@ class Sprite(Image):
         self.anim_loop = 0 
 # ------------------------------------------------------
     def start_animating(self):
-        if self.anim_delay == -1:
-            self.anim_delay = .2
+        if self.anim_delay < 0:
+            self.anim_delay = .16
             self.anim_loop = 0            
 # ------------------------------------------------------
     def stop_animating(self):
-        self.anim_delay = -1
+        if self.anim_delay != -1:
+            self.anim_delay = -1
 # ------------------------------------------------------
     def init_collider(self):
         if self.collider != None:
@@ -145,12 +146,12 @@ class Sprite(Image):
             with cf.ThreadPoolExecutor() as executor:
                 future = executor.submit(self.get_new_pos,adjvector,obstacles)
             newpos = future.result()
-            Logger.debug('move: newpos={}'.format(newpos))
+            #Logger.debug('move: newpos={}'.format(newpos))
         # handle animation if any            
         if (newpos != self.pos):
             self.select_animation(vector)
-            self.pos = newpos
-            self.collider.pos = newpos
+            self.moveTo(newpos)
+            self.collider.moveTo(newpos)
             self.moving = True
             self.start_animating()
         else:
@@ -188,7 +189,7 @@ class Sprite(Image):
             if len(collisions) > 0:
                 newx = oldx
                 newy = oldy
-        newpos = (newx, newy)
+        newpos = (int(newx), int(newy))
         return newpos
 # ------------------------------------------------------
     def get_collisions(self, widget, obstacles):
@@ -208,7 +209,7 @@ class Sprite(Image):
     def decrement_vector(self, vector):
         newx = vector[0]
         newy = vector[1]
-        Logger.debug('before decrementing: newx={}  newy={}'.format(newx,newy))
+        #Logger.debug('before decrementing: newx={}  newy={}'.format(newx,newy))
         if newx <= -1:
             newx = newx + 1
         elif newx >= 1:
@@ -221,7 +222,7 @@ class Sprite(Image):
             newy = newy - 1
         else:
             newy = 0
-        Logger.debug('after decrementing: newx={}  newy={}'.format(newx,newy))            
+        #Logger.debug('after decrementing: newx={}  newy={}'.format(newx,newy))            
         newvector = (newx,newy)
         return newvector
 # ######################################################

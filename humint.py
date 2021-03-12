@@ -258,6 +258,8 @@ class AccelerometerHandler(InputHandler):
     def get_vector(self):
         if self.parent.enabled and self.active:
             maxdiff = 4
+            mindiff = 1
+            threshold = .95
             a = 0
             b = 0
             lasta = a
@@ -269,18 +271,34 @@ class AccelerometerHandler(InputHandler):
             if self.lastvalue != (None, None, None):
                 lasta = round(self.lastvalue[0],1)
                 lastb = round(self.lastvalue[1],1)
-            if b == lastb:
-                x = 0
+#           Get the difference between this reading with the last reading       
+            xdiff = abs(b-lastb)
+            if xdiff <= threshold:
+                xdiff = 0
+            elif xdiff < mindiff:
+                xdiff = mindiff
+            elif xdiff > maxdiff:
+                xdiff = maxdiff
+            ydiff = abs(a-lasta)
+            if ydiff <= threshold:
+                ydiff = 0
+            elif ydiff < mindiff:
+                y = mindiff
+            elif ydiff > maxdiff:
+                y = maxdiff
+#           Get vector values between -1 and 1
+            if xdiff == 0:
+                x = 0   #this should catch moves below the threshold so the ball isn't constantly jiggling
             elif b < lastb:
-                x = -2 
+                x = -1 * xdiff/maxdiff
             elif b > lastb:
-                x = 2
-            if a == lasta:
+                x = 1 * xdiff/maxdiff
+            if ydiff == 0:
                 y = 0
             if a < lasta:
-                y = 2
+                y = 1 * ydiff/maxdiff
             elif a > lasta:
-                y = -2
+                y = -1 * ydiff/maxdiff
             self.vector = (x,y)
         return self.vector
 # ######################################################
@@ -309,6 +327,7 @@ class HumInt():
         return v
 # ------------------------------------------------------    
     def set_vector(self,v):
+        Logger.debug('set_vector: {}'.format(v))
         self.vector = v
 # ------------------------------------------------------
     def set_widget(self,widget):
@@ -316,6 +335,9 @@ class HumInt():
 # ------------------------------------------------------ 
     def enable(self):
         self.enabled = True
+        self.vector = (0,0)
+        if self.keyboard.active:
+            self.keyboard.activate()
 # ------------------------------------------------------ 
     def disable(self):
         self.enabled = False       

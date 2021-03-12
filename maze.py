@@ -62,6 +62,7 @@ class MazeGame(Widget):
     player1 = ObjectProperty(None)
     difficulty = BoundedNumericProperty(2, min=1, max=5)
     running = BooleanProperty(None)
+    paused = BooleanProperty(None)
     playfield = ObjectProperty(None)
     loopEvent = ObjectProperty(None)
 # ------------------------------------------------------
@@ -83,47 +84,60 @@ class MazeGame(Widget):
         self.playfield.yoffset = bottom
         self.add_widget(self.playfield)
         self.difficulty = 2
-        self.interval = 0.24
+        self.interval = 0.16
         self.end_game(victory=False)
 # ------------------------------------------------------
     def new_game(self):
         self.difficulty = self.hide_menu()
         self.player1.enable()
         self.playfield.new_game(self.difficulty)
-        self.player1.set_vector((0,0))
+        Logger.debug('new_game: self={}'.format(self))
+        # v = (0,0)
+        # self.player1.set_vector(v=v)
         self.player1.touchWidget.activate(widget=self.playfield.ball)
-        def callback(value):
-            self.show_pause_menu()
-            return False
-        Window.bind(on_request_close=callback)
+        Window.bind(on_request_close=self._on_request_close)
         self.running = True
+        self.schedule_next_update()
+# ------------------------------------------------------
+    def schedule_next_update(self):
         self.loopEvent = Clock.schedule_once(self.update, self.interval)
 # ------------------------------------------------------
+    def cancel_next_update(self):
+        try:
+            self.loopEvent.cancel()
+            return True
+        except Exception:
+            return False
+# ------------------------------------------------------
+    # back button on Android; Escape on Windows
+    def _on_request_close(self, value, source=None):
+        if source == 'keyboard':
+            self.pause_game()
+            Window.release_all_keyboards()
+            return True
+        else:
+            return False        
+# ------------------------------------------------------
     def update(self, dt):
+        #Logger.debug('update: running={}'.format(self.running))
         if (self.running):
             self.running_update()
 # ------------------------------------------------------
     def running_update(self):
+        self.schedule_next_update()
         victory = self.playfield.update_game(player=self.player1)
         if victory:
             self.end_game(victory)
-        else:
-            self.loopEvent = Clock.schedule_once(self.update, self.interval)
  # ------------------------------------------------------               
-    def end_game(self, victory=True):
-        try:
-            self.loopEvent.cancel()
-        except Exception:
-            pass
-        finally:
-            if victory:
-                text = self.get_victory_text()
-                # rem show victory banner with a delay
-            else:
-                text = 'Ready to begin?'
-            self.running = False
-            self.player1.disable()
-            self.show_menu(difficulty=self.difficulty, caption=text)
+    def end_game(self, victory=True, menu=None):
+        self.cancel_next_update()
+        if victory:
+            text = self.get_victory_text()
+        else:
+            text = 'Ready to begin?'
+        self.running = False
+        self.player1.disable()
+        self.show_menu(difficulty=self.difficulty, caption=text)
 # ------------------------------------------------------
     def get_victory_text(self):
         values = ('Nice job!','You win!','Well Done!','Victory!','Success!', 'Outstanding!')
@@ -153,24 +167,41 @@ class MazeGame(Widget):
         return difficulty          
 # ------------------------------------------------------  
     def resume_game(self, menu):
-        self.remove_widget(menu)
+        menu.parent.remove_widget(menu)
+        self.player1.enable()
         self.running = True
-        self.loopEvent = Clock.schedule_once(self.update, self.interval)            
+        self.paused = False
+        self.schedule_next_update() 
+        Window.bind(on_request_close=self._on_request_close) 
+# ------------------------------------------------------ 
+    def pause_game(self):
+        self.paused = True
+        Window.unbind(on_request_close=self._on_request_close)
+        self.show_pause_menu()
+# ------------------------------------------------------  
+    def quit_game(self, menu=None):
+        Logger.debug('Quitting game: self={}'.format(self)) 
+        if menu != None:
+            menu.parent.remove_widget(menu)
+        self.end_game(victory=False)                       
 # ------------------------------------------------------
-    def show_pause_menu(self,caption):
+    def show_pause_menu(self,caption='Game Paused'):
         self.running = False
-        menu = PauseMenu()
+        self.loopEvent.cancel        
+        menu = PauseMenu(caption=caption)
         menu.size = Window.size
         def callback(value):
-            self.resume_game(menu=value)
+            self.resume_game(menu=value.parent)
         menu.resButton.bind(on_press=callback)
         def callback(value):
-            self.remove_widget(value)
-            self.new_game()
+            self.quit_game(menu=value.parent)
+        menu.mainButton.bind(on_press=callback)
         def callback(value):
             self.quit()
         menu.quitButton.bind(on_press=callback)
         self.add_widget(menu)
+        self.loopEvent.cancel
+        return False
 # ######################################################
 class Playfield(FloatLayout):
     topLeft = ObjectProperty(None)
@@ -220,7 +251,9 @@ class Playfield(FloatLayout):
         self.place_ball(cell=self.start,difficulty=difficulty)          
  # ------------------------------------------------------ 
     def update_game(self, player):
-        self.move_sprite(player,self.ball)   
+        self.move_sprite(player,self.ball) 
+        if not self.ball.moving:
+            player.set_vector = (0,0)   
         victory = self.check_victory(self.ball,self.goal)   
         return victory    
 # ------------------------------------------------------
@@ -305,9 +338,10 @@ class Playfield(FloatLayout):
         y = cell.pos[1] + int(cell.size[1] / 2) - 8
         width = int(cell.size[0] * .5) - 2
         height = int(cell.size[1] * .5) - 2
-        speed = 2
-        if speed <= 1:
+        speed = int(width / 4) + int(difficulty/2)
+        if speed <= 2:
             speed = 2
+        Logger.debug('place_ball: speed={}'.format(speed))
         asset = self.assetData['ball']
         self.ball = Ball(speed=speed,size_hint=(None,None),source=asset[0],size=(width,height),pos=(x,y),allow_stretch=True,altSources=[asset[1]])
         cell.add_widget(self.ball)
