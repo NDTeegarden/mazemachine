@@ -265,7 +265,7 @@ class Goal(Image):
         self.id='goal'
         self.anim_delay = -1
     
-    def flash(self, anim_loop = 3, anim_delay = 0.18):
+    def flash(self, anim_loop = 4, anim_delay = 0.18):
         self.anim_delay = anim_delay
         self.anim_loop = anim_loop
 

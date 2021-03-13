@@ -94,7 +94,7 @@ android.presplash_color = #000000
 #android.features = android.hardware.usb.host
 
 # (int) Target Android API, should be as high as possible.
-android.api = 27
+android.api = 29
 
 # (int) Minimum API your APK will support.
 #android.minapi = 21
