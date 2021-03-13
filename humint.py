@@ -257,9 +257,9 @@ class AccelerometerHandler(InputHandler):
 # ------------------------------------------------------  
     def get_vector(self):
         if self.parent.enabled and self.active:
-            maxdiff = 4
+            maxdiff = 5
             mindiff = 1
-            threshold = .95
+            threshold = .5
             a = 0
             b = 0
             lasta = a

@@ -34,13 +34,27 @@
         , "goal_top": "assets/exit-up.zip"  
         ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
     }  
-    ,{ "wall": "assets/brickwall3.png"
-        , "floor": "assets/brickfloor3.png"
-        , "background": "assets/med-gray.png" 
+    ,{ "wall": "assets/brickwall1.png"
+        , "floor": "assets/brickfloor1.png"
+        , "background": "assets/dark-gray.png" 
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip"  
         ,  "ball": ["assets/white-ballA-left.zip","assets/white-ballA-right.zip"]
-    }  
+    }
+    ,{ "wall": "assets/brickwall2.png"
+        , "floor": "assets/brickfloor2.png"
+        , "background": "assets/dark-gray.png" 
+        , "goal_bottom": "assets/exit-down.zip"
+        , "goal_top": "assets/exit-up.zip"  
+        ,  "ball": ["assets/white-ballA-left.zip","assets/white-ballA-right.zip"]
+    }
+    ,{ "wall": "assets/brickwall4.png"
+        , "floor": "assets/brickfloor4.png"
+        , "background": "assets/brick-background4.png" 
+        , "goal_bottom": "assets/exit-down.zip"
+        , "goal_top": "assets/exit-up.zip"  
+        ,  "ball": ["assets/white-ballA-left.zip","assets/white-ballA-right.zip"]
+    }            
     ,{ "wall": "assets/ice7b-wall.png"
         , "floor": "assets/ice7b-floor.png"
         , "background": "assets/dark-gray.png" 
