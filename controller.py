@@ -109,18 +109,25 @@ class TouchWidgetHandler(InputHandler):
         self.active = True
         if self.widget != None:
             self.widget.bind(on_touch_down=self._on_touch_down)
+            self.widget.bind(on_touch_move=self._on_touch_move)
             self.widget.bind(on_touch_up=self._on_touch_up)
 # ------------------------------------------------------  
     def deactivate(self):
         self.active = False
         if self.widget != None:
             self.widget.unbind(on_touch_down=self._on_touch_down)
+            self.widget.unbind(on_touch_move=self._on_touch_move)
             self.widget.unbind(on_touch_up=self._on_touch_up)                    
 # ------------------------------------------------------    
     def _on_touch_down(self,instance,touch):
         thread = th.Thread(target=self.handle_touch_down, args=(touch.pos,))
         thread.start()
-        return False  
+        return False 
+# ------------------------------------------------------    
+    def _on_touch_move(self,instance,touch):
+        thread = th.Thread(target=self.handle_touch_down, args=(touch.pos,))
+        thread.start()
+        return False           
 # ------------------------------------------------------                
     def handle_touch_down(self, pos):
         if self.parent.enabled and self.active and self.widget != None:        
@@ -139,10 +146,6 @@ class TouchWidgetHandler(InputHandler):
         touchPos = self.pos
         xdiff = touchPos[0] - targetPos[0]
         ydiff = touchPos[1] - targetPos[1]
-        # if abs(xdiff) <= self.widget.size[0]:
-        #     xdiff = 0
-        # if abs(ydiff) <= self.widget.size[1]:
-        #     ydiff = 0
         if (abs(xdiff)-self.widget.size[0]/2) > abs(ydiff):
             ydiff = 0
         elif (abs(ydiff)-self.widget.size[1]/2) > abs(xdiff):
@@ -150,15 +153,15 @@ class TouchWidgetHandler(InputHandler):
         x = 0
         y = 0        
         if (xdiff > 0):
-            x = 2
+            x = 1
         elif (xdiff < 0):
-            x = -2
+            x = -1
         else:
             x = 0
         if (ydiff > 0 ):
-            y = 2
+            y = 1
         elif (ydiff < 0):
-            y = -2
+            y = -1
         else:
             y = 0            
         self.vector = (x,y)        
@@ -245,7 +248,7 @@ class AccelerometerHandler(InputHandler):
             except NotImplementedError:
                 import traceback
                 traceback.print_exc()
-                status = "{}: Accelerometer is not implemented for your platform".format(self)
+                status = '{}: Accelerometer is not implemented for your platform'.format(self)
                 Logger.info(status)
                 self.active = False
             if self.active:
@@ -254,23 +257,28 @@ class AccelerometerHandler(InputHandler):
     def init_value(self):
         self.value = accelerometer.acceleration[:3]
         self.lastvalue = self.value
+        status = '{}init_value: value={}   lastvalue={}'.format(self, self.value, self.lastvalue)
+        Logger.debug(status)
 # ------------------------------------------------------  
     def get_vector(self):
         if self.parent.enabled and self.active:
             maxdiff = 5
             mindiff = 1
-            threshold = .5
-            a = 0
-            b = 0
-            lasta = a
-            lastb = b
+            threshold = .25
             self.value = accelerometer.acceleration[:3]
+            status = '{}get_vector: value={}   lastvalue={}'.format(self, self.value, self.lastvalue)
             if self.value != (None, None, None):
                 a = round(self.value[0],1)
                 b = round(self.value[1],1)
+            else:
+                a = 0
+                b = 0
             if self.lastvalue != (None, None, None):
                 lasta = round(self.lastvalue[0],1)
                 lastb = round(self.lastvalue[1],1)
+            else:
+                lasta = a
+                lastb = b
 #           Get the difference between this reading with the last reading       
             xdiff = abs(b-lastb)
             if xdiff <= threshold:
@@ -338,6 +346,8 @@ class Controller():
         self.vector = (0,0)
         if self.keyboard.active:
             self.keyboard.activate()
+        if self.accControl.active:
+            self.accControl.init_value()
 # ------------------------------------------------------ 
     def disable(self):
         self.enabled = False       

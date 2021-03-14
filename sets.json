@@ -155,7 +155,7 @@
     }  
     ,{ "wall": "assets/aggtest-wall.png"
         , "floor": "assets/aggtest-floor.png"
-        , "background": "assets/dark-gray.png" 
+        , "background": "assets/med-gray.png" 
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip"  
         ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]

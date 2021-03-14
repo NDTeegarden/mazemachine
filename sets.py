@@ -15,7 +15,7 @@ class AssetSet():
 
     def get_next(self):
         remaining = len(self.fresh)
-        if remaining <= 1:
+        if remaining <= 1 or len(self.used) < 1:
             n = 0
         else:
             n = rn.randrange(0,remaining)

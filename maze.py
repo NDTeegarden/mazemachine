@@ -59,7 +59,7 @@ class MazeApp(App):
         })
         config.setdefaults('MazeGame', {
             'difficulty': 2,
-            'interval': 0.16
+            'interval': 0.12
         })        
 
 # Cool colors:
@@ -363,7 +363,7 @@ class Playfield(FloatLayout):
         y = cell.pos[1] + int(cell.size[1] / 2) - 8
         width = int(cell.size[0] * .5) - 2
         height = int(cell.size[1] * .5) - 2
-        speed = int(width / 4) + int(difficulty/2)
+        speed = int(width / 3) + int(difficulty/2)
         if speed <= 2:
             speed = 2
         Logger.debug('place_ball: speed={}'.format(speed))
