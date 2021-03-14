@@ -302,7 +302,7 @@ class AccelerometerHandler(InputHandler):
             self.vector = (x,y)
         return self.vector
 # ######################################################
-class HumInt():
+class Controller():
     def __init__(self,rootWidget,useKeyboard=True,useAccelerometer=True,useJoystick=True,useTouchWidget=False,widget=None):
         self.keyboard = KeyboardHandler(active=useKeyboard, rootWidget=rootWidget, parent=self)
         self.touchWidget = TouchWidgetHandler(active=useTouchWidget,widget=widget,parent=self)

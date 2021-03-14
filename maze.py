@@ -22,7 +22,7 @@ from plyer import accelerometer
 #local imports
 from ellermaze import EllerMaze
 from ellermaze import EllerMazeGenerator
-from humint import HumInt
+from controller import Controller
 from mazesprites import (Cell, Wall, Floor, Ball, Goal)
 from menu import GameMenu, PauseMenu
 from sets import AssetSet
@@ -67,7 +67,7 @@ class MazeGame(Widget):
     loopEvent = ObjectProperty(None)
 # ------------------------------------------------------
     def start(self,useKeyboard = False):
-        self.player1 = HumInt(rootWidget=self,useKeyboard=useKeyboard)
+        self.player1 = Controller(rootWidget=self,useKeyboard=useKeyboard)
         self.playfield = Playfield()
         self.size = Window.size
         w = self.size[0]
@@ -100,7 +100,7 @@ class MazeGame(Widget):
         self.schedule_next_update()
 # ------------------------------------------------------
     def schedule_next_update(self):
-        self.loopEvent = Clock.schedule_once(self.update, self.interval)
+        self.loopEvent = Clock.schedule_interval(self.update, self.interval)
 # ------------------------------------------------------
     def cancel_next_update(self):
         try:
@@ -124,7 +124,6 @@ class MazeGame(Widget):
             self.running_update()
 # ------------------------------------------------------
     def running_update(self):
-        self.schedule_next_update()
         victory = self.playfield.update_game(player=self.player1)
         if victory:
             self.end_game(victory)
@@ -176,18 +175,20 @@ class MazeGame(Widget):
 # ------------------------------------------------------ 
     def pause_game(self):
         self.paused = True
+        self.running = False
+        self.cancel_next_update()
         Window.unbind(on_request_close=self._on_request_close)
         self.show_pause_menu()
 # ------------------------------------------------------  
     def quit_game(self, menu=None):
+        self.cancel_next_update()
         Logger.debug('Quitting game: self={}'.format(self)) 
         if menu != None:
             menu.parent.remove_widget(menu)
         self.end_game(victory=False)                       
 # ------------------------------------------------------
     def show_pause_menu(self,caption='Game Paused'):
-        self.running = False
-        self.loopEvent.cancel        
+      
         menu = PauseMenu(caption=caption)
         menu.size = Window.size
         def callback(value):
