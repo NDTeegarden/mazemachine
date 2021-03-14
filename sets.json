@@ -162,7 +162,7 @@
     }    
     ,{ "wall": "assets/vine-wall.png"
         , "floor": "assets/vine-floor.png"
-        , "background": "assets/brick-background4.png" 
+        , "background": "assets/dark-gray.png" 
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip"  
         ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]

@@ -36,7 +36,10 @@ import concurrent.futures as cf
 
 class MazeApp(App):
     def build(self):
-        Logger.setLevel(LOG_LEVELS["info"])
+        config = self.config
+        loglevel = config.get('MazeApp', 'loglevel')
+        print(loglevel)
+        Logger.setLevel(LOG_LEVELS[loglevel])        
         super().__init__()
         opts = [opt for opt in sys.argv[1:] if opt.startswith("-")]
         useKeyboard = False
@@ -47,8 +50,17 @@ class MazeApp(App):
                 useKeyboard = True
                 Logger.setLevel(LOG_LEVELS["debug"]) 
         game = MazeGame()
-        game.start(useKeyboard=useKeyboard)
+        game.start(useKeyboard=useKeyboard, config=config)
         return game
+
+    def build_config(self, config):
+        config.setdefaults('MazeApp', {
+            'loglevel': 'info',
+        })
+        config.setdefaults('MazeGame', {
+            'difficulty': 2,
+            'interval': 0.16
+        })        
 
 # Cool colors:
 #   175/256,176/256,148/256,1
@@ -66,7 +78,18 @@ class MazeGame(Widget):
     playfield = ObjectProperty(None)
     loopEvent = ObjectProperty(None)
 # ------------------------------------------------------
-    def start(self,useKeyboard = False):
+    def start(self,useKeyboard = False, config = None):
+        self.config = config 
+        try:
+            difficulty = config.getint('MazeGame','difficulty')
+        except Exception:
+            Logger.debug('config for difficulty didn''t work')
+            difficulty=2
+        try:
+            interval = config.getfloat('MazeGame','interval')  
+        except Exception:
+            Logger.debug('config for interval didn''t work')    
+            interval = 0.16 
         self.player1 = Controller(rootWidget=self,useKeyboard=useKeyboard)
         self.playfield = Playfield()
         self.size = Window.size
@@ -83,8 +106,8 @@ class MazeGame(Widget):
         self.playfield.xoffset = left
         self.playfield.yoffset = bottom
         self.add_widget(self.playfield)
-        self.difficulty = 2
-        self.interval = 0.16
+        self.difficulty = difficulty
+        self.interval = interval
         self.end_game(victory=False)
 # ------------------------------------------------------
     def new_game(self):
@@ -136,6 +159,7 @@ class MazeGame(Widget):
             text = 'Ready to begin?'
         self.running = False
         self.player1.disable()
+        self.config.set('MazeGame','difficulty',self.difficulty)
         self.show_menu(difficulty=self.difficulty, caption=text)
 # ------------------------------------------------------
     def get_victory_text(self):
@@ -146,6 +170,7 @@ class MazeGame(Widget):
 # ------------------------------------------------------
     def quit(self):
         d = self.hide_menu()
+        self.config.write()
         print('Goodbye!')
         sys.exit(0)
 # ------------------------------------------------------
