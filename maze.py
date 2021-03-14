@@ -188,7 +188,6 @@ class MazeGame(Widget):
         self.end_game(victory=False)                       
 # ------------------------------------------------------
     def show_pause_menu(self,caption='Game Paused'):
-      
         menu = PauseMenu(caption=caption)
         menu.size = Window.size
         def callback(value):
