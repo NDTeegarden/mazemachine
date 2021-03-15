@@ -219,10 +219,30 @@ class JoystickHandler(InputHandler):
         return False 
 # ------------------------------------------------------  
     def _on_joy_axis(self, win, stickid, axisid, value):
+        #self.hasPrecedence = True
+        #thread = th.Thread(target=self.handle_stick, args=(stickid, axisid, value))
+        #thread.start()
         return False
 # ------------------------------------------------------  
     def handle_stick(self, stickid, axisid, value):   
-        Logger.debug('{}: stick={}  axis={}  value={}'.format(self, stickid, axisid, value))  
+        Logger.debug('{}: stick={}  axis={}  value={}'.format(self, stickid, axisid, value)) 
+        threshhold = 2048
+        if abs(value) <= threshhold:
+            value = 0
+        x = 0
+        y = 0
+        if value < 0:
+            d = -1
+        elif value > 0:
+            d = 1
+        else:
+            d = 0
+        if axisid==1 or axisid==4:
+            y = d
+        elif axisid==0 or axisid==3:
+            x = d
+        self.vector = (x,y)
+
 # ------------------------------------------------------ 
     def deactivate(self):
         self.active = False
@@ -264,17 +284,17 @@ class AccelerometerHandler(InputHandler):
         if self.parent.enabled and self.active:
             maxdiff = 5
             mindiff = 1
-            threshold = .25
+            threshold = .33
             self.value = accelerometer.acceleration[:3]
             status = '{}get_vector: value={}   lastvalue={}'.format(self, self.value, self.lastvalue)
             if self.value != (None, None, None):
-                a = round(self.value[0],1)
+                a = round(self.value[0]-self.value[2],1)
                 b = round(self.value[1],1)
             else:
                 a = 0
                 b = 0
             if self.lastvalue != (None, None, None):
-                lasta = round(self.lastvalue[0],1)
+                lasta = round(self.lastvalue[0]-self.lastvalue[2],1)
                 lastb = round(self.lastvalue[1],1)
             else:
                 lasta = a
