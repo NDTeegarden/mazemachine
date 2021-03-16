@@ -92,20 +92,33 @@ class Sprite(Image):
     collider = ObjectProperty(None)
     moving = ObjectProperty(None)
 # ------------------------------------------------------
-    def __init__(self,source,pos,size,size_hint=(None,None),allow_stretch=False,keep_ratio=True,speed=1,altSources=[], **kwargs):
+    def __init__(self,source,pos,size,size_hint=(None,None),allow_stretch=False,keep_ratio=True,speed=1,altSources=[], soundSource=None, **kwargs):
         super().__init__(size=size,pos=pos,source=source,allow_stretch=allow_stretch, keep_ratio=keep_ratio,**kwargs)
         self.sources = altSources
         self.sources.insert(0,source)
         self.transparentcolor = Color(0,0,0,0)
         self.speed = speed
+        self.init_sound(soundSource=soundSource)
         self.init_collider()  
-        self.init_image_animation()    
+        self.init_image_animation()  
+#------------------------------------------------------
+    def init_sound(self,soundSource):
+        if soundSource == None:
+            return False
+        else:
+            try:
+                self.sound = SoundLoader.load(soundSource)
+            except Exception:
+                status = '{}: Failed to load sound {}'.format(self,soundSource)
+                Logger.warning(status)
+                return False
+        return True
+
 # ------------------------------------------------------
     def set_animation(self, index):
         if index >= len(self.sources):
             index = 0
         self.source = self.sources[index]
-
 #------------------------------------------------------
     def init_image_animation(self):
         self.moving = False

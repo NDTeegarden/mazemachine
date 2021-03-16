@@ -7,6 +7,7 @@ Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
 from kivy.logger import Logger, LOG_LEVELS
 from kivy.app import App
 from kivy.core.window import Window
+from kivy.core.audio import SoundLoader
 from kivy.uix.layout import Layout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.widget import Widget
@@ -17,7 +18,7 @@ from kivy.vector import Vector
 from kivy.clock import Clock
 
 #plyer imports
-from plyer import accelerometer
+from plyer import accelerometer, vibrator
 
 #local imports
 from ellermaze import EllerMaze
@@ -155,12 +156,19 @@ class MazeGame(Widget):
         self.cancel_next_update()
         if victory:
             text = self.get_victory_text()
+            delay = 1.5           #the delay is to allow time for the victory sound to play
         else:
             text = 'Ready to begin?'
+            delay = 0
         self.running = False
         self.player1.disable()
         self.config.set('MazeGame','difficulty',self.difficulty)
-        self.show_menu(difficulty=self.difficulty, caption=text)
+        def callback(dt):
+            self.show_menu(difficulty=self.difficulty, caption=text)
+        if delay > 0:
+            self.loopEvent = Clock.schedule_once(callback, delay)
+        else:
+            self.show_menu(difficulty=self.difficulty, caption=text)
 # ------------------------------------------------------
     def get_victory_text(self):
         values = ('Nice job!','You win!','Well Done!','Victory!','Success!', 'Outstanding!')
@@ -399,12 +407,27 @@ class Playfield(FloatLayout):
     def check_victory(self,sprite,goal):
         item = sprite.collide_widget(goal)
         if item:
-            (x,y) = goal.pos
-            x = x + 6
-            sprite.moveTo((x,y))
-            sprite.stop_animating()
-            goal.flash()
-        return item                                    
+            self.celebrate_victory(sprite,goal)
+        return item  
+# ------------------------------------------------------
+    def celebrate_victory(self,sprite,goal):
+        sound = SoundLoader.load('assets/ball-drop1.wav')
+        try:
+            thread = th.Thread(target=sound.play)
+            thread.start()
+        except Exception:
+            Logger.debug('Sound not working')
+        try:
+            vibrator.vibrate(.012)
+        except NotImplementedError:
+            import traceback
+            traceback.print_exc()
+            Logger.debug('Vibrate not working')                
+        x = goal.pos[0] + 6
+        y = sprite.pos[1]
+        sprite.moveTo((x,y))
+        sprite.move(vector=(0,-1))
+        goal.flash()
 # ------------------------------------------------------                      
     def move_sprite(self,player,sprite):
         v = player.get_vector()
