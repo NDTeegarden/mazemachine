@@ -38,20 +38,23 @@ import concurrent.futures as cf
 class MazeApp(App):
     def build(self):
         config = self.config
-        loglevel = config.get('MazeApp', 'loglevel')
-        print(loglevel)
+        loglevel = config['MazeApp']['loglevel']        #start logging before doing anything else
         Logger.setLevel(LOG_LEVELS[loglevel])        
         super().__init__()
         opts = [opt for opt in sys.argv[1:] if opt.startswith("-")]
         useKeyboard = False
         for opt in opts:
             if opt.startswith('-k'):    #keyboard active
-                useKeyboard = True
+                config['MazeGame']['keyboard'] = 'True'
             if opt.startswith('-d'):    #debug mode
-                useKeyboard = True
-                Logger.setLevel(LOG_LEVELS["debug"]) 
+                config['MazeGame']['keyboard'] = 'True'
+                Logger.setLevel(LOG_LEVELS["debug"])
+            if opt.startswith('--nosound'):    
+                config['MazeGame']['sound'] = 'False'   
+            if opt.startswith('--novibrate'):    
+                config['MazeGame']['sound'] = 'False'                                     
         game = MazeGame()
-        game.start(useKeyboard=useKeyboard, config=config)
+        game.start(config=config)
         return game
 
     def build_config(self, config):
@@ -60,7 +63,10 @@ class MazeApp(App):
         })
         config.setdefaults('MazeGame', {
             'difficulty': 2,
-            'interval': 0.12
+            'interval': 0.12,
+            'keyboard': False,
+            'sound': True,
+            'vibrate': True
         })        
 
 # Cool colors:
@@ -79,19 +85,9 @@ class MazeGame(Widget):
     playfield = ObjectProperty(None)
     loopEvent = ObjectProperty(None)
 # ------------------------------------------------------
-    def start(self,useKeyboard = False, config = None):
-        self.config = config 
-        try:
-            difficulty = config.getint('MazeGame','difficulty')
-        except Exception:
-            Logger.debug('config for difficulty didn''t work')
-            difficulty=2
-        try:
-            interval = config.getfloat('MazeGame','interval')  
-        except Exception:
-            Logger.debug('config for interval didn''t work')    
-            interval = 0.16 
-        self.player1 = Controller(rootWidget=self,useKeyboard=useKeyboard)
+    def start(self,config = None):
+        self.load_config_settings(config=config)
+        self.player1 = Controller(rootWidget=self,useKeyboard=self.useKeyboard)
         self.playfield = Playfield()
         self.size = Window.size
         w = self.size[0]
@@ -107,9 +103,49 @@ class MazeGame(Widget):
         self.playfield.xoffset = left
         self.playfield.yoffset = bottom
         self.add_widget(self.playfield)
+        self.end_game(victory=False)
+# ------------------------------------------------------
+    def load_config_settings(self, config):
+        self.config = config 
+        error = False
+        try:
+            difficulty = config.getint('MazeGame','difficulty')
+        except Exception:
+            Logger.debug('config for difficulty didn''t work')
+            difficulty=2
+            error = True
+        try:
+            interval = config.getfloat('MazeGame','interval')  
+        except Exception:
+            Logger.debug('config for interval didn''t work')    
+            interval = 0.16
+            error = True
+        try:
+            soundOn = config.getboolean('MazeGame','sound')  
+        except Exception:
+            Logger.debug('config for sound didn''t work')    
+            soundOn = False
+            error = True
+        try:
+            vibrateOn = config.getboolean('MazeGame','vibrate')  
+        except Exception:
+            Logger.debug('config for vibrate didn''t work')    
+            vibrateOn = False 
+            error = True
+        try:
+            useKeyboard = config.getboolean('MazeGame','keyboard')  
+        except Exception:
+            Logger.debug('config for keyboard didn''t work')    
+            useKeyboard = False 
+            error = True            
         self.difficulty = difficulty
         self.interval = interval
-        self.end_game(victory=False)
+        self.soundOn = soundOn
+        self.vibrateOn = vibrateOn 
+        self.useKeyboard = useKeyboard           
+        item = not error
+        return item
+
 # ------------------------------------------------------
     def new_game(self):
         self.difficulty = self.hide_menu()
@@ -156,7 +192,7 @@ class MazeGame(Widget):
         self.cancel_next_update()
         if victory:
             text = self.get_victory_text()
-            delay = 1.5           #the delay is to allow time for the victory sound to play
+            delay = 1.5           #the delay is to allow time for the victory sound and animation
         else:
             text = 'Ready to begin?'
             delay = 0
@@ -414,21 +450,24 @@ class Playfield(FloatLayout):
         x = goal.pos[0] + 6
         y = sprite.pos[1]
         sprite.moveTo((x,y))
-        sprite.move(vector=(0,-1))
+        def callback(dt):
+            sprite.move(vector=(0,-1))
+        for i in range(0,9):
+            Clock.schedule_once(callback, i * 0.16)
         flashThread = th.Thread(target=goal.flash)
         flashThread.start()
-        sound = SoundLoader.load('assets/ball-drop2.wav')
-        try:
-            soundThread = th.Thread(target=sound.play)
-            soundThread.start()
-        except Exception:
-            Logger.debug('Sound not working')
-        try:
-            vibrator.vibrate(.012)
-        except NotImplementedError:
-            import traceback
-            traceback.print_exc()
-            Logger.debug('Vibrate not working')                
+        if self.parent.soundOn:
+            sound = SoundLoader.load('assets/ball-drop2.wav')
+            try:
+                soundThread = th.Thread(target=sound.play)
+                soundThread.start()
+            except Exception:
+                Logger.debug('Sound not working')
+        if self.parent.vibrateOn:
+            try:
+                vibrator.vibrate(.012)
+            except NotImplementedError:
+                Logger.debug('Vibrate not working')                
 # ------------------------------------------------------                      
     def move_sprite(self,player,sprite):
         v = player.get_vector()
