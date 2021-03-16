@@ -417,7 +417,7 @@ class Playfield(FloatLayout):
         sprite.move(vector=(0,-1))
         flashThread = th.Thread(target=goal.flash)
         flashThread.start()
-        sound = SoundLoader.load('assets/ball-drop1.wav')
+        sound = SoundLoader.load('assets/ball-drop2.wav')
         try:
             soundThread = th.Thread(target=sound.play)
             soundThread.start()
