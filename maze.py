@@ -411,10 +411,16 @@ class Playfield(FloatLayout):
         return item  
 # ------------------------------------------------------
     def celebrate_victory(self,sprite,goal):
+        x = goal.pos[0] + 6
+        y = sprite.pos[1]
+        sprite.moveTo((x,y))
+        sprite.move(vector=(0,-1))
+        flashThread = th.Thread(target=goal.flash)
+        flashThread.start()
         sound = SoundLoader.load('assets/ball-drop1.wav')
         try:
-            thread = th.Thread(target=sound.play)
-            thread.start()
+            soundThread = th.Thread(target=sound.play)
+            soundThread.start()
         except Exception:
             Logger.debug('Sound not working')
         try:
@@ -423,11 +429,6 @@ class Playfield(FloatLayout):
             import traceback
             traceback.print_exc()
             Logger.debug('Vibrate not working')                
-        x = goal.pos[0] + 6
-        y = sprite.pos[1]
-        sprite.moveTo((x,y))
-        sprite.move(vector=(0,-1))
-        goal.flash()
 # ------------------------------------------------------                      
     def move_sprite(self,player,sprite):
         v = player.get_vector()
