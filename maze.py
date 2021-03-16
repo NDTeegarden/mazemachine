@@ -40,21 +40,10 @@ class MazeApp(App):
         config = self.config
         loglevel = config['MazeApp']['loglevel']        #start logging before doing anything else
         Logger.setLevel(LOG_LEVELS[loglevel])        
-        super().__init__()
-        opts = [opt for opt in sys.argv[1:] if opt.startswith("-")]
-        useKeyboard = False
-        for opt in opts:
-            if opt.startswith('-k'):    #keyboard active
-                config['MazeGame']['keyboard'] = 'True'
-            if opt.startswith('-d'):    #debug mode
-                config['MazeGame']['keyboard'] = 'True'
-                Logger.setLevel(LOG_LEVELS["debug"])
-            if opt.startswith('--nosound'):    
-                config['MazeGame']['sound'] = 'False'   
-            if opt.startswith('--novibrate'):    
-                config['MazeGame']['sound'] = 'False'                                     
+        super().__init__()  
+        opts = sys.argv                                                   
         game = MazeGame()
-        game.start(config=config)
+        game.start(config=config, opts=opts)
         return game
 
     def build_config(self, config):
@@ -85,8 +74,9 @@ class MazeGame(Widget):
     playfield = ObjectProperty(None)
     loopEvent = ObjectProperty(None)
 # ------------------------------------------------------
-    def start(self,config = None):
+    def start(self,config = None, opts=[]):
         self.load_config_settings(config=config)
+        self.load_opts_settings(opts=opts)
         self.player1 = Controller(rootWidget=self,useKeyboard=self.useKeyboard)
         self.playfield = Playfield()
         self.size = Window.size
@@ -146,6 +136,23 @@ class MazeGame(Widget):
         item = not error
         return item
 
+# ------------------------------------------------------
+    def load_opts_settings(self,opts):
+        opts = [opt for opt in sys.argv[1:] if opt.startswith("-")]
+        for opt in opts:
+            if opt.startswith('-k'):    #keyboard active
+                self.useKeyboard = True
+            if opt.startswith('-d') or opt.startswith('--debug') :    #debug mode
+                self.useKeyboard = 'True'
+                Logger.setLevel(LOG_LEVELS["debug"])
+            if opt.startswith('--nosound'):    
+                self.soundOn = False
+            if opt.startswith('--novibrate'):    
+                self.vibrateOn = False
+            if opt.startswith('--sound'):    
+                self.soundOn = True 
+            if opt.startswith('--vibrate'):    
+                self.vibrateOn = True
 # ------------------------------------------------------
     def new_game(self):
         self.difficulty = self.hide_menu()
