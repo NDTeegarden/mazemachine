@@ -123,7 +123,7 @@
         , "background": "assets/dark-gray.png" 
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip"  
-        ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
+        ,  "ball": ["assets/white-ballB-left.zip","assets/white-ballB-right.zip"]]
     }       
     ,{ "wall": "assets/gnarly-wall.png"
         , "floor": "assets/gnarly-floor.png"
@@ -166,6 +166,13 @@
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip"  
         ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
-    }   
+    }  
+    ,{ "wall": "assets/quartz-wall.png"
+        , "floor": "assets/quartz-floor.png"
+        , "background": "assets/dark-gray.png" 
+        , "goal_bottom": "assets/exit-down.zip"
+        , "goal_top": "assets/exit-up.zip"  
+        ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
+    }       
                                                                                                
 ]

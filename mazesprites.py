@@ -96,12 +96,21 @@ class Sprite(Image):
         super().__init__(size=size,pos=pos,source=source,allow_stretch=allow_stretch, keep_ratio=keep_ratio,**kwargs)
         self.sources = altSources
         self.sources.insert(0,source)
+        self.load_content()
         self.transparentcolor = Color(0,0,0,0)
         self.speed = speed
         self.soundOn = soundOn
         self.sounds = {}
         self.init_collider()  
-        self.init_image_animation()  
+        self.init_image_animation() 
+#------------------------------------------------------
+    def load_content(self):
+        l = len(self.sources)
+        if l > 1:
+            #force program to load all images we will eventually use
+            for i in range(1,l-1):
+                self.source = self.sources[i]    
+            self.source = self.sources[0]     
 #------------------------------------------------------
     def add_sound(self,key,source):
         s = None
