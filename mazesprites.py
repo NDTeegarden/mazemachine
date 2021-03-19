@@ -1,6 +1,6 @@
 from kivy.uix.widget import Widget
 from kivy.uix.image import Image
-#from kivy.core.image import Image as CoreImage
+from kivy.core.audio import SoundLoader
 from kivy.uix.label import Label
 from kivy.graphics import Color, Rectangle, Ellipse
 from kivy.properties import BooleanProperty, NumericProperty, ReferenceListProperty, ObjectProperty
@@ -92,28 +92,28 @@ class Sprite(Image):
     collider = ObjectProperty(None)
     moving = ObjectProperty(None)
 # ------------------------------------------------------
-    def __init__(self,source,pos,size,size_hint=(None,None),allow_stretch=False,keep_ratio=True,speed=1,altSources=[], soundSource=None, **kwargs):
+    def __init__(self,source,pos,size,size_hint=(None,None),allow_stretch=False,keep_ratio=True,speed=1,altSources=[], soundOn=True, **kwargs):
         super().__init__(size=size,pos=pos,source=source,allow_stretch=allow_stretch, keep_ratio=keep_ratio,**kwargs)
         self.sources = altSources
         self.sources.insert(0,source)
         self.transparentcolor = Color(0,0,0,0)
         self.speed = speed
-        self.init_sound(soundSource=soundSource)
+        self.soundOn = soundOn
+        self.sounds = {}
         self.init_collider()  
         self.init_image_animation()  
 #------------------------------------------------------
-    def init_sound(self,soundSource):
-        if soundSource == None:
-            return False
-        else:
-            try:
-                self.sound = SoundLoader.load(soundSource)
-            except Exception:
-                status = '{}: Failed to load sound {}'.format(self,soundSource)
-                Logger.warning(status)
-                return False
-        return True
-
+    def add_sound(self,key,source):
+        s = None
+        try:
+            s = SoundLoader.load(source)
+        except Exception:
+            import traceback
+            traceback.print_exc()
+            status = '{}: Failed to load sound {}'.format(self,source)
+            Logger.warning(status)
+        if s != None:
+            self.sounds[key] = s      
 # ------------------------------------------------------
     def set_animation(self, index):
         if index >= len(self.sources):
@@ -134,6 +134,27 @@ class Sprite(Image):
         if self.anim_delay != -1:
             self.anim_delay = -1
 # ------------------------------------------------------
+    def start_sound(self, key='move', volume=1):
+        if self.soundOn:
+            s = self.sounds[key]
+            Logger.debug('start_sound {}: {}'.format(key,s.state))
+            if s != None and s.state != 'play':
+                try:
+                    s.volume = volume
+                    s.play()
+                except Exception:
+                    Logger.debug('Sound {} not working'.format(key))
+# ------------------------------------------------------
+    def stop_sound(self, key='move'):
+        s = self.sounds[key]
+        Logger.debug('stop_sound {}: {}'.format(key, s.state))
+        if s != None and s.state == 'play':
+            try:
+                s.stop()
+            except Exception:
+                Logger.debug('Unable to stop sound {}'.format(key))
+            
+# ------------------------------------------------------
     def init_collider(self):
         if self.collider != None:
             self.remove_widget(self.collider)
@@ -148,6 +169,7 @@ class Sprite(Image):
         if vector == (0,0):
             self.moving = False
             self.stop_animating()
+            #self.stop_sound('move')
             return
         else:
             # multiply vector times speed
@@ -158,7 +180,11 @@ class Sprite(Image):
             # check for obstacles - in a separate thread to keep Android OS happy
             with cf.ThreadPoolExecutor() as executor:
                 future = executor.submit(self.get_new_pos,adjvector,obstacles)
-            newpos = future.result()
+            result = future.result()
+            newpos = result[0]
+            colFlag = result[1]
+            # if colFlag:
+            #     self.start_sound('hit')
             #Logger.debug('move: newpos={}'.format(newpos))
         # handle animation if any            
         if (newpos != self.pos):
@@ -166,10 +192,14 @@ class Sprite(Image):
             self.moveTo(newpos)
             self.collider.moveTo(newpos)
             self.moving = True
-            self.start_animating()
+            with cf.ThreadPoolExecutor() as executor:
+                animThread = executor.submit(self.start_animating)
+            #self.start_sound('move')
         else:
             self.moving = False
             self.stop_animating()
+            # self.start_sound('hit')
+            #self.stop_sound('move')
 # ------------------------------------------------------
     def moveTo(self,pos):
         self.pos = (pos)
@@ -184,7 +214,9 @@ class Sprite(Image):
         c = self.collider
         c.moveTo(pos=(newx,newy))
         collisions = self.get_collisions(widget=c, obstacles=obstacles)
+        flag = False
         if len(collisions) > 0:
+            flag = True
             if (dx != 0):                
                 newx = oldx + dx
                 newy = oldy  
@@ -203,7 +235,7 @@ class Sprite(Image):
                 newx = oldx
                 newy = oldy
         newpos = (int(newx), int(newy))
-        return newpos
+        return (newpos, flag)
 # ------------------------------------------------------
     def get_collisions(self, widget, obstacles):
         collisions = []

@@ -420,8 +420,15 @@ class Playfield(FloatLayout):
         Logger.debug('place_ball: speed={}'.format(speed))
         asset = self.assetData['ball']
         self.ball = Ball(speed=speed,size_hint=(None,None),source=asset[0],size=(width,height),pos=(x,y),allow_stretch=True,altSources=[asset[1]])
+        self.ball.soundOn = self.parent.soundOn
+        if self.parent.soundOn:
+            soundAsset = 'assets/qubodup-bowling_roll-nofadeout.wav'        
+            self.ball.add_sound(key='move', source = soundAsset)
+            soundAsset = 'assets/ball-drop2.wav'
+            self.ball.add_sound(key='win', source = soundAsset)
+            soundAsset = 'assets/ball-hit1.wav'
+            self.ball.add_sound(key='hit', source = soundAsset)        
         cell.add_widget(self.ball)
-        #todo: down-right and up-left animations
 # ------------------------------------------------------
     def place_goal(self,cell):
         w = int(self.floorSize[0] / 2)
@@ -461,20 +468,16 @@ class Playfield(FloatLayout):
             sprite.move(vector=(0,-1))
         for i in range(0,9):
             Clock.schedule_once(callback, i * 0.16)
-        flashThread = th.Thread(target=goal.flash)
-        flashThread.start()
-        if self.parent.soundOn:
-            sound = SoundLoader.load('assets/ball-drop2.wav')
-            try:
-                soundThread = th.Thread(target=sound.play)
-                soundThread.start()
-            except Exception:
-                Logger.debug('Sound not working')
-        if self.parent.vibrateOn:
-            try:
-                vibrator.vibrate(.012)
-            except NotImplementedError:
-                Logger.debug('Vibrate not working')                
+        with cf.ThreadPoolExecutor() as executor:            
+            flashThread = executor.submit(goal.flash)
+            if self.parent.soundOn:
+                soundThread = executor.submit(self.ball.start_sound, 'win')
+
+            if self.parent.vibrateOn:
+                try:
+                    vibeThread = executor.submit(vibrator.vibrate,.012)
+                except NotImplementedError:
+                    Logger.debug('Vibrate not working')                
 # ------------------------------------------------------                      
     def move_sprite(self,player,sprite):
         v = player.get_vector()
