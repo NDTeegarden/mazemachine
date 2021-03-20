@@ -440,7 +440,7 @@ class Playfield(FloatLayout):
         y = cell.pos[1] + int(cell.size[1] / 2) - 8
         width = int(cell.size[0] * .5) - 2
         height = int(cell.size[1] * .5) - 2
-        speed = int(width / 3) + int(difficulty/2)
+        speed = int(width / 3) + int(difficulty/2) + 1
         if speed <= 2:
             speed = 2
         Logger.debug('place_ball: speed={}'.format(speed))
