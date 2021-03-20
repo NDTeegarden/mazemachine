@@ -154,8 +154,13 @@ class MazeGame(Widget):
             if opt.startswith('--vibrate'):    
                 self.vibrateOn = True
 # ------------------------------------------------------
-    def new_game(self):
-        self.difficulty = self.hide_menu()
+    def new_game(self): # {'difficulty': difficulty, 'soundOn:': soundOn, 'vibrateOn': vibrateOn}
+        result = self.hide_menu()
+        Logger.debug('hide_menu={}'.format(result))
+        self.difficulty = result['difficulty']
+        self.soundOn = result['sound']
+        self.vibrateOn = result['vibrate']
+        self.set_config({'difficulty':self.difficulty,'sound':self.soundOn,'vibrate':self.vibrateOn})
         self.player1.enable()
         self.playfield.new_game(self.difficulty)
         Logger.debug('new_game: self={}'.format(self))
@@ -205,13 +210,20 @@ class MazeGame(Widget):
             delay = 0
         self.running = False
         self.player1.disable()
-        self.config.set('MazeGame','difficulty',self.difficulty)
+        self.set_config({'difficulty':self.difficulty,'sound':self.soundOn,'vibrate':self.vibrateOn})
         def callback(dt):
-            self.show_menu(difficulty=self.difficulty, caption=text)
+            self.show_menu(caption=text)
         if delay > 0:
             self.loopEvent = Clock.schedule_once(callback, delay)
         else:
-            self.show_menu(difficulty=self.difficulty, caption=text)
+            self.show_menu(caption=text)
+# ------------------------------------------------------
+    def set_config(self, values):
+        for item in values:
+            try:
+                self.config.set('MazeGame',item,values[item])
+            except Exception:
+                Logger.debug('Could not set config {}'.format(item))
 # ------------------------------------------------------
     def get_victory_text(self):
         values = ('Nice job!','You win!','Well Done!','Victory!','Success!', 'Outstanding!')
@@ -221,12 +233,17 @@ class MazeGame(Widget):
 # ------------------------------------------------------
     def quit(self):
         d = self.hide_menu()
+        Logger.debug('config:{}'.format(d))
+        self.set_config(d)
         self.config.write()
         print('Goodbye!')
         sys.exit(0)
 # ------------------------------------------------------
-    def show_menu(self,difficulty,caption):
-        self.gameMenu = GameMenu(difficulty=difficulty,caption=caption)
+    def show_menu(self,caption):
+        difficulty=self.difficulty
+        soundOn=self.soundOn
+        vibrateOn=self.vibrateOn
+        self.gameMenu = GameMenu(difficulty=difficulty,caption=caption,soundOn=soundOn,vibrateOn=vibrateOn)
         self.gameMenu.size = Window.size
         def callback(value):
             self.new_game()
@@ -238,10 +255,16 @@ class MazeGame(Widget):
 # ------------------------------------------------------
     def hide_menu(self):
         difficulty = self.gameMenu.difficulty
+        soundOn = self.gameMenu.soundOn
+        vibrateOn = self.gameMenu.vibrateOn
         self.remove_widget(self.gameMenu)
-        return difficulty          
+        self.set_config({'difficulty':self.difficulty,'sound':self.soundOn,'vibrate':self.vibrateOn})
+        return {'difficulty': difficulty, 'sound': soundOn, 'vibrate': vibrateOn}
 # ------------------------------------------------------  
     def resume_game(self, menu):
+        self.soundOn = menu.soundOn
+        self.vibrateOn = menu.vibrateOn
+        self.set_config({'sound':self.soundOn,'vibrate':self.vibrateOn})
         menu.parent.remove_widget(menu)
         self.player1.enable()
         self.running = True
@@ -260,17 +283,20 @@ class MazeGame(Widget):
         self.cancel_next_update()
         Logger.debug('Quitting game: self={}'.format(self)) 
         if menu != None:
+            self.soundOn = menu.soundOn
+            self.vibrateOn = menu.vibrateOn
+            self.set_config({'difficulty':self.difficulty,'sound':self.soundOn,'vibrate':self.vibrateOn})
             menu.parent.remove_widget(menu)
         self.end_game(victory=False)                       
 # ------------------------------------------------------
     def show_pause_menu(self,caption='Game Paused'):
-        menu = PauseMenu(caption=caption)
+        menu = PauseMenu(caption=caption,soundOn=self.soundOn,vibrateOn=self.vibrateOn)
         menu.size = Window.size
         def callback(value):
             self.resume_game(menu=value.parent)
         menu.resButton.bind(on_press=callback)
         def callback(value):
-            self.quit_game(menu=value.parent)
+            self.quit_game(menu=value.parent)   #quit to main menu
         menu.mainButton.bind(on_press=callback)
         def callback(value):
             self.quit()
@@ -475,7 +501,7 @@ class Playfield(FloatLayout):
 
             if self.parent.vibrateOn:
                 try:
-                    vibeThread = executor.submit(vibrator.vibrate,.012)
+                    vibeThread = executor.submit(vibrator.vibrate,.018)
                 except NotImplementedError:
                     Logger.debug('Vibrate not working')                
 # ------------------------------------------------------                      
