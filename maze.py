@@ -467,16 +467,10 @@ class Playfield(FloatLayout):
     def place_goal(self,cell):
         w = int(self.floorSize[0] / 2)
         h = w
-        if cell == self.bottomRight or cell == self.bottomLeft:
-            x = cell.pos[0] + (w / 2) + (self.wallSize[0] / 2)
-            y = cell.pos[1] - (h / 2)
-            #.debug('y={}   cell.pos={}'.format(y,cell.pos))
-            src = self.assetData['goal_bottom']
-        else:
-            x = cell.pos[0] + self.wallSize[0]
-            y = cell.pos[1] + self.wallSize[1] - self.wallSize[0] - 4
-            src = self.assetData['goal_top']
-
+        x = cell.pos[0] + (w / 2) + (self.wallSize[0] / 2)
+        y = cell.pos[1] - (h / 2)
+        #.debug('place_goal: y={}   cell.pos={}'.format(y,cell.pos))
+        src = self.assetData['goal_bottom']
         Logger.debug(src)
         self.goal = Goal(pos=(x,y),size=(w,h), source=src, allow_stretch=True, keep_ratio = True)
         cell.add_widget(self.goal)

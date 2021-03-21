@@ -330,8 +330,8 @@ class SettingsSection(GridLayout):
         self.vibeLabel = Label(text='Vibration')
         self.vibeLabel.disabled=(not vibrateOn) 
         self.add_widget(self.soundLabel)
+        self.add_widget(self.vibeLabel)        
         self.add_widget(self.soundSwitch)
-        self.add_widget(self.vibeLabel)
         self.add_widget(self.vibeSwitch)        
 # ------------------------------------------------------
     def build(self,soundOn=False,vibrateOn=False,size_hint=(.25,.25),pos_hint={'center_x': .35, 'center_y': .15}):

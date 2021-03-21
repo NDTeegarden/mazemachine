@@ -3,182 +3,156 @@
         , "floor": "assets/bluefloor3.png"
         , "background": "assets/dark-gray.png"
         , "goal_bottom": "assets/exit-down.zip"
-        , "goal_top": "assets/exit-up.zip" 
-        ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
+        ,  "ball": ["assets/red-ball-left.zip","assets/red-ball-right.zip"]
     }
     ,{ "wall": "assets/wood-wall.png"
         , "floor": "assets/wood-floor.png"
-        , "background": "assets/light-wood.png"         
-        , "goal_bottom": "assets/exit-down.zip"
-        , "goal_top": "assets/exit-up.zip"  
+        , "background": "assets/light-wood.png"
+        , "goal_bottom": "assets/exit-down.zip" 
         ,  "ball": ["assets/bright-blue-ball-left.zip","assets/bright-blue-ball-right.zip"]
     }
     ,{ "wall": "assets/metal-wall.png"
         , "floor": "assets/metal-floor.png"
         , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip"
-        , "goal_top": "assets/exit-up.zip"  
+        , "goal_bottom": "assets/exit-down.zip" 
         ,  "ball": ["assets/red-ball-left.zip","assets/red-ball-right.zip"]
     }
     ,{ "wall": "assets/pebble-wall.png"
         , "floor": "assets/pebble-floor.png"
         , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip"
-        , "goal_top": "assets/exit-up.zip"  
+        , "goal_bottom": "assets/exit-down.zip" 
         ,  "ball": ["assets/red-ball-left.zip","assets/red-ball-right.zip"]
     }  
     ,{ "wall": "assets/blockwall.png"
         , "floor": "assets/blockfloor.png"
         , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip"
-        , "goal_top": "assets/exit-up.zip"  
+        , "goal_bottom": "assets/exit-down.zip" 
         ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
     }  
     ,{ "wall": "assets/brickwall1.png"
         , "floor": "assets/brickfloor1.png"
         , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip"
-        , "goal_top": "assets/exit-up.zip"  
-        ,  "ball": ["assets/white-ballA-left.zip","assets/white-ballA-right.zip"]
+        , "goal_bottom": "assets/exit-down.zip" 
+        ,  "ball": ["assets/whiteA-ball-left.zip","assets/whiteA-ball-right.zip"]
     }
     ,{ "wall": "assets/brickwall2.png"
         , "floor": "assets/brickfloor2.png"
         , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip"
-        , "goal_top": "assets/exit-up.zip"  
-        ,  "ball": ["assets/white-ballA-left.zip","assets/white-ballA-right.zip"]
+        , "goal_bottom": "assets/exit-down.zip" 
+        ,  "ball": ["assets/whiteA-ball-left.zip","assets/whiteA-ball-right.zip"]
     }
     ,{ "wall": "assets/brickwall4.png"
         , "floor": "assets/brickfloor4.png"
         , "background": "assets/brick-background4.png" 
-        , "goal_bottom": "assets/exit-down.zip"
-        , "goal_top": "assets/exit-up.zip"  
-        ,  "ball": ["assets/white-ballA-left.zip","assets/white-ballA-right.zip"]
-    }            
+        , "goal_bottom": "assets/exit-down.zip" 
+        ,  "ball": ["assets/whiteC-ball-left.zip","assets/whiteC-ball-right.zip"]
+    }   
     ,{ "wall": "assets/ice7b-wall.png"
         , "floor": "assets/ice7b-floor.png"
         , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip"
-        , "goal_top": "assets/exit-up.zip"  
-        ,  "ball": ["assets/white-ballA-left.zip","assets/white-ballA-right.zip"]
+        , "goal_bottom": "assets/exit-down.zip" 
+        ,  "ball": ["assets/whiteA-ball-left.zip","assets/whiteA-ball-right.zip"]
     }   
     ,{ "wall": "assets/aggregate-wall.png"
         , "floor": "assets/aggregate-floor.png"
         , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip"
-        , "goal_top": "assets/exit-up.zip"  
+        , "goal_bottom": "assets/exit-down.zip" 
         ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
     }  
     ,{ "wall": "assets/lightstone-wall.png"
         , "floor": "assets/lightstone-floor.png"
         , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip"
-        , "goal_top": "assets/exit-up.zip"  
+        , "goal_bottom": "assets/exit-down.zip" 
         ,  "ball": ["assets/red-ball-left.zip","assets/red-ball-right.zip"]
     }      
     ,{ "wall": "assets/mntn-wall.png"
         , "floor": "assets/mntn-floor.png"
         , "background": "assets/light-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip"
-        , "goal_top": "assets/exit-up.zip"  
+        , "goal_bottom": "assets/exit-down.zip" 
         ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
     }  
     ,{ "wall": "assets/orangestone-wall.png"
         , "floor": "assets/orangestone-floor.png"
         , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip"
-        , "goal_top": "assets/exit-up.zip"  
-        ,  "ball": ["assets/white-ballA-left.zip","assets/white-ballA-right.zip"]
+        , "goal_bottom": "assets/exit-down.zip" 
+        ,  "ball": ["assets/whiteA-ball-left.zip","assets/whiteA-ball-right.zip"]
     } 
     ,{ "wall": "assets/sandstone-wall.png"
         , "floor": "assets/sandstone-floor.png"
         , "background": "assets/dark-wood-background.png" 
-        , "goal_bottom": "assets/exit-down.zip"
-        , "goal_top": "assets/exit-up.zip"  
+        , "goal_bottom": "assets/exit-down.zip" 
         ,  "ball": ["assets/bright-blue-ball-left.zip","assets/bright-blue-ball-right.zip"]
     }    
     ,{ "wall": "assets/paver-wall.png"
         , "floor": "assets/paver-floor.png"
         , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip"
-        , "goal_top": "assets/exit-up.zip"  
+        , "goal_bottom": "assets/exit-down.zip" 
         ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
     }  
     ,{ "wall": "assets/turquoise-wall.png"
         , "floor": "assets/turquoise-floor.png"
         , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip"
-        , "goal_top": "assets/exit-up.zip"  
+        , "goal_bottom": "assets/exit-down.zip" 
         ,  "ball": ["assets/pink-ball-left.zip","assets/pink-ball-right.zip"]
     }  
     ,{ "wall": "assets/jade-wall.png"
         , "floor": "assets/jade-floor.png"
         , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip"
-        , "goal_top": "assets/exit-up.zip"  
+        , "goal_bottom": "assets/exit-down.zip" 
         ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
     }
     ,{ "wall": "assets/temple-wall.png"
         , "floor": "assets/temple-floor.png"
         , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip"
-        , "goal_top": "assets/exit-up.zip"  
-        ,  "ball": ["assets/white-ballB-left.zip","assets/white-ballB-right.zip"]
+        , "goal_bottom": "assets/exit-down.zip" 
+        ,  "ball": ["assets/whiteB-ball-left.zip","assets/whiteB-ball-right.zip"]
     }       
     ,{ "wall": "assets/gnarly-wall.png"
         , "floor": "assets/gnarly-floor.png"
         , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip"
-        , "goal_top": "assets/exit-up.zip"  
+        , "goal_bottom": "assets/exit-down.zip" 
         ,  "ball": ["assets/bright-blue-ball-left.zip","assets/bright-blue-ball-right.zip"]
     }    
     ,{ "wall": "assets/mottled-wall.png"
         , "floor": "assets/mottled-floor.png"
         , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip"
-        , "goal_top": "assets/exit-up.zip"  
+        , "goal_bottom": "assets/exit-down.zip" 
         ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
     }
     ,{ "wall": "assets/swirly-wall.png"
         , "floor": "assets/swirly-floor.png"
         , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip"
-        , "goal_top": "assets/exit-up.zip"  
+        , "goal_bottom": "assets/exit-down.zip" 
         ,  "ball": ["assets/red-ball-left.zip","assets/red-ball-right.zip"]
     } 
     ,{ "wall": "assets/transtube-wall.zip"
         , "floor": "assets/transtube-floor.zip"
         , "background": "assets/brick-background3.png" 
-        , "goal_bottom": "assets/exit-down.zip"
-        , "goal_top": "assets/exit-up.zip"  
-        ,  "ball": ["assets/white-ballA-left.zip","assets/white-ballA-right.zip"]
+        , "goal_bottom": "assets/exit-down.zip" 
+        ,  "ball": ["assets/whiteA-ball-left.zip","assets/whiteA-ball-right.zip"]
     }  
     ,{ "wall": "assets/aggtest-wall.png"
         , "floor": "assets/aggtest-floor.png"
         , "background": "assets/light-background.png" 
-        , "goal_bottom": "assets/exit-down.zip"
-        , "goal_top": "assets/exit-up.zip"  
+        , "goal_bottom": "assets/exit-down.zip" 
         ,  "ball": ["assets/blue-ball-left.zip","assets/blue-ball-right.zip"]
     }    
     ,{ "wall": "assets/vine-wall.png"
         , "floor": "assets/vine-floor.png"
         , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip"
-        , "goal_top": "assets/exit-up.zip"  
+        , "goal_bottom": "assets/exit-down.zip" 
         ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
     }  
     ,{ "wall": "assets/quartz-wall.png"
         , "floor": "assets/quartz-floor.png"
         , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip"
-        , "goal_top": "assets/exit-up.zip"  
+        , "goal_bottom": "assets/exit-down.zip" 
         ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
     }       
     ,{ "wall": "assets/lightstone-wall.png"
         , "floor": "assets/lightstone-floor.png"
         , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip"
-        , "goal_top": "assets/exit-up.zip"  
+        , "goal_bottom": "assets/exit-down.zip" 
         ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
-    }                                                                                                  
+    }        
 ]
