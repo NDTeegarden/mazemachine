@@ -93,6 +93,7 @@ class MazeGame(Widget):
         self.playfield.xoffset = left
         self.playfield.yoffset = bottom
         self.add_widget(self.playfield)
+        self.set_signoff()
         self.end_game(victory=False)
 # ------------------------------------------------------
     def load_config_settings(self, config):
@@ -135,7 +136,14 @@ class MazeGame(Widget):
         self.useKeyboard = useKeyboard           
         item = not error
         return item
-
+# ------------------------------------------------------
+    def set_signoff(self):
+        roll = rn.randint(0,999999999999)
+        if roll != 420:
+            text = 'Goodbye!'
+        else:
+            text = 'Wake up, Neo'
+        self.signoff = text
 # ------------------------------------------------------
     def load_opts_settings(self,opts):
         opts = [opt for opt in sys.argv[1:] if opt.startswith("-")]
@@ -236,7 +244,7 @@ class MazeGame(Widget):
         Logger.debug('config:{}'.format(d))
         self.set_config(d)
         self.config.write()
-        print('Goodbye!')
+        print(self.signoff)
         sys.exit(0)
 # ------------------------------------------------------
     def show_menu(self,caption):
@@ -363,7 +371,7 @@ class Playfield(FloatLayout):
         switcher = {
             1: (6,6),
             2: (8,8),
-            3: (11,11),
+            3: (10,10),
             4: (14,14),
             5: (16,16)
             }
@@ -440,7 +448,7 @@ class Playfield(FloatLayout):
         y = cell.pos[1] + int(cell.size[1] / 2) - 8
         width = int(cell.size[0] * .5) - 2
         height = int(cell.size[1] * .5) - 2
-        speed = int(width / 3) + int(difficulty/2) + 1
+        speed = int(width / 3) + int(difficulty/2) + 2
         if speed <= 2:
             speed = 2
         Logger.debug('place_ball: speed={}'.format(speed))

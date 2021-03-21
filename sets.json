@@ -69,8 +69,8 @@
         , "goal_top": "assets/exit-up.zip"  
         ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
     }  
-    ,{ "wall": "assets/ice4e-wall.png"
-        , "floor": "assets/ice4e-floor.png"
+    ,{ "wall": "assets/lightstone-wall.png"
+        , "floor": "assets/lightstone-floor.png"
         , "background": "assets/dark-gray.png" 
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip"  
@@ -155,10 +155,10 @@
     }  
     ,{ "wall": "assets/aggtest-wall.png"
         , "floor": "assets/aggtest-floor.png"
-        , "background": "assets/med-gray.png" 
+        , "background": "assets/light-background.png" 
         , "goal_bottom": "assets/exit-down.zip"
         , "goal_top": "assets/exit-up.zip"  
-        ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
+        ,  "ball": ["assets/blue-ball-left.zip","assets/blue-ball-right.zip"]
     }    
     ,{ "wall": "assets/vine-wall.png"
         , "floor": "assets/vine-floor.png"
@@ -174,5 +174,11 @@
         , "goal_top": "assets/exit-up.zip"  
         ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
     }       
-                                                                                               
+    ,{ "wall": "assets/lightstone-wall.png"
+        , "floor": "assets/lightstone-floor.png"
+        , "background": "assets/dark-gray.png" 
+        , "goal_bottom": "assets/exit-down.zip"
+        , "goal_top": "assets/exit-up.zip"  
+        ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
+    }                                                                                                  
 ]

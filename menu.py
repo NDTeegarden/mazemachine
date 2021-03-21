@@ -48,7 +48,7 @@ class GameMenu(FloatLayout):
     def add_level_selector(self):
         self.difSelector = Selector(size_hint=(.35,1),pos_hint={'x': .05, 'top' : .85}) 
         self.add_widget(self.difSelector)
-        self.difSelector.build(min=1, max=5,value=self.difficulty,orientation='vertical',title='Difficulty',descriptors=['Easy','Moderate','Standard','Hard','Maximum'])
+        self.difSelector.build(min=1, max=5,value=self.difficulty,orientation='vertical',title='Difficulty',descriptors=['Easy','Moderate','Challenging','Hard','Maximum'])
         self.difSelector.update_canvas()
         def callback(instance,value):
             self.difficulty = self.difSelector.value
