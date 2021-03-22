@@ -125,8 +125,8 @@
         , "goal_bottom": "assets/exit-down.zip" 
         ,  "ball": ["assets/red-ball-left.zip","assets/red-ball-right.zip"]
     } 
-    ,{ "wall": "assets/transtube-wall.zip"
-        , "floor": "assets/transtube-floor.zip"
+    ,{ "wall": "assets/transtube2-wall.zip"
+        , "floor": "assets/transtube2-floor.zip"
         , "background": "assets/brick-background3.png" 
         , "goal_bottom": "assets/exit-down.zip" 
         ,  "ball": ["assets/whiteA-ball-left.zip","assets/whiteA-ball-right.zip"]
