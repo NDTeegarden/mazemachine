@@ -288,13 +288,13 @@ class AccelerometerHandler(InputHandler):
             self.value = accelerometer.acceleration[:3]
             status = '{}get_vector: value={}   lastvalue={}'.format(self, self.value, self.lastvalue)
             if self.value != (None, None, None):
-                a = round(self.value[0]-self.value[2],1)
+                a = round(self.value[0] + 10,1)   #self.value[0]-self.value[2],1
                 b = round(self.value[1],1)
             else:
                 a = 0
                 b = 0
             if self.lastvalue != (None, None, None):
-                lasta = round(self.lastvalue[0]-self.lastvalue[2],1)
+                lasta = round(self.lastvalue[0] + 10,1)   #self.value[0]-self.value[2],1
                 lastb = round(self.lastvalue[1],1)
             else:
                 lasta = a
