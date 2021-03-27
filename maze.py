@@ -16,6 +16,7 @@ from kivy.graphics import Color, Rectangle, Ellipse
 from kivy.properties import (BooleanProperty, NumericProperty, BoundedNumericProperty, ReferenceListProperty, ObjectProperty)
 from kivy.vector import Vector
 from kivy.clock import Clock
+from kivy.utils import platform
 
 #plyer imports
 from plyer import accelerometer, vibrator
@@ -39,7 +40,7 @@ class MazeApp(App):
     def build(self):
         config = self.config
         loglevel = config['MazeApp']['loglevel']        #start logging before doing anything else
-        Logger.setLevel(LOG_LEVELS[loglevel])        
+        Logger.setLevel(LOG_LEVELS[loglevel])      
         super().__init__()  
         opts = sys.argv                                                   
         game = MazeGame()
@@ -74,9 +75,10 @@ class MazeGame(Widget):
     playfield = ObjectProperty(None)
     loopEvent = ObjectProperty(None)
 # ------------------------------------------------------
-    def start(self,config = None, opts=[]):
+    def start(self,config = None, opts=[]): 
         self.load_config_settings(config=config)
         self.load_opts_settings(opts=opts)
+        Logger.debug('SYSTEM: platform={}'.format(platform)) 
         self.player1 = Controller(rootWidget=self,useKeyboard=self.useKeyboard)
         self.playfield = Playfield()
         self.size = Window.size
@@ -456,12 +458,12 @@ class Playfield(FloatLayout):
         self.ball = Ball(speed=speed,size_hint=(None,None),source=asset[0],size=(width,height),pos=(x,y),allow_stretch=True,altSources=[asset[1]])
         self.ball.soundOn = self.parent.soundOn
         if self.parent.soundOn:
-            soundAsset = 'assets/qubodup-bowling_roll-nofadeout.wav'        
-            self.ball.add_sound(key='move', source = soundAsset)
-            soundAsset = 'assets/ball-drop2.wav'
-            self.ball.add_sound(key='win', source = soundAsset)
+            soundAsset = 'assets/ball-rolling0.wav'        
+            self.ball.add_move_sound(source=soundAsset, loop=True)
+            soundAsset = 'assets/ball-drop1.wav'
+            self.ball.add_victory_sound(source=soundAsset)
             soundAsset = 'assets/ball-hit1.wav'
-            self.ball.add_sound(key='hit', source = soundAsset)        
+            self.ball.add_sound(key='hit', source=soundAsset)        
         cell.add_widget(self.ball)
 # ------------------------------------------------------
     def place_goal(self,cell):
@@ -495,17 +497,16 @@ class Playfield(FloatLayout):
         def callback(dt):
             sprite.move(vector=(0,-1))
         for i in range(0,9):
-            Clock.schedule_once(callback, i * 0.16)
+            Clock.schedule_once(callback, i * 0.16)          
         with cf.ThreadPoolExecutor() as executor:            
             flashThread = executor.submit(goal.flash)
-            if self.parent.soundOn:
-                soundThread = executor.submit(self.ball.start_sound, 'win')
-
             if self.parent.vibrateOn:
                 try:
-                    vibeThread = executor.submit(vibrator.vibrate,.018)
+                    vibeThread = executor.submit(vibrator.vibrate,.024)
                 except NotImplementedError:
-                    Logger.debug('Vibrate not working')                
+                    Logger.debug('Vibrate not working')
+        if self.parent.soundOn:
+            self.ball.handle_victory_sound()                                      
 # ------------------------------------------------------                      
     def move_sprite(self,player,sprite):
         v = player.get_vector()
