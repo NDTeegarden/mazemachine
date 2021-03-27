@@ -13,11 +13,13 @@ class GenericAudioClip():
         item = True
         self.sound = None
         try:
-            self.sound = SoundLoader.load(source, loop=loop)
+            self.sound = SoundLoader.load(source)
         except Exception:
             traceback.print_exc()
             Logger.debug('{} load() failed'.format(self))
             item = False   
+        if item:
+            self.sound.loop=loop
         return item  
 # ------------------------------------------------------
     def play(self):
@@ -53,10 +55,10 @@ class GenericAudioClip():
         finally:
             item = self.stop()
             try:
-                self.seekTo(pos)
+                self.sound.seek(pos)
             except Exception:
                 traceback.print_exc()
-                Logger.debug('{} pause() failed on seekTop()'.format(self))
+                Logger.debug('{} pause() failed on seek()'.format(self))
                 item = False
             finally:
                 return item                

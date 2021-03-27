@@ -1,6 +1,6 @@
 [
-    {   "wall": "assets/bluewall3.png"
-        , "floor": "assets/bluefloor3.png"
+    {   "wall": "assets/bluewall4.png"
+        , "floor": "assets/bluefloor4.png"
         , "background": "assets/dark-gray.png"
         , "goal_bottom": "assets/exit-down.zip"
         ,  "ball": ["assets/red-ball-left.zip","assets/red-ball-right.zip"]
@@ -10,12 +10,6 @@
         , "background": "assets/light-wood.png"
         , "goal_bottom": "assets/exit-down.zip" 
         ,  "ball": ["assets/bright-blue-ball-left.zip","assets/bright-blue-ball-right.zip"]
-    }
-    ,{ "wall": "assets/metal-wall.png"
-        , "floor": "assets/metal-floor.png"
-        , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/red-ball-left.zip","assets/red-ball-right.zip"]
     }
     ,{ "wall": "assets/pebble-wall.png"
         , "floor": "assets/pebble-floor.png"
@@ -45,7 +39,7 @@
         , "floor": "assets/brickfloor4.png"
         , "background": "assets/brick-background4.png" 
         , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/whiteC-ball-left.zip","assets/whiteC-ball-right.zip"]
+        ,  "ball": ["assets/whiteB-ball-left.zip","assets/whiteB-ball-right.zip"]
     }   
     ,{ "wall": "assets/ice7b-wall.png"
         , "floor": "assets/ice7b-floor.png"
@@ -127,9 +121,9 @@
     } 
     ,{ "wall": "assets/transtube2-wall.zip"
         , "floor": "assets/transtube2-floor.zip"
-        , "background": "assets/brick-background3.png" 
+        , "background": "assets/metal-background.png" 
         , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/whiteA-ball-left.zip","assets/whiteA-ball-right.zip"]
+        ,  "ball": ["assets/whiteB-ball-left.zip","assets/whiteB-ball-right.zip"]
     }  
     ,{ "wall": "assets/aggtest-wall.png"
         , "floor": "assets/aggtest-floor.png"
@@ -147,7 +141,7 @@
         , "floor": "assets/quartz-floor.png"
         , "background": "assets/dark-gray.png" 
         , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
+        ,  "ball": ["assets/bright-blue-ball-left.zip","assets/bright-blue-ball-right.zip"]
     }       
     ,{ "wall": "assets/lightstone-wall.png"
         , "floor": "assets/lightstone-floor.png"
