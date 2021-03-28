@@ -421,7 +421,7 @@ class Playfield(FloatLayout):
         self.mazePos = pos
         w = self.children[0].children[0].pos[0] - pos[0]
         item = self.topLeft.children[0]
-        h = item.pos[1] 
+        h = item.pos[1] + item.size[1]
         size = (w,h)
         self.mazeSize = size
         #Logger.debug('{}:pos={}  size={}'.format(self,pos,size))
