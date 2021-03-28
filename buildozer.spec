@@ -19,13 +19,13 @@ source.include_exts = py,png,jpg,kv,atlas,json,zip,gif,wav
 source.include_patterns = assets/*.png,assets/*.zip,assets/*.gif,assets/*.wav
 
 # (list) Source files to exclude (let empty to not exclude anything)
-source.exclude_exts = .git,.gitignore,.bak,.xcf,.ora,.jpg
+source.exclude_exts = .git,.gitignore,.bak,.xcf,.ora,.jpg,.ini
 
 # (list) List of directory to exclude (let empty to not exclude anything)
 source.exclude_dirs = tests, bin, venv, assets/work
 
 # (list) List of exclusions using pattern matching
-#source.exclude_patterns = license,images/*/*.jpg
+source.exclude_patterns = license,images/*/*.jpg,.git,.gitignore,*.bak,*.xcf,*.ora,*.jpg,*.ini
 
 # (str) Application versioning (method 1)
 version = 0.2

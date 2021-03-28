@@ -15,7 +15,7 @@ class AndroidAudioClip():
     def load(self, source, loop, *args):
         self.mPlayer = self.MediaPlayer()           
         self.mPlayer.setDataSource(source)
-        Logger.debug('READ THIS: loading {} with loop={}'.format(source,loop))
+       #Logger.debug('READ THIS: loading {} with loop={}'.format(source,loop))
         self.mPlayer.setLooping(loop)
         builder = self.AABuilder()
         builder.setUsage(self.AudioAttributes.USAGE_GAME)
@@ -34,10 +34,10 @@ class AndroidAudioClip():
             self.mPlayer.start()
         except Exception:
             traceback.print_exc()
-            Logger.debug('READ THIS: start() failed')
+           #Logger.debug('READ THIS: start() failed')
             item = False
         if item:
-            Logger.debug('READ THIS: start() succeeded')
+           #Logger.debug('READ THIS: start() succeeded')
         return item
  # ------------------------------------------------------       
     def release(self):
@@ -46,7 +46,7 @@ class AndroidAudioClip():
             self.mPlayer.release()
         except Exception:
             traceback.print_exc()
-            Logger.debug('READ THIS: release() failed')
+           #Logger.debug('READ THIS: release() failed')
             item = False   
         return item         
 # ------------------------------------------------------
@@ -56,18 +56,18 @@ class AndroidAudioClip():
             self.mPlayer.pause()
         except Exception:
             traceback.print_exc()
-            Logger.debug('READ THIS: pause() failed')
+           #Logger.debug('READ THIS: pause() failed')
             item = False
         if item:
-            Logger.debug('READ THIS: pause() succeeded.Trying seekto:')
+           #Logger.debug('READ THIS: pause() succeeded.Trying seekto:')
         try:
             self.mPlayer.seekTo(0)
         except Exception:
             traceback.print_exc()
-            Logger.debug('READ THIS: seekTo(0) failed')
+           #Logger.debug('READ THIS: seekTo(0) failed')
             item = False  
         if item:
-            Logger.debug('READ THIS: seekTo(0) succeed') 
+           #Logger.debug('READ THIS: seekTo(0) succeed') 
         return item                 
 # ------------------------------------------------------
     def pause(self):
@@ -76,10 +76,10 @@ class AndroidAudioClip():
             self.mPlayer.pause()
         except Exception:
             traceback.print_exc()
-            Logger.debug('READ THIS: pause() failed')
+           #Logger.debug('READ THIS: pause() failed')
             item = False
         if item:
-            Logger.debug('READ THIS: pause() succeeded.')               
+           #Logger.debug('READ THIS: pause() succeeded.')               
         return item                    
 # ------------------------------------------------------
     def isPlaying(self):
@@ -87,9 +87,9 @@ class AndroidAudioClip():
             result = self.mPlayer.isPlaying()  
         except Exception:
             traceback.print_exc()
-            Logger.debug('READ THIS: couldn'' get isPlaying')
+           #Logger.debug('READ THIS: couldn'' get isPlaying')
             result = False
-        Logger.debug('READ THIS: isPlaying={}'.format(result))
+       #Logger.debug('READ THIS: isPlaying={}'.format(result))
         return result      
 # ------------------------------------------------------
     def __del__(self):

@@ -37,7 +37,7 @@
     }
     ,{ "wall": "assets/brickwall4.png"
         , "floor": "assets/brickfloor4.png"
-        , "background": "assets/brick-background4.png" 
+        , "background": "assets/brick-background2.png" 
         , "goal_bottom": "assets/exit-down.zip" 
         ,  "ball": ["assets/whiteB-ball-left.zip","assets/whiteB-ball-right.zip"]
     }   
@@ -148,5 +148,11 @@
         , "background": "assets/dark-gray.png" 
         , "goal_bottom": "assets/exit-down.zip" 
         ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
-    }        
+    }
+    ,{ "wall": "assets/bluetube-wall.png"
+        , "floor": "assets/bluetube-floor.png"
+        , "background": "assets/brick-background3.png" 
+        , "goal_bottom": "assets/exit-down.zip" 
+        ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
+    }               
 ]

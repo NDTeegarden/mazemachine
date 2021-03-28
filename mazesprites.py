@@ -98,8 +98,8 @@ class Sprite(Image):
 # ------------------------------------------------------
     def __init__(self,source,pos,size,size_hint=(None,None),allow_stretch=False,keep_ratio=True,speed=1,altSources=[], soundOn=True, **kwargs):
         super().__init__(size=size,pos=pos,source=source,allow_stretch=allow_stretch, keep_ratio=keep_ratio,**kwargs)
-        Logger.debug('READ THIS: pos={}'.format(pos))
-        Logger.debug('READ THIS: Vector(self.pos)={}'.format(Vector(self.pos)))
+       #Logger.debug('READ THIS: pos={}'.format(pos))
+       #Logger.debug('READ THIS: Vector(self.pos)={}'.format(Vector(self.pos)))
         self.sources = altSources
         self.sources.insert(0,source)
         self.load_content()
@@ -143,7 +143,7 @@ class Sprite(Image):
             traceback.print_exc()
             return item
         moving = value
-        Logger.debug('READ THIS: handle_move_sound: moving={}  playing={}'.format(moving,sound.isPlaying()))
+       #Logger.debug('READ THIS: handle_move_sound: moving={}  playing={}'.format(moving,sound.isPlaying()))
         if moving and (not sound.isPlaying()):
             sound.play()
         elif (not moving) and sound.isPlaying():
@@ -191,7 +191,7 @@ class Sprite(Image):
             return item
         item = True 
         if item:
-            Logger.debug('READ THIS: trying to play victory sound')
+           #Logger.debug('READ THIS: trying to play victory sound')
             try:
                 sound.play()
             except Exception:
@@ -253,7 +253,7 @@ class Sprite(Image):
         else:
             (oldx,oldy) = self.pos
             oldpos=(oldx,oldy)
-            Logger.debug('READ THIS: self.pos={}  oldpos={}'.format(self.pos,oldpos))
+           #Logger.debug('READ THIS: self.pos={}  oldpos={}'.format(self.pos,oldpos))
             # multiply vector times speed
             s = self.speed
             dx = vector[0] * s
@@ -267,7 +267,7 @@ class Sprite(Image):
             colFlag = result[1]
         # handle animation if any            
         if (newpos != oldpos):
-            Logger.debug('READ THIS: newpos != oldpos newpos={}. oldpos={}'.format(newpos,oldpos))
+           #Logger.debug('READ THIS: newpos != oldpos newpos={}. oldpos={}'.format(newpos,oldpos))
             self.select_animation(vector)
             self.moveTo(newpos)
             self.collider.moveTo(newpos)

@@ -421,7 +421,8 @@ class Playfield(FloatLayout):
         self.mazePos = pos
         w = self.children[0].children[0].pos[0] - pos[0]
         item = self.topLeft.children[0]
-        h = item.pos[1] + item.size[1]
+        f = self.floors[0]
+        h = item.pos[1] + f.size[1]
         size = (w,h)
         self.mazeSize = size
         #Logger.debug('{}:pos={}  size={}'.format(self,pos,size))
@@ -460,10 +461,10 @@ class Playfield(FloatLayout):
         if self.parent.soundOn:
             soundAsset = 'assets/ball-rolling0.wav'        
             self.ball.add_move_sound(source=soundAsset, loop=True)
-            soundAsset = 'assets/ball-drop1.wav'
+            soundAsset = 'assets/ball-drop0.wav'
             self.ball.add_victory_sound(source=soundAsset)
-            soundAsset = 'assets/ball-hit1.wav'
-            self.ball.add_sound(key='hit', source=soundAsset)        
+            # soundAsset = 'assets/ball-hit1.wav'
+            # self.ball.add_sound(key='hit', source=soundAsset)        
         cell.add_widget(self.ball)
 # ------------------------------------------------------
     def place_goal(self,cell):
