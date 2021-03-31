@@ -49,7 +49,7 @@ class MazeApp(App):
 
     def build_config(self, config):
         config.setdefaults('MazeApp', {
-            'loglevel': 'info',
+            'loglevel': 'debug',
         })
         config.setdefaults('MazeGame', {
             'difficulty': 2,
@@ -72,6 +72,7 @@ class MazeGame(Widget):
     difficulty = BoundedNumericProperty(2, min=1, max=5)
     running = BooleanProperty(None)
     paused = BooleanProperty(None)
+    soundOn = BooleanProperty(None)
     playfield = ObjectProperty(None)
     loopEvent = ObjectProperty(None)
 # ------------------------------------------------------
@@ -273,6 +274,7 @@ class MazeGame(Widget):
 # ------------------------------------------------------  
     def resume_game(self, menu):
         self.soundOn = menu.soundOn
+        Logger.debug('resume_game: MazeGame.soundOn={}'.format(self.soundOn))
         self.vibrateOn = menu.vibrateOn
         self.set_config({'sound':self.soundOn,'vibrate':self.vibrateOn})
         menu.parent.remove_widget(menu)
@@ -417,12 +419,17 @@ class Playfield(FloatLayout):
 # ------------------------------------------------------
     def draw_background(self):
         last = len(self.children) - 1
-        pos = self.bottomLeft.children[0].pos
+        #position 
+        pos = self.bottomLeft.pos  #
         self.mazePos = pos
-        w = self.children[0].children[0].pos[0] - pos[0]
-        item = self.topLeft.children[0]
-        f = self.floors[0]
-        h = item.pos[1] + f.size[1]
+        #width
+        corner = self.children[0].children[0]
+        wall = self.walls[0]
+        w = (corner.pos[0] + wall.size[0]) - pos[0]
+        #height
+        corner = self.topLeft.children[0]
+        floor = self.floors[0]
+        h = corner.pos[1] + floor.size[1]
         size = (w,h)
         self.mazeSize = size
         #Logger.debug('{}:pos={}  size={}'.format(self,pos,size))
@@ -451,20 +458,27 @@ class Playfield(FloatLayout):
         y = cell.pos[1] + int(cell.size[1] / 2) - 8
         width = int(cell.size[0] * .5) - 2
         height = int(cell.size[1] * .5) - 2
-        speed = int(width / 3) + int(difficulty/2) + 2
+        speed = int(width / 3) + int(difficulty/2) + 3
         if speed <= 2:
             speed = 2
         Logger.debug('place_ball: speed={}'.format(speed))
         asset = self.assetData['ball']
-        self.ball = Ball(speed=speed,size_hint=(None,None),source=asset[0],size=(width,height),pos=(x,y),allow_stretch=True,altSources=[asset[1]])
+        self.ball = Ball(speed=speed,size_hint=(None,None),source=asset[0],size=(width,height),pos=(x,y),allow_stretch=True,altSources=[asset[1]],soundOn=False)
+        self.ball.add_sound_source(key='win', source='assets/ball-drop0.wav')
+        self.ball.add_sound_source(key='move', source='assets/ball-rolling0.wav')
         self.ball.soundOn = self.parent.soundOn
-        if self.parent.soundOn:
-            soundAsset = 'assets/ball-rolling0.wav'        
-            self.ball.add_move_sound(source=soundAsset, loop=True)
-            soundAsset = 'assets/ball-drop0.wav'
-            self.ball.add_victory_sound(source=soundAsset)
-            # soundAsset = 'assets/ball-hit1.wav'
-            # self.ball.add_sound(key='hit', source=soundAsset)        
+        def callback(instance, value):
+            self.ball.soundOn = value
+            Logger.debug('CALLBACK: MazeGame.soundOn={}'.format(value))
+        self.parent.bind(soundOn=callback)
+        def callback(instance, value):
+            if value:
+                self.ball.soundOn = False
+                Logger.debug('CALLBACK: MazeGame.paused={}'.format(value))
+            else:
+                self.ball.soundOn = self.parent.soundOn
+                Logger.debug('CALLBACK: MazeGame.paused={}'.format(value))
+        self.parent.bind(paused=callback)
         cell.add_widget(self.ball)
 # ------------------------------------------------------
     def place_goal(self,cell):
@@ -506,8 +520,7 @@ class Playfield(FloatLayout):
                     vibeThread = executor.submit(vibrator.vibrate,.024)
                 except NotImplementedError:
                     Logger.debug('Vibrate not working')
-        if self.parent.soundOn:
-            self.ball.handle_victory_sound()                                      
+        self.ball.handle_victory_sound()                                      
 # ------------------------------------------------------                      
     def move_sprite(self,player,sprite):
         v = player.get_vector()

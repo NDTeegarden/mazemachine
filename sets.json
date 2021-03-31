@@ -119,11 +119,11 @@
         , "goal_bottom": "assets/exit-down.zip" 
         ,  "ball": ["assets/red-ball-left.zip","assets/red-ball-right.zip"]
     } 
-    ,{ "wall": "assets/transtube2-wall.zip"
-        , "floor": "assets/transtube2-floor.zip"
+    ,{ "wall": "assets/transtube3-wall.zip"
+        , "floor": "assets/transtube3-floor.zip"
         , "background": "assets/metal-background.png" 
         , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/whiteB-ball-left.zip","assets/whiteB-ball-right.zip"]
+        ,  "ball": ["assets/whiteC-ball-left.zip","assets/whiteC-ball-right.zip"]
     }  
     ,{ "wall": "assets/aggtest-wall.png"
         , "floor": "assets/aggtest-floor.png"

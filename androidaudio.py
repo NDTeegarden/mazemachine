@@ -22,7 +22,7 @@ class AndroidAudioClip():
         builder.setContentType(self.AudioAttributes.CONTENT_TYPE_SONIFICATION)
         attrib = builder.build()
         self.mPlayer.setAudioAttributes(attrib)
-        self.mPlayer.prepare()
+        self.mPlayer.prepareAsync()
 # ------------------------------------------------------
     def play(self):
         item = True
@@ -36,8 +36,6 @@ class AndroidAudioClip():
             traceback.print_exc()
            #Logger.debug('READ THIS: start() failed')
             item = False
-        if item:
-           #Logger.debug('READ THIS: start() succeeded')
         return item
  # ------------------------------------------------------       
     def release(self):
@@ -45,7 +43,7 @@ class AndroidAudioClip():
         try:
             self.mPlayer.release()
         except Exception:
-            traceback.print_exc()
+           #traceback.print_exc()
            #Logger.debug('READ THIS: release() failed')
             item = False   
         return item         
@@ -58,7 +56,7 @@ class AndroidAudioClip():
             traceback.print_exc()
            #Logger.debug('READ THIS: pause() failed')
             item = False
-        if item:
+        #if item:
            #Logger.debug('READ THIS: pause() succeeded.Trying seekto:')
         try:
             self.mPlayer.seekTo(0)
@@ -66,8 +64,6 @@ class AndroidAudioClip():
             traceback.print_exc()
            #Logger.debug('READ THIS: seekTo(0) failed')
             item = False  
-        if item:
-           #Logger.debug('READ THIS: seekTo(0) succeed') 
         return item                 
 # ------------------------------------------------------
     def pause(self):
@@ -77,9 +73,7 @@ class AndroidAudioClip():
         except Exception:
             traceback.print_exc()
            #Logger.debug('READ THIS: pause() failed')
-            item = False
-        if item:
-           #Logger.debug('READ THIS: pause() succeeded.')               
+            item = False              
         return item                    
 # ------------------------------------------------------
     def isPlaying(self):

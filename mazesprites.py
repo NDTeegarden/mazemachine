@@ -94,35 +94,83 @@ class Sprite(Image):
     transparentcolor = ObjectProperty(None) 
     speed = ObjectProperty(None)
     collider = ObjectProperty(None)
-    moving = ObjectProperty(None)
+    moving = BooleanProperty(None)
+    soundOn = BooleanProperty(None)
 # ------------------------------------------------------
-    def __init__(self,source,pos,size,size_hint=(None,None),allow_stretch=False,keep_ratio=True,speed=1,altSources=[], soundOn=True, **kwargs):
+    def __init__(self,source,pos,size,size_hint=(None,None),allow_stretch=False,keep_ratio=True,speed=1,altSources=[], soundSources={}, soundOn=False, **kwargs):
         super().__init__(size=size,pos=pos,source=source,allow_stretch=allow_stretch, keep_ratio=keep_ratio,**kwargs)
        #Logger.debug('READ THIS: pos={}'.format(pos))
        #Logger.debug('READ THIS: Vector(self.pos)={}'.format(Vector(self.pos)))
         self.sources = altSources
         self.sources.insert(0,source)
+        self.soundOn = soundOn
+        self.soundSources= soundSources
+        self.sounds = {}
         self.load_content()
         self.transparentcolor = Color(0,0,0,0)
         self.speed = speed
-        self.soundOn = soundOn
-        self.sounds = {}
         self.init_collider()  
         self.init_image_animation() 
+        def callback(instance, value):
+            if not value:
+                self.pause_all_sounds()
+            else:     #load sounds if they were never loaded (for example of player flips Sound setting on pause menu)
+                if len(self.sounds) != len(self.soundSources):
+                    self.load_sounds()
+        self.bind(soundOn=callback)
 #------------------------------------------------------
     def load_content(self):
+        self.load_images()
+        self.load_sounds()
+#------------------------------------------------------
+    def load_images(self):
         l = len(self.sources)
         if l > 1:
             #force program to load all images we will eventually use
             for i in range(1,l-1):
                 self.source = self.sources[i]    
-            self.source = self.sources[0]     
+            self.source = self.sources[0]
+#------------------------------------------------------
+    def load_sounds(self):
+        l = len(self.soundSources)
+        if l > 0 and self.soundOn:
+            #force program to load all sounds we will eventually use
+            for key in self.soundSources:
+                source = self.soundSources[key]
+                if key =='move':
+                    self.add_move_sound(source=source, key=key)
+                elif key == 'win':
+                    self.add_victory_sound(source=source, key=key)
+                else:
+                    self.add_sound(source=source,key=key)
 #------------------------------------------------------
     def add_sound(self,key,source, loop=False):
-        sound = AudioClip(source=source,loop=loop)
-        self.sounds[key] = sound  
+        if (key not in self.soundSources) or (self.soundSources[key] != source):
+            self.soundSources[key] = source
+        item = True
+        try:
+            sound = AudioClip(source=source,loop=loop)
+        except Exception:
+            item = False
+            traceback.print_exc()
+            Logger.debug('could not add sound {}'.format(source))             
+        if item:
+            self.sounds[key] = sound
+        return item
+#------------------------------------------------------
+    def add_sound_source(self,key,source, loop=False):
+        item = True
+        try:
+            self.soundSources[key] = source
+        except Exception:
+            item = False
+            traceback.print_exc()
+            Logger.debug('could not add sound source {}'.format(source)) 
+        return item        
 #------------------------------------------------------
     def add_move_sound(self,source, key='move', loop=True):
+        if (key not in self.soundSources) or (self.soundSources[key] != source):
+            self.soundSources[key] = source        
         item = True
         try: 
             sound = AudioClip(source=source, loop=loop)
@@ -136,20 +184,22 @@ class Sprite(Image):
         return item
 # ------------------------------------------------------
     def handle_move_sound(self,instance,value):
-        try:
-            sound = self.sounds['move']
-        except Exception:
-            item = False
-            traceback.print_exc()
-            return item
-        moving = value
-       #Logger.debug('READ THIS: handle_move_sound: moving={}  playing={}'.format(moving,sound.isPlaying()))
-        if moving and (not sound.isPlaying()):
-            sound.play()
-        elif (not moving) and sound.isPlaying():
-            sound.pause()
+        if self.soundOn:
+            try:
+                sound = self.sounds['move']
+            except Exception:
+                traceback.print_exc()
+            moving = value
+            #Logger.debug('READ THIS: handle_move_sound: moving={}  playing={}'.format(moving,sound.isPlaying()))
+            if moving and (not sound.isPlaying()):
+                sound.play()
+            elif (not moving) and sound.isPlaying():
+                sound.pause()
+       
 #------------------------------------------------------
     def add_victory_sound(self,source, key='win', loop=False):
+        if (key not in self.soundSources) or (self.soundSources[key] != source):
+            self.soundSources[key] = source        
         item = True
         try: 
             sound = AudioClip(source=source, loop=loop)
@@ -182,20 +232,21 @@ class Sprite(Image):
             self.unbbind(moving=self.handle_move_sound)
         except Exception:
             pass
-        # now play the victory sound (if there is one)
-        try:
-            sound = self.sounds['win']
-        except Exception:
-            item = False
-            traceback.print_exc()
-            return item
-        item = True 
-        if item:
-           #Logger.debug('READ THIS: trying to play victory sound')
+        # now play the victory sound (if there is one, and sound is on)
+        if self.soundOn:
             try:
-                sound.play()
+                sound = self.sounds['win']
             except Exception:
                 item = False
+                traceback.print_exc()
+                return item
+            item = True 
+            if item:
+            #Logger.debug('READ THIS: trying to play victory sound')
+                try:
+                    sound.play()
+                except Exception:
+                    item = False
         return item
 # ------------------------------------------------------
     def set_animation(self, index):
@@ -220,22 +271,41 @@ class Sprite(Image):
     def start_sound(self, key='move'):
         if self.soundOn:
             s = self.sounds[key]
-            Logger.debug('start_sound {}: {}'.format(key,s.state))
-            if s != None and s.state != 'play':
-                try:
-                    s.play()
-                except Exception:
-                    Logger.debug('Sound {} not working'.format(key))
+            if s != None:
+                if s.isPlaying():
+                    try:
+                        s.play()
+                    except Exception:
+                        Logger.debug('Sound {} not working'.format(key))
 # ------------------------------------------------------
     def stop_sound(self, key='move'):
         s = self.sounds[key]
-        Logger.debug('stop_sound {}: {}'.format(key, s.state))
-        if s != None and s.state == 'play':
-            try:
-                s.stop()
-            except Exception:
-                Logger.debug('Unable to stop sound {}'.format(key))
-            
+        if s != None:
+            if s.isPlaying():
+                try:
+                    s.stop()
+                except Exception:
+                    Logger.debug('Unable to stop sound {}'.format(key))
+# ------------------------------------------------------
+    def pause_sound(self, key='move'):
+        s = self.sounds[key]
+        if s != None:
+            if s.isPlaying():
+                try:
+                    s.pause()
+                except Exception:
+                    Logger.debug('Unable to stop sound {}'.format(key))
+# ------------------------------------------------------
+    def pause_all_sounds(self):
+        for key in self.sounds:
+            s = self.sounds[key]
+            if s != None:
+                if s.isPlaying():
+                    try:
+                        s.pause()
+                    except Exception:
+                        Logger.debug('Unable to pause sound {}'.format(key))
+                       
 # ------------------------------------------------------
     def init_collider(self):
         if self.collider != None:
