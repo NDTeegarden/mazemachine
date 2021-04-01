@@ -1,13 +1,13 @@
 [app]
 
 # (str) Title of your application
-title = Maze Machine Prototype
+title = Maze Machine test
 
 # (str) Package name
 package.name = mazeapp
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = org.matrix
+package.domain = org.lovegardengames
 
 # (str) Source code where the main.py live
 source.dir = .
@@ -28,7 +28,7 @@ source.exclude_dirs = tests, bin, venv, assets/work
 source.exclude_patterns = license,images/*/*.jpg,.git,.gitignore,*.bak,*.xcf,*.ora,*.jpg,*.ini
 
 # (str) Application versioning (method 1)
-version = 0.2
+version = 0.3
 
 # (str) Application versioning (method 2)
 # version.regex = __version__ = ['"](.*)['"]

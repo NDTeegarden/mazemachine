@@ -15,7 +15,7 @@
         , "floor": "assets/pebble-floor.png"
         , "background": "assets/dark-gray.png" 
         , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/red-ball-left.zip","assets/red-ball-right.zip"]
+        ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
     }  
     ,{ "wall": "assets/blockwall.png"
         , "floor": "assets/blockfloor.png"
@@ -39,7 +39,7 @@
         , "floor": "assets/brickfloor4.png"
         , "background": "assets/brick-background2.png" 
         , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/whiteB-ball-left.zip","assets/whiteB-ball-right.zip"]
+        ,  "ball": ["assets/pink-ball-left.zip","assets/pink-ball-right.zip"]
     }   
     ,{ "wall": "assets/ice7b-wall.png"
         , "floor": "assets/ice7b-floor.png"
@@ -53,15 +53,9 @@
         , "goal_bottom": "assets/exit-down.zip" 
         ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
     }  
-    ,{ "wall": "assets/lightstone-wall.png"
-        , "floor": "assets/lightstone-floor.png"
-        , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/red-ball-left.zip","assets/red-ball-right.zip"]
-    }      
     ,{ "wall": "assets/mntn-wall.png"
         , "floor": "assets/mntn-floor.png"
-        , "background": "assets/light-background.png" 
+        , "background": "assets/temple8gray-background.png" 
         , "goal_bottom": "assets/exit-down.zip" 
         ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
     }  
@@ -123,7 +117,7 @@
         , "floor": "assets/transtube3-floor.zip"
         , "background": "assets/metal-background.png" 
         , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/whiteC-ball-left.zip","assets/whiteC-ball-right.zip"]
+        ,  "ball": ["assets/pink-ball-left.zip","assets/pink-ball-right.zip"]
     }  
     ,{ "wall": "assets/aggtest-wall.png"
         , "floor": "assets/aggtest-floor.png"
