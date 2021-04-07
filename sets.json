@@ -151,8 +151,14 @@
     }
     ,{ "wall": "assets/bluebrick-wall.png"
         , "floor": "assets/bluebrick-floor.png"
-        , "background": "assets/brick-background3.png" 
+        , "background": "assets/dark-gray.png" 
         , "goal_bottom": "assets/exit-down.zip" 
         ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
-    }                 
+    }    
+    ,{ "wall": "assets/recessed-wall.png"
+        , "floor": "assets/recessed-floor.png"
+        , "background": "assets/recessed-background.png" 
+        , "goal_bottom": "assets/exit-down.zip" 
+        ,  "ball": ["assets/red-ball-left.zip","assets/red-ball-right.zip"]
+    }                    
 ]

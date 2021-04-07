@@ -458,9 +458,9 @@ class Playfield(FloatLayout):
         y = cell.pos[1] + int(cell.size[1] / 2) - 8
         width = int(cell.size[0] * .5) - 2
         height = int(cell.size[1] * .5) - 2
-        speed = int(width / 2) + int(difficulty / 2) #+ 4
-        if speed <= 4:
-            speed = 4
+        speed = int(width / 3) + int(difficulty / 2)
+        if speed <= 2:
+            speed = 2
         Logger.debug('place_ball: speed={}'.format(speed))
         asset = self.assetData['ball']
         self.ball = Ball(speed=speed,size_hint=(None,None),source=asset[0],size=(width,height),pos=(x,y),allow_stretch=True,altSources=[asset[1]],soundOn=False)
