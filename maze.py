@@ -3,7 +3,7 @@ KIVY_NO_ARGS=1
 import kivy
 kivy.require('2.0.0')
 from kivy.config import Config
-Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
+#Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
 from kivy.logger import Logger, LOG_LEVELS
 from kivy.app import App
 from kivy.core.window import Window
@@ -257,9 +257,11 @@ class MazeGame(Widget):
         self.gameMenu = GameMenu(difficulty=difficulty,caption=caption,soundOn=soundOn,vibrateOn=vibrateOn)
         self.gameMenu.size = Window.size
         def callback(value):
+            Logger.debug('NEW Button: {}.on_press!'.format(self))
             self.new_game()
         self.gameMenu.newButton.bind(on_press=callback)
         def callback(value):
+            Logger.debug('QUIT Button: {}.on_press!'.format(self))
             self.quit()
         self.gameMenu.quitButton.bind(on_press=callback)
         self.add_widget(self.gameMenu)

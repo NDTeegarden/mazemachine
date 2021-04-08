@@ -13,7 +13,8 @@ from kivy.uix.switch import Switch
 from kivy.uix.togglebutton import ToggleButton
 from kivy.graphics import Rectangle, Color
 from kivy.properties import (NumericProperty, BoundedNumericProperty, ObjectProperty, StringProperty, BooleanProperty, ListProperty)
-
+from kivy.uix.behaviors.togglebutton import ToggleButtonBehavior
+from kivy.uix.image import Image
 #system imports
 import sys
 
@@ -299,26 +300,33 @@ class PauseMenu(FloatLayout):
             Logger.warning('{}: failed to update_shape'.format(self))             
 
 # #######################################################
-class SettingsButton(ToggleButton):
+class SettingsButton(ToggleButtonBehavior, Image):
     active = BooleanProperty(None)
-
-    def build(self, active=False, *args):
-        # create a callback linking button state to 'active' Boolean
-        def callback(instance, value):
-            self.active = (value == 'normal')
-        self.bind(state=callback)
-        # now trigger it based on the variable passed into build
-        if active:
-            self.state = 'normal'
+# ------------------------------------------------------
+    def build(self, background_normal, background_down, active, *args):
+        self.background_normal = background_normal
+        self.background_down = background_down
+        self.active=active
+        Logger.debug('BUILD: active={}'.format(active) )
+        if self.active:
+            self.source = self.background_normal
         else:
-            self.state = 'down'
-
+            self.source = self.background_down
+        def callback(instance):
+            Logger.debug('{}.on_press!'.format(self))
+            if self.active:
+                self.active = False
+                self.source = self.background_down
+            else:
+                self.active = True
+                self.source = self.background_normal
+            return False
+        self.bind(on_press=callback)
 
 # #######################################################
 class SettingsSection(GridLayout):
     soundOn = BooleanProperty(None)
     vibrateOn = BooleanProperty(None)
-     
 # ------------------------------------------------------
     def __init__(self, soundOn=False, vibrateOn=False, size_hint=(.25,.25),pos_hint={'center_x': .35, 'center_y': .15}, *args): 
         self.cols=2
@@ -329,29 +337,25 @@ class SettingsSection(GridLayout):
     def add_options(self, soundOn, vibrateOn):
         self.soundOn = soundOn
         self.vibrateOn = vibrateOn
-        self.soundSwitch = SettingsButton(text='',background_normal='assets/audio-on.png',background_down='assets/audio-off.png')
-        self.soundSwitch.build(active=soundOn)      
-        self.vibeSwitch = SettingsButton(text='',background_normal='assets/vibrate-on.png',background_down='assets/vibrate-off.png') 
-        self.vibeSwitch.build(active=vibrateOn)
+        self.soundSwitch = SettingsButton()
+        self.soundSwitch.build(background_normal='assets/audio-on.png',background_down='assets/audio-off.png',active=soundOn)      
+        self.vibeSwitch = SettingsButton() 
+        self.vibeSwitch.build(background_normal='assets/vibrate-on.png',background_down='assets/vibrate-off.png',active=vibrateOn)
         def callback(instance, value):
+            Logger.debug('Setting self.soundOn to {}'.format(value))
             self.soundOn = value
-            #self.soundLabel.disabled = not value 
+            return True
         self.soundSwitch.bind(active=callback)        
         def callback(instance, value):
+            Logger.debug('Setting self.vibrateOn to {}'.format(value))
             self.vibrateOn = value
-            #self.vibeLabel.disabled = not value
-        self.vibeSwitch.bind(active=callback)
-        # self.soundLabel = Label(text='Sound')
-        # self.soundLabel.disabled=(not soundOn)
-        # self.vibeLabel = Label(text='Vibration')
-        # self.vibeLabel.disabled=(not vibrateOn)       
+            return True
+        self.vibeSwitch.bind(active=callback)      
         self.add_widget(self.soundSwitch)
-        self.add_widget(self.vibeSwitch) 
-        # self.add_widget(self.soundLabel)
-        # self.add_widget(self.vibeLabel)                 
+        self.add_widget(self.vibeSwitch)               
 # ------------------------------------------------------
     def build(self,soundOn=False,vibrateOn=False,size_hint=(.25,.25),pos_hint={'center_x': .35, 'center_y': .15}):
         self.size_hint = size_hint 
         self.pos_hint = pos_hint
         self.add_options(soundOn, vibrateOn)
-        self.spacing=[16,0]
+        self.spacing=[20,0]
