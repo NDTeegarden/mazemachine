@@ -283,7 +283,7 @@ class AccelerometerHandler(InputHandler):
     def get_vector(self):
         if self.parent.enabled and self.active:
             maxdiff = 2
-            mindiff = .5
+            mindiff = .8
             threshold = .125
             self.value = accelerometer.acceleration[:3]
             #status = '{}get_vector: value={}   lastvalue={}'.format(self, self.value, self.lastvalue)
@@ -312,9 +312,9 @@ class AccelerometerHandler(InputHandler):
             if ydiff <= threshold:
                 ydiff = 0
             elif ydiff < mindiff:
-                y = mindiff
+                ydiff = mindiff
             elif ydiff > maxdiff:
-                y = maxdiff
+                ydiff = maxdiff
 #           Get vector values between -1 and 1
             if xdiff == 0:
                 x = 0   #this should catch moves below the threshold so the ball isn't constantly jiggling

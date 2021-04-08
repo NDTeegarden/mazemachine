@@ -329,6 +329,7 @@ class Sprite(Image):
             dx = vector[0] * s
             dy = vector[1] * s
             adjvector = (dx,dy)
+            Logger.debug('READ THIS: adjusted-vector={}'.format(adjvector))
             # check for obstacles - in a separate thread to keep Android OS happy
             with cf.ThreadPoolExecutor() as executor:
                 future = executor.submit(self.get_new_pos,adjvector,obstacles)
@@ -337,7 +338,7 @@ class Sprite(Image):
             colFlag = result[1]
         # handle animation if any            
         if (newpos != oldpos):
-           #Logger.debug('READ THIS: newpos != oldpos newpos={}. oldpos={}'.format(newpos,oldpos))
+            #Logger.debug('READ THIS: newpos != oldpos | newpos={} oldpos={} colFlag={}'.format(newpos,oldpos,colFlag))
             self.select_animation(vector)
             self.moveTo(newpos)
             self.collider.moveTo(newpos)
@@ -347,7 +348,7 @@ class Sprite(Image):
         else:
             self.moving = False
             self.stop_animating()
-        #Logger.debug('READ THIS: self.moving={}. newpos={}. oldpos={}'.format(self.moving,newpos,oldpos))
+        Logger.debug('READ THIS: newpos={} oldpos={} colFlag={}'.format(newpos,oldpos,colFlag))
 # ------------------------------------------------------
     def moveTo(self,pos):
         self.pos = (pos)
