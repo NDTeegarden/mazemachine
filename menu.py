@@ -299,6 +299,22 @@ class PauseMenu(FloatLayout):
             Logger.warning('{}: failed to update_shape'.format(self))             
 
 # #######################################################
+class SettingsButton(ToggleButton):
+    active = BooleanProperty(None)
+
+    def build(self, active=False, *args):
+        # create a callback linking button state to 'active' Boolean
+        def callback(instance, value):
+            self.active = (value == 'normal')
+        self.bind(state=callback)
+        # now trigger it based on the variable passed into build
+        if active:
+            self.state = 'normal'
+        else:
+            self.state = 'down'
+
+
+# #######################################################
 class SettingsSection(GridLayout):
     soundOn = BooleanProperty(None)
     vibrateOn = BooleanProperty(None)
@@ -306,66 +322,36 @@ class SettingsSection(GridLayout):
 # ------------------------------------------------------
     def __init__(self, soundOn=False, vibrateOn=False, size_hint=(.25,.25),pos_hint={'center_x': .35, 'center_y': .15}, *args): 
         self.cols=2
-        self.rows=2
+        self.rows=1
         super().__init__(*args)
         self.build(soundOn=soundOn,vibrateOn=vibrateOn,size_hint=size_hint,pos_hint=pos_hint)
 # ------------------------------------------------------
     def add_options(self, soundOn, vibrateOn):
         self.soundOn = soundOn
         self.vibrateOn = vibrateOn
-        self.soundSwitch = Switch() 
-        self.soundSwitch.active = soundOn        
-        self.vibeSwitch = Switch() 
-        self.vibeSwitch.active = vibrateOn
+        self.soundSwitch = SettingsButton(text='',background_normal='assets/audio-on.png',background_down='assets/audio-off.png')
+        self.soundSwitch.build(active=soundOn)      
+        self.vibeSwitch = SettingsButton(text='',background_normal='assets/vibrate-on.png',background_down='assets/vibrate-off.png') 
+        self.vibeSwitch.build(active=vibrateOn)
         def callback(instance, value):
             self.soundOn = value
-            self.soundLabel.disabled = not value 
+            #self.soundLabel.disabled = not value 
         self.soundSwitch.bind(active=callback)        
         def callback(instance, value):
             self.vibrateOn = value
-            self.vibeLabel.disabled = not value
+            #self.vibeLabel.disabled = not value
         self.vibeSwitch.bind(active=callback)
-        self.soundLabel = Label(text='Sound')
-        self.soundLabel.disabled=(not soundOn)
-        self.vibeLabel = Label(text='Vibration')
-        self.vibeLabel.disabled=(not vibrateOn) 
-        self.add_widget(self.soundLabel)
-        self.add_widget(self.vibeLabel)        
+        # self.soundLabel = Label(text='Sound')
+        # self.soundLabel.disabled=(not soundOn)
+        # self.vibeLabel = Label(text='Vibration')
+        # self.vibeLabel.disabled=(not vibrateOn)       
         self.add_widget(self.soundSwitch)
-        self.add_widget(self.vibeSwitch)        
+        self.add_widget(self.vibeSwitch) 
+        # self.add_widget(self.soundLabel)
+        # self.add_widget(self.vibeLabel)                 
 # ------------------------------------------------------
     def build(self,soundOn=False,vibrateOn=False,size_hint=(.25,.25),pos_hint={'center_x': .35, 'center_y': .15}):
         self.size_hint = size_hint 
         self.pos_hint = pos_hint
-        self.init_canvas()
         self.add_options(soundOn, vibrateOn)
-        self.canvas.ask_update()
-# ------------------------------------------------------
-    def init_canvas(self,color=Color(0,0,0,0),shape=None):
-        self.color = color
-        if shape == None:
-            shape = self.default_shape()
-        self.shape = shape
-        self.canvas.clear()
-        self.canvas.before.add(self.color)
-        self.canvas.before.add(self.shape)
-        self.bind(pos=self.update_canvas)
-        self.bind(size=self.update_canvas)  
-# ------------------------------------------------------
-    def update(self):
-        self.canvas.ask_update()
-# ------------------------------------------------------
-    def default_shape(self):
-        s = Rectangle(size=self.size,pos=self.pos) 
-        return s
-# ------------------------------------------------------
-    def update_shape(self):
-        self.shape.pos = self.pos
-        self.shape.size = self.size
-# ------------------------------------------------------
-    def update_canvas(self,*args):
-        try:
-            self.update_shape()
-        except Exception:
-            Logger.warning('{}: failed to update_shape'.format(self))             
-
+        self.spacing=[16,0]
