@@ -348,7 +348,7 @@ class Sprite(Image):
         else:
             self.moving = False
             self.stop_animating()
-        Logger.debug('READ THIS: newpos={} oldpos={} colFlag={}'.format(newpos,oldpos,colFlag))
+        #Logger.debug('READ THIS: newpos={} oldpos={} colFlag={}'.format(newpos,oldpos,colFlag))
 # ------------------------------------------------------
     def moveTo(self,pos):
         self.pos = (pos)

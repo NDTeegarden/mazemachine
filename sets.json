@@ -111,7 +111,7 @@
         , "floor": "assets/swirly-floor.png"
         , "background": "assets/dark-gray.png" 
         , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/bright-blue-left.zip","assets/bright-blue-right.zip"]
+        ,  "ball": ["assets/bright-ball-blue-left.zip","assets/bright-blue-ball-right.zip"]
     } 
     ,{ "wall": "assets/transtube3-wall.zip"
         , "floor": "assets/transtube3-floor.zip"

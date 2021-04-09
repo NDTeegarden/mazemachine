@@ -307,13 +307,13 @@ class SettingsButton(ToggleButtonBehavior, Image):
         self.background_normal = background_normal
         self.background_down = background_down
         self.active=active
-        Logger.debug('BUILD: active={}'.format(active) )
+        #Logger.debug('BUILD: active={}'.format(active) )
         if self.active:
             self.source = self.background_normal
         else:
             self.source = self.background_down
         def callback(instance):
-            Logger.debug('{}.on_press!'.format(self))
+            #Logger.debug('{}.on_press!'.format(self))
             if self.active:
                 self.active = False
                 self.source = self.background_down
@@ -342,12 +342,12 @@ class SettingsSection(GridLayout):
         self.vibeSwitch = SettingsButton() 
         self.vibeSwitch.build(background_normal='assets/vibrate-on.png',background_down='assets/vibrate-off.png',active=vibrateOn)
         def callback(instance, value):
-            Logger.debug('Setting self.soundOn to {}'.format(value))
+            #Logger.debug('Setting self.soundOn to {}'.format(value))
             self.soundOn = value
             return True
         self.soundSwitch.bind(active=callback)        
         def callback(instance, value):
-            Logger.debug('Setting self.vibrateOn to {}'.format(value))
+            #Logger.debug('Setting self.vibrateOn to {}'.format(value))
             self.vibrateOn = value
             return True
         self.vibeSwitch.bind(active=callback)      

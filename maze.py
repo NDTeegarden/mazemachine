@@ -12,6 +12,7 @@ from kivy.uix.layout import Layout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.widget import Widget
 from kivy.uix.image import Image
+from kivy.uix.button import Button
 from kivy.graphics import Color, Rectangle, Ellipse
 from kivy.properties import (BooleanProperty, NumericProperty, BoundedNumericProperty, ReferenceListProperty, ObjectProperty)
 from kivy.vector import Vector
@@ -174,6 +175,7 @@ class MazeGame(Widget):
         self.set_config({'difficulty':self.difficulty,'sound':self.soundOn,'vibrate':self.vibrateOn})
         self.player1.enable()
         self.playfield.new_game(self.difficulty)
+        self.place_pause_button()
         Logger.debug('new_game: self={}'.format(self))
         # v = (0,0)
         # self.player1.set_vector(v=v)
@@ -249,6 +251,21 @@ class MazeGame(Widget):
         self.config.write()
         print(self.signoff)
         sys.exit(0)
+# ------------------------------------------------------
+    def place_pause_button(self) :
+        button = Button(text='', background_normal='assets/menu.png', background_down='assets/menu-pressed.png')  
+        def callback(instance):
+            if self.running:
+                self.pause_game()
+            else:
+                return False
+        button.bind(on_press=callback)
+        h = self.playfield.top - int(button.height * 1.5)
+        pos = (0,h)
+        w = self.height/8
+        button.pos = pos
+        button.size = (w,w)
+        self.add_widget(button)          
 # ------------------------------------------------------
     def show_menu(self,caption):
         difficulty=self.difficulty
@@ -453,7 +470,7 @@ class Playfield(FloatLayout):
     def clear_maze(self):
         self.clear_widgets()
         self.walls = []
-        self.floors = []        
+        self.floors = []         
 # ------------------------------------------------------
     def place_ball(self,cell,difficulty):
         x = cell.pos[0] + int(cell.size[0] / 2) - 6
