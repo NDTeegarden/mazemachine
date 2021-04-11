@@ -14,7 +14,9 @@ from kivy.uix.togglebutton import ToggleButton
 from kivy.graphics import Rectangle, Color
 from kivy.properties import (NumericProperty, BoundedNumericProperty, ObjectProperty, StringProperty, BooleanProperty, ListProperty)
 from kivy.uix.behaviors.togglebutton import ToggleButtonBehavior
+from kivy.uix.behaviors.button import ButtonBehavior
 from kivy.uix.image import Image
+import kivy.core.text.markup
 #system imports
 import sys
 
@@ -67,7 +69,13 @@ class GameMenu(FloatLayout):
         self.settings.bind(soundOn=callback)
         def callback(instance, value):
             self.vibrateOn = value
-        self.settings.bind(vibrateOn=callback)        
+        self.settings.bind(vibrateOn=callback)    
+# ------------------------------------------------------
+    def show_credits(self):
+        panel = TextDisplay()
+        panel.build(source='credits.bb',background='assets/black-square.png') 
+        self.add_widget(panel)      
+        Logger.debug('show credits: panel.pos={}'.format(panel.pos))                
 # ------------------------------------------------------
     def build(self,difficulty,caption,soundOn,vibrateOn):
         self.size_hint = (.75,.75) 
@@ -210,6 +218,7 @@ class Selector(FloatLayout):
                 child.canvas.ask_update()
             except Exception:
                 Logger.warning('{}: failed to update_shape'.format(self))  
+
 # #######################################################
 class PauseMenu(FloatLayout):
     soundOn = BooleanProperty(None)
@@ -271,6 +280,12 @@ class PauseMenu(FloatLayout):
         self.add_settings()
         self.canvas.ask_update()
 # ------------------------------------------------------
+    def show_credits(self):
+        panel = TextDisplay()
+        panel.build(source='credits.dat',background='assets/black-square.png') 
+        self.add_widget(panel)      
+        Logger.debug('show credits: panel.pos={}'.format(panel.pos))       
+# ------------------------------------------------------
     def init_canvas(self,color=Color(0,0,0,.8),shape=None):
         self.color = color
         if shape == None:
@@ -322,6 +337,22 @@ class SettingsButton(ToggleButtonBehavior, Image):
                 self.source = self.background_normal
             return False
         self.bind(on_press=callback)
+# #######################################################
+class StandardButton(ButtonBehavior, Image):
+    active = BooleanProperty(None)
+# ------------------------------------------------------
+    def build(self, background_normal, background_down, *args):
+        self.background_normal = background_normal
+        self.background_down = background_down
+        self.source = self.background_normal
+        def callback(instance):
+            self.source = self.background_down
+            return False
+        self.bind(on_press=callback) 
+        def callback(instance):
+            self.source = self.background_normal
+            return False
+        self.bind(on_release=callback)       
 
 # #######################################################
 class SettingsSection(GridLayout):
@@ -329,10 +360,10 @@ class SettingsSection(GridLayout):
     vibrateOn = BooleanProperty(None)
 # ------------------------------------------------------
     def __init__(self, soundOn=False, vibrateOn=False, size_hint=(.25,.25),pos_hint={'center_x': .35, 'center_y': .15}, *args): 
-        self.cols=2
+        self.cols=4
         self.rows=1
         super().__init__(*args)
-        self.build(soundOn=soundOn,vibrateOn=vibrateOn,size_hint=size_hint,pos_hint=pos_hint)
+        self.build(soundOn=soundOn,vibrateOn=vibrateOn,size_hint=size_hint,pos_hint=pos_hint)  
 # ------------------------------------------------------
     def add_options(self, soundOn, vibrateOn):
         self.soundOn = soundOn
@@ -352,10 +383,58 @@ class SettingsSection(GridLayout):
             return True
         self.vibeSwitch.bind(active=callback)      
         self.add_widget(self.soundSwitch)
-        self.add_widget(self.vibeSwitch)               
+        self.add_widget(self.vibeSwitch)  
+# ------------------------------------------------------
+    def add_info(self):
+        self.infoButton = StandardButton() 
+        self.infoButton.build(background_normal='assets/info.png',background_down='assets/info-pressed.png')
+        def callback(instance):
+            self.parent.show_credits()
+        self.infoButton.bind(on_press=callback)
+        self.add_widget(self.infoButton)
+# ------------------------------------------------------
+    def add_blank(self):
+        blank = StandardButton() 
+        blank.build(background_normal='assets/black-square.png',background_down='assets/black-square.png')
+        self.add_widget(blank)        
 # ------------------------------------------------------
     def build(self,soundOn=False,vibrateOn=False,size_hint=(.25,.25),pos_hint={'center_x': .35, 'center_y': .15}):
         self.size_hint = size_hint 
         self.pos_hint = pos_hint
+        self.add_info()
+        self.add_blank()
         self.add_options(soundOn, vibrateOn)
-        self.spacing=[20,0]
+        self.spacing=[10,0]
+# #######################################################
+class TextDisplay(Button):
+# ------------------------------------------------------    
+    def build(self,source,background):
+        self.background_normal=background
+        self.background_down=background
+        def callback(instance,value):
+            instance.size = value
+        self.bind(texture_size=callback)        
+        t=u''
+        try:    
+            f = open(source, 'r')
+        except Exception:
+            import traceback
+            traceback.print_exc()             
+            item = False
+            return item
+        try:
+            t = t + f.read()
+        except Exception:
+            import traceback
+            traceback.print_exc()            
+        finally:
+            f.close()
+        self.markup=True
+        self.text = t
+        def callback(instance):
+            instance.close()
+        self.bind(on_press=callback)
+
+# ------------------------------------------------------
+    def close(self):
+        self.parent.remove_widget(self)

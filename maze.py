@@ -27,7 +27,7 @@ from ellermaze import EllerMaze
 from ellermaze import EllerMazeGenerator
 from controller import Controller
 from mazesprites import (Cell, Wall, Floor, Ball, Goal)
-from menu import GameMenu, PauseMenu
+from menu import GameMenu, PauseMenu, StandardButton
 from sets import AssetSet
 
 #system imports
@@ -36,6 +36,8 @@ import numpy as np
 import random as rn
 import threading as th
 import concurrent.futures as cf
+
+CLOCK_INTERVAL = .08
 
 class MazeApp(App):
     def build(self):
@@ -50,11 +52,10 @@ class MazeApp(App):
 
     def build_config(self, config):
         config.setdefaults('MazeApp', {
-            'loglevel': 'debug',
+            'loglevel': 'info',
         })
         config.setdefaults('MazeGame', {
             'difficulty': 2,
-            'interval': 0.12,
             'keyboard': False,
             'sound': True,
             'vibrate': True
@@ -84,6 +85,7 @@ class MazeGame(Widget):
         self.player1 = Controller(rootWidget=self,useKeyboard=self.useKeyboard)
         self.playfield = Playfield()
         self.size = Window.size
+        self.interval = CLOCK_INTERVAL
         w = self.size[0]
         h = self.size[1]
         psize = (0,0)
@@ -98,7 +100,7 @@ class MazeGame(Widget):
         self.playfield.yoffset = bottom
         self.add_widget(self.playfield)
         self.set_signoff()
-        self.end_game(victory=False)
+        self.end_game(victory=False)        #end_game shows themain menu
 # ------------------------------------------------------
     def load_config_settings(self, config):
         self.config = config 
@@ -108,12 +110,6 @@ class MazeGame(Widget):
         except Exception:
             Logger.debug('config for difficulty didn''t work')
             difficulty=2
-            error = True
-        try:
-            interval = config.getfloat('MazeGame','interval')  
-        except Exception:
-            Logger.debug('config for interval didn''t work')    
-            interval = 0.16
             error = True
         try:
             soundOn = config.getboolean('MazeGame','sound')  
@@ -134,7 +130,6 @@ class MazeGame(Widget):
             useKeyboard = False 
             error = True            
         self.difficulty = difficulty
-        self.interval = interval
         self.soundOn = soundOn
         self.vibrateOn = vibrateOn 
         self.useKeyboard = useKeyboard           
@@ -182,7 +177,7 @@ class MazeGame(Widget):
         self.player1.touchWidget.activate(widget=self.playfield.ball)
         Window.bind(on_request_close=self._on_request_close)
         self.running = True
-        self.schedule_next_update()
+        self.schedule_next_update()    
 # ------------------------------------------------------
     def schedule_next_update(self):
         self.loopEvent = Clock.schedule_interval(self.update, self.interval)
@@ -206,7 +201,8 @@ class MazeGame(Widget):
     def update(self, dt):
         #Logger.debug('update: running={}'.format(self.running))
         if (self.running):
-            self.running_update()
+            with cf.ThreadPoolExecutor() as executor:
+                updThread = executor.submit(self.running_update())
 # ------------------------------------------------------
     def running_update(self):
         victory = self.playfield.update_game(player=self.player1)
@@ -253,7 +249,8 @@ class MazeGame(Widget):
         sys.exit(0)
 # ------------------------------------------------------
     def place_pause_button(self) :
-        button = Button(text='', background_normal='assets/menu.png', background_down='assets/menu-pressed.png')  
+        button = StandardButton()
+        button.build(background_normal='assets/menu.png', background_down='assets/menu-pressed.png')  
         def callback(instance):
             if self.running:
                 self.pause_game()
@@ -485,20 +482,20 @@ class Playfield(FloatLayout):
         Logger.debug('place_ball: speed={}'.format(speed))
         asset = self.assetData['ball']
         self.ball = Ball(speed=speed,size_hint=(None,None),source=asset[0],size=(width,height),pos=(x,y),allow_stretch=True,altSources=[asset[1]],soundOn=False)
-        self.ball.add_sound_source(key='win', source='assets/ball-drop0.wav')
-        self.ball.add_sound_source(key='move', source='assets/ball-rolling0.wav')
+        self.ball.add_sound_source(key='win', source='assets/glassbell.wav')
+        self.ball.add_sound_source(key='move', source='assets/rollin.wav')
         self.ball.soundOn = self.parent.soundOn
         def callback(instance, value):
             self.ball.soundOn = value
-            Logger.debug('CALLBACK: MazeGame.soundOn={}'.format(value))
+            #Logger.debug('CALLBACK: MazeGame.soundOn={}'.format(value))
         self.parent.bind(soundOn=callback)
         def callback(instance, value):
             if value:
                 self.ball.soundOn = False
-                Logger.debug('CALLBACK: MazeGame.paused={}'.format(value))
+                #Logger.debug('CALLBACK: MazeGame.paused={}'.format(value))
             else:
                 self.ball.soundOn = self.parent.soundOn
-                Logger.debug('CALLBACK: MazeGame.paused={}'.format(value))
+                #Logger.debug('CALLBACK: MazeGame.paused={}'.format(value))
         self.parent.bind(paused=callback)
         cell.add_widget(self.ball)
 # ------------------------------------------------------
@@ -509,7 +506,7 @@ class Playfield(FloatLayout):
         y = cell.pos[1] - (h / 2)
         #.debug('place_goal: y={}   cell.pos={}'.format(y,cell.pos))
         src = self.assetData['goal_bottom']
-        Logger.debug(src)
+        #Logger.debug(src)
         self.goal = Goal(pos=(x,y),size=(w,h), source=src, allow_stretch=True, keep_ratio = True)
         cell.add_widget(self.goal)
         for item in (self.floors):

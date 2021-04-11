@@ -1,14 +1,11 @@
-Maze Machine
 
-Lovegarden Games ©2021
+    arikel
+    CruzR
+    CryHam
+    Behrtron
+    JosipKladaric
+    Sindwiller
+    kenney.nl
+    qubodup
 
-Includes art from these 
-opengameart.org contributors:
-arikel
-CruzR
-CryHam
-Behrtron
-JosipKladaric
-Sindwiller
-kenney.nl
-qubodup
+    

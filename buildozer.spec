@@ -13,10 +13,10 @@ package.domain = org.lovegardengames
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,kv,atlas,json,zip,gif,wav
+source.include_exts = py,png,jpg,kv,atlas,json,zip,gif,wav,dat
 
 # (list) List of inclusions using pattern matching
-source.include_patterns = assets/*.png,assets/*.zip,assets/*.gif,assets/*.wav
+source.include_patterns = assets/*.png,assets/*.zip,assets/*.gif,assets/*.wav,*.dat
 
 # (list) Source files to exclude (let empty to not exclude anything)
 source.exclude_exts = .git,.gitignore,.bak,.xcf,.ora,.jpg,.ini
