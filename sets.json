@@ -75,7 +75,7 @@
         , "floor": "assets/sandstone-floor.png"
         , "background": "assets/dark-wood-background.png" 
         , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/bright-blue-ball-left.zip","assets/bright-blue-ball-right.zip"]
+        ,  "ball": ["assets/whiteA-ball-left.zip","assets/whiteA-blue-ball-right.zip"]
     }    
     ,{ "wall": "assets/paver-wall.png"
         , "floor": "assets/paver-floor.png"

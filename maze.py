@@ -476,7 +476,7 @@ class Playfield(FloatLayout):
         wallWidth = item.size[0]
         width = int(cell.size[0] * .5) - 2
         height = int(cell.size[1] * .5) - 2
-        speed = wallWidth - 2
+        speed = wallWidth - 1
         if speed < 2:
             speed = 2
         Logger.debug('place_ball: speed={}'.format(speed))

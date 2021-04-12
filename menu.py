@@ -21,15 +21,34 @@ import kivy.core.text.markup
 import sys
 
 BUTTON_SIZE_HINT = (.3,.15)
+# #######################################################
+class BaseMenu(FloatLayout):
+    caption = StringProperty(None)    
+# ------------------------------------------------------
+    def __init__(self, caption='test', *args): 
+        super().__init__(*args)
+        self.caption = caption
+# ------------------------------------------------------
+    def build(self,*args):
+        self.add_caption()       
+# ------------------------------------------------------
+    def add_caption(self):
+        l = Label(text=self.caption,size_hint=(1,.2),pos_hint={'center_x': .5,'top': 1}, font_size='36sp') 
+        self.add_widget(l)
+# ------------------------------------------------------
+    def show_credits(self):
+        panel = TextDisplay()
+        panel.build(source='credits.dat',background='assets/black-square.png') 
+        self.add_widget(panel)      
+        Logger.debug('show credits: panel.pos={}'.format(panel.pos))          
 
-class GameMenu(FloatLayout):
+# #######################################################
+class GameMenu(BaseMenu):
     difficulty = BoundedNumericProperty(3, min=1, max=5)
     soundOn = BooleanProperty(None)
     vibrateOn = BooleanProperty(None)
     newFlag = BooleanProperty(None)
-    quitFlag = BooleanProperty(None)
-    caption = StringProperty(None)
-    captionLabel = ObjectProperty(None)      
+    quitFlag = BooleanProperty(None)    
 # ------------------------------------------------------
     def __init__(self, difficulty=3, caption='test',soundOn=False,vibrateOn=False, *args): 
         super().__init__(*args)
@@ -56,10 +75,7 @@ class GameMenu(FloatLayout):
         def callback(instance,value):
             self.difficulty = self.difSelector.value
         self.difSelector.bind(value=callback)
-# ------------------------------------------------------
-    def add_caption(self):
-        l = Label(text=self.caption,size_hint=(1,.2),pos_hint={'center_x': .5,'top': 1}, font_size='36sp') 
-        self.add_widget(l)
+
 # ------------------------------------------------------
     def add_settings(self):
         self.settings = SettingsSection(soundOn=self.soundOn,vibrateOn=self.vibrateOn,size_hint=(.25,.15),pos_hint={'center_x': .4, 'center_y': .15})
@@ -69,13 +85,7 @@ class GameMenu(FloatLayout):
         self.settings.bind(soundOn=callback)
         def callback(instance, value):
             self.vibrateOn = value
-        self.settings.bind(vibrateOn=callback)    
-# ------------------------------------------------------
-    def show_credits(self):
-        panel = TextDisplay()
-        panel.build(source='credits.bb',background='assets/black-square.png') 
-        self.add_widget(panel)      
-        Logger.debug('show credits: panel.pos={}'.format(panel.pos))                
+        self.settings.bind(vibrateOn=callback)              
 # ------------------------------------------------------
     def build(self,difficulty,caption,soundOn,vibrateOn):
         self.size_hint = (.75,.75) 
@@ -220,13 +230,12 @@ class Selector(FloatLayout):
                 Logger.warning('{}: failed to update_shape'.format(self))  
 
 # #######################################################
-class PauseMenu(FloatLayout):
+class PauseMenu(BaseMenu):
     soundOn = BooleanProperty(None)
     vibrateOn = BooleanProperty(None)
     resumeFlag = BooleanProperty(None)
     quitFlag = BooleanProperty(None)
-    caption = StringProperty(None)
-    captionLabel = ObjectProperty(None)      
+    caption = StringProperty(None)    
 # ------------------------------------------------------
     def __init__(self, caption='Paused', soundOn=False,vibrateOn=False, *args): 
         super().__init__(*args)
@@ -249,10 +258,6 @@ class PauseMenu(FloatLayout):
         self.add_widget(self.resButton)
         self.add_widget(self.mainButton)        
         self.add_widget(self.quitButton)
-# ------------------------------------------------------
-    def add_caption(self):
-        l = Label(text=self.caption,size_hint=(1,.2),pos_hint={'center_x': .5,'top': 1}, font_size='36sp') 
-        self.add_widget(l)
 # ------------------------------------------------------
     def add_settings(self):
         self.settings = SettingsSection(soundOn=self.soundOn,vibrateOn=self.vibrateOn,size_hint=(.25,.15),pos_hint={'center_x': .2, 'center_y': .5})
@@ -279,12 +284,7 @@ class PauseMenu(FloatLayout):
         self.add_buttons()
         self.add_settings()
         self.canvas.ask_update()
-# ------------------------------------------------------
-    def show_credits(self):
-        panel = TextDisplay()
-        panel.build(source='credits.dat',background='assets/black-square.png') 
-        self.add_widget(panel)      
-        Logger.debug('show credits: panel.pos={}'.format(panel.pos))       
+     
 # ------------------------------------------------------
     def init_canvas(self,color=Color(0,0,0,.8),shape=None):
         self.color = color

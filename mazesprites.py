@@ -329,13 +329,12 @@ class Sprite(Image):
             dx = vector[0] * s
             dy = vector[1] * s
             adjvector = (dx,dy)
-            Logger.debug('READ THIS: adjusted-vector={}'.format(adjvector))
+            #Logger.debug('READ THIS: adjusted-vector={}'.format(adjvector))
             # check for obstacles - in a separate thread to keep Android OS happy
             with cf.ThreadPoolExecutor() as executor:
                 future = executor.submit(self.get_new_pos,adjvector,obstacles)
             result = future.result()
-            newpos = result[0]
-            colFlag = result[1]
+            newpos = result
         # handle animation if any            
         if (newpos != oldpos):
             #Logger.debug('READ THIS: newpos != oldpos | newpos={} oldpos={} colFlag={}'.format(newpos,oldpos,colFlag))
@@ -354,36 +353,57 @@ class Sprite(Image):
         self.pos = (pos)
 # ------------------------------------------------------
     def get_new_pos(self, vector, obstacles):
-        (oldx, oldy) = self.pos
+        newpos = self.pos
         dx = int(vector[0])
         dy = int(vector[1])
+        newvector = (dx,dy)
+        while (newvector != (0,0)) and (newpos == self.pos):
+            newpos= self.test_with_vector(newvector, obstacles)
+            flag = (newpos == self.pos)
+            if flag and dx != 0:
+                if dx > 1:
+                    dx = dx - 1
+                elif dx < 1:
+                    dx = dx + 1
+                else:
+                    dx = 0
+            if flag and dy != 0:
+                if dy > 1:
+                    dy = dy -1
+                elif dy < 1:
+                    dy = dy + 1
+                else:
+                    dy = 0 
+        return (newpos)
+# ------------------------------------------------------
+    def test_with_vector(self, vector, obstacles):
+        (oldx, oldy) = self.pos
+        (dx,dy) = vector
         newx = oldx + dx
         newy = oldy + dy
         c = self.collider
         c.moveTo(pos=(newx,newy))
         collisions = self.get_collisions(widget=c, obstacles=obstacles)
-        flag = False
         if len(collisions) > 0:
-            flag = True
             if (dx != 0):                
                 newx = oldx + dx
                 newy = oldy  
                 c.moveTo(pos=(newx,newy))
                 newlist = self.get_collisions(widget=c, obstacles=collisions)
                 if len(newlist) == 0:
-                    collisions = newlist 
+                    collisions = newlist
             if (dy != 0) and len(collisions) > 0:
                 newx = oldx
                 newy = oldy + dy
                 c.moveTo(pos=(newx,newy))
                 newlist = self.get_collisions(widget=c, obstacles=collisions)
                 if len(newlist) == 0:
-                    collisions = newlist 
+                    collisions = newlist
             if len(collisions) > 0:
                 newx = oldx
                 newy = oldy
         newpos = (int(newx), int(newy))
-        return (newpos, flag)
+        return (newpos)              
 # ------------------------------------------------------
     def get_collisions(self, widget, obstacles):
         collisions = []
