@@ -1,170 +1,182 @@
 [
-    {   "wall": "assets/bluewall4.png"
-        , "floor": "assets/bluefloor4.png"
-        , "background": "assets/dark-gray.png"
-        , "goal_bottom": "assets/exit-down.zip"
-        ,  "ball": ["assets/red-ball-left.zip","assets/red-ball-right.zip"]
+    {   "wall": "assets/mazeparts/bluewall4.png"
+        , "floor": "assets/mazeparts/bluefloor4.png"
+        , "background": "assets/backgrounds/dark-gray.png"
+        , "goal_bottom": "assets/mazeparts/exit-down.zip"
+        ,  "ball": ["assets/players/red-ball-left.zip","assets/players/red-ball-right.zip"]
     }
-    ,{ "wall": "assets/wood-wall.png"
-        , "floor": "assets/wood-floor.png"
-        , "background": "assets/light-wood.png"
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/bright-blue-ball-left.zip","assets/bright-blue-ball-right.zip"]
+    ,{ "wall": "assets/mazeparts/wood-wall.png"
+        , "floor": "assets/mazeparts/wood-floor.png"
+        , "background": "assets/backgrounds/parchment-background.png"
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/bright-blue-ball-left.zip","assets/players/bright-blue-ball-right.zip"]
     }
-    ,{ "wall": "assets/pebble-wall.png"
-        , "floor": "assets/pebble-floor.png"
-        , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
+    ,{ "wall": "assets/mazeparts/pebble-wall.png"
+        , "floor": "assets/mazeparts/pebble-floor.png"
+        , "background": "assets/backgrounds/dark-gray.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/orange-ball-left.zip","assets/players/orange-ball-right.zip"]
     }  
-    ,{ "wall": "assets/blockwall.png"
-        , "floor": "assets/blockfloor.png"
-        , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
+    ,{ "wall": "assets/mazeparts/blockwall.png"
+        , "floor": "assets/mazeparts/blockfloor.png"
+        , "background": "assets/backgrounds/dark-gray.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/orange-ball-left.zip","assets/players/orange-ball-right.zip"]
     }  
-    ,{ "wall": "assets/brickwall1.png"
-        , "floor": "assets/brickfloor1.png"
-        , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/whiteA-ball-left.zip","assets/whiteA-ball-right.zip"]
+    ,{ "wall": "assets/mazeparts/brickwall1.png"
+        , "floor": "assets/mazeparts/brickfloor1.png"
+        , "background": "assets/backgrounds/dark-gray.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/whiteA-ball-left.zip","assets/players/whiteA-ball-right.zip"]
     }
-    ,{ "wall": "assets/brickwall2.png"
-        , "floor": "assets/brickfloor2.png"
-        , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/whiteA-ball-left.zip","assets/whiteA-ball-right.zip"]
+    ,{ "wall": "assets/mazeparts/brickwall2.png"
+        , "floor": "assets/mazeparts/brickfloor2.png"
+        , "background": "assets/backgrounds/dark-gray.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/whiteD-ball-left.zip","assets/players/whiteD-ball-right.zip"]
     }
-    ,{ "wall": "assets/brickwall4.png"
-        , "floor": "assets/brickfloor4.png"
-        , "background": "assets/brick-background2.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
+    ,{ "wall": "assets/mazeparts/brickwall4.png"
+        , "floor": "assets/mazeparts/brickfloor4.png"
+        , "background": "assets/backgrounds/brick-background2.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/orange-ball-left.zip","assets/players/orange-ball-right.zip"]
     } 
-    ,{ "wall": "assets/brickwall5.png"
-        , "floor": "assets/brickfloor5.png"
-        , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/pink-ball-left.zip","assets/pink-ball-right.zip"]
+    ,{ "wall": "assets/mazeparts/brickwall5.png"
+        , "floor": "assets/mazeparts/brickfloor5.png"
+        , "background": "assets/backgrounds/dark-gray.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/pink-ball-left.zip","assets/players/pink-ball-right.zip"]
     }      
-    ,{ "wall": "assets/ice7b-wall.png"
-        , "floor": "assets/ice7b-floor.png"
-        , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/pink-ball-left.zip","assets/pink-ball-right.zip"]
+    ,{ "wall": "assets/mazeparts/ice7b-wall.png"
+        , "floor": "assets/mazeparts/ice7b-floor.png"
+        , "background": "assets/backgrounds/dark-gray.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/pink-ball-left.zip","assets/players/pink-ball-right.zip"]
     }   
-    ,{ "wall": "assets/aggregate-wall.png"
-        , "floor": "assets/aggregate-floor.png"
-        , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
+    ,{ "wall": "assets/mazeparts/aggregate-wall.png"
+        , "floor": "assets/mazeparts/aggregate-floor.png"
+        , "background": "assets/backgrounds/dark-gray.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/orange-ball-left.zip","assets/players/orange-ball-right.zip"]
     }  
-    ,{ "wall": "assets/mntn-wall.png"
-        , "floor": "assets/mntn-floor.png"
-        , "background": "assets/temple8gray-background.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
+    ,{ "wall": "assets/mazeparts/mntn-wall.png"
+        , "floor": "assets/mazeparts/mntn-floor.png"
+        , "background": "assets/backgrounds/temple8gray-background.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/orange-ball-left.zip","assets/players/orange-ball-right.zip"]
     }  
-    ,{ "wall": "assets/orangestone-wall.png"
-        , "floor": "assets/orangestone-floor.png"
-        , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/whiteA-ball-left.zip","assets/whiteA-ball-right.zip"]
+    ,{ "wall": "assets/mazeparts/orangestone-wall.png"
+        , "floor": "assets/mazeparts/orangestone-floor.png"
+        , "background": "assets/backgrounds/dark-gray.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/whiteA-ball-left.zip","assets/players/whiteA-ball-right.zip"]
     } 
-    ,{ "wall": "assets/sandstone-wall.png"
-        , "floor": "assets/sandstone-floor.png"
-        , "background": "assets/dark-wood-background.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/whiteA-ball-left.zip","assets/whiteA-blue-ball-right.zip"]
+    ,{ "wall": "assets/mazeparts/sandstone-wall.png"
+        , "floor": "assets/mazeparts/sandstone-floor.png"
+        , "background": "assets/backgrounds/dark-wood-background.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/whiteD-ball-left.zip","assets/players/whiteD-ball-right.zip"]
     }    
-    ,{ "wall": "assets/paver-wall.png"
-        , "floor": "assets/paver-floor.png"
-        , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
+    ,{ "wall": "assets/mazeparts/turquoise-wall.png"
+        , "floor": "assets/mazeparts/turquoise-floor.png"
+        , "background": "assets/backgrounds/dark-gray.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/pink-ball-left.zip","assets/players/pink-ball-right.zip"]
     }  
-    ,{ "wall": "assets/turquoise-wall.png"
-        , "floor": "assets/turquoise-floor.png"
-        , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/pink-ball-left.zip","assets/pink-ball-right.zip"]
-    }  
-    ,{ "wall": "assets/jade-wall.png"
-        , "floor": "assets/jade-floor.png"
-        , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
+    ,{ "wall": "assets/mazeparts/jade-wall.png"
+        , "floor": "assets/mazeparts/jade-floor.png"
+        , "background": "assets/backgrounds/dark-gray.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/orange-ball-left.zip","assets/players/orange-ball-right.zip"]
     }
-    ,{ "wall": "assets/temple-wall.png"
-        , "floor": "assets/temple-floor.png"
-        , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/bright-blue-ball-left.zip","assets/bright-blue-ball-right.zip"]
+    ,{ "wall": "assets/mazeparts/temple-wall.png"
+        , "floor": "assets/mazeparts/temple-floor.png"
+        , "background": "assets/backgrounds/dark-gray.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/bright-blue-ball-left.zip","assets/players/bright-blue-ball-right.zip"]
     }       
-    ,{ "wall": "assets/gnarly-wall.png"
-        , "floor": "assets/gnarly-floor.png"
-        , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/bright-blue-ball-left.zip","assets/bright-blue-ball-right.zip"]
+    ,{ "wall": "assets/mazeparts/gnarly-wall.png"
+        , "floor": "assets/mazeparts/gnarly-floor.png"
+        , "background": "assets/backgrounds/dark-gray.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/bright-blue-ball-left.zip","assets/players/bright-blue-ball-right.zip"]
     }    
-    ,{ "wall": "assets/mottled-wall.png"
-        , "floor": "assets/mottled-floor.png"
-        , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
+    ,{ "wall": "assets/mazeparts/mottled-wall.png"
+        , "floor": "assets/mazeparts/mottled-floor.png"
+        , "background": "assets/backgrounds/dark-gray.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/orange-ball-left.zip","assets/players/orange-ball-right.zip"]
     }
-    ,{ "wall": "assets/swirly-wall.png"
-        , "floor": "assets/swirly-floor.png"
-        , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/bright-blue-ball-left.zip","assets/bright-blue-ball-right.zip"]
+    ,{ "wall": "assets/mazeparts/swirly-wall.png"
+        , "floor": "assets/mazeparts/swirly-floor.png"
+        , "background": "assets/backgrounds/dark-gray.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/bright-blue-ball-left.zip","assets/players/bright-blue-ball-right.zip"]
     } 
-    ,{ "wall": "assets/transtube3-wall.zip"
-        , "floor": "assets/transtube3-floor.zip"
-        , "background": "assets/metal-background.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/pink-ball-left.zip","assets/pink-ball-right.zip"]
+    ,{ "wall": "assets/mazeparts/transtube3-wall.zip"
+        , "floor": "assets/mazeparts/transtube3-floor.zip"
+        , "background": "assets/backgrounds/metal-background.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/pink-ball-left.zip","assets/players/pink-ball-right.zip"]
     }  
-    ,{ "wall": "assets/aggtest-wall.png"
-        , "floor": "assets/aggtest-floor.png"
-        , "background": "assets/brick-background1.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/blue-ball-left.zip","assets/blue-ball-right.zip"]
+    ,{ "wall": "assets/mazeparts/aggtest-wall.png"
+        , "floor": "assets/mazeparts/aggtest-floor.png"
+        , "background": "assets/backgrounds/dark-gray.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/whiteD-ball-left.zip","assets/players/whiteD-ball-right.zip"]
     }    
-    ,{ "wall": "assets/vine-wall.png"
-        , "floor": "assets/vine-floor.png"
-        , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
+    ,{ "wall": "assets/mazeparts/vine-wall.png"
+        , "floor": "assets/mazeparts/vine-floor.png"
+        , "background": "assets/backgrounds/stone01_c-background.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/orange-ball-left.zip","assets/players/orange-ball-right.zip"]
     }  
-    ,{ "wall": "assets/quartz-wall.png"
-        , "floor": "assets/quartz-floor.png"
-        , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/bright-blue-ball-left.zip","assets/bright-blue-ball-right.zip"]
+    ,{ "wall": "assets/mazeparts/quartz-wall.png"
+        , "floor": "assets/mazeparts/quartz-floor.png"
+        , "background": "assets/backgrounds/dark-gray.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/bright-blue-ball-left.zip","assets/players/bright-blue-ball-right.zip"]
     }       
-    ,{ "wall": "assets/lightstone-wall.png"
-        , "floor": "assets/lightstone-floor.png"
-        , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/red-ball-left.zip","assets/red-ball-right.zip"]
+    ,{ "wall": "assets/mazeparts/lightstone-wall.png"
+        , "floor": "assets/mazeparts/lightstone-floor.png"
+        , "background": "assets/backgrounds/dark-gray.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/red-ball-left.zip","assets/players/red-ball-right.zip"]
     }
-    ,{ "wall": "assets/bluetube-wall.png"
-        , "floor": "assets/bluetube-floor.png"
-        , "background": "assets/brick-background3.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
-    }
-    ,{ "wall": "assets/bluebrick-wall.png"
-        , "floor": "assets/bluebrick-floor.png"
-        , "background": "assets/dark-gray.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/orange-ball-left.zip","assets/orange-ball-right.zip"]
+    ,{ "wall": "assets/mazeparts/paver-wall.png"
+        , "floor": "assets/mazeparts/paver-floor.png"
+        , "background": "assets/backgrounds/dark-gray.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/red-ball-left.zip","assets/players/red-ball-right.zip"]
     }    
-    ,{ "wall": "assets/recessed-wall.png"
-        , "floor": "assets/recessed-floor.png"
-        , "background": "assets/recessed-background.png" 
-        , "goal_bottom": "assets/exit-down.zip" 
-        ,  "ball": ["assets/red-ball-left.zip","assets/red-ball-right.zip"]
-    }                    
+    ,{ "wall": "assets/mazeparts/bluebrick-wall.png"
+        , "floor": "assets/mazeparts/bluebrick-floor.png"
+        , "background": "assets/backgrounds/dark-gray.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/whiteD-ball-left.zip","assets/players/whiteD-ball-right.zip"]
+    }    
+    ,{ "wall": "assets/mazeparts/recessed-wall.png"
+        , "floor": "assets/mazeparts/recessed-floor.png"
+        , "background": "assets/backgrounds/recessed-background.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/red-ball-left.zip","assets/players/red-ball-right.zip"]
+    }
+    ,{ "wall": "assets/mazeparts/cobblestone-wall.png"
+        , "floor": "assets/mazeparts/cobblestone-floor.png"
+        , "background": "assets/backgrounds/dark-gray.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/red-ball-left.zip","assets/players/red-ball-right.zip"]
+    }
+    ,{ "wall": "assets/mazeparts/redbrick-wall.png"
+        , "floor": "assets/mazeparts/redbrick-floor.png"
+        , "background": "assets/backgrounds/dark-gray.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/whiteA-ball-left.zip","assets/players/whiteA-ball-right.zip"]
+    } 
+    ,{ "wall": "assets/mazeparts/3d-wall.png"
+        , "floor": "assets/mazeparts/3d-floor.png"
+        , "background": "assets/backgrounds/dark-gray.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/whiteD-ball-left.zip","assets/players/whiteD-ball-right.zip"]
+    }                                            
 ]

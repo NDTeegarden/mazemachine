@@ -38,7 +38,7 @@ class BaseMenu(FloatLayout):
 # ------------------------------------------------------
     def show_credits(self):
         panel = TextDisplay()
-        panel.build(source='credits.dat',background='assets/black-square.png') 
+        panel.build(source='credits.dat',background='assets/menu/black-square.png') 
         self.add_widget(panel)      
         Logger.debug('show credits: panel.pos={}'.format(panel.pos))          
 
@@ -55,11 +55,11 @@ class GameMenu(BaseMenu):
         self.build(difficulty=difficulty,caption=caption,soundOn=soundOn,vibrateOn=vibrateOn)
 # ------------------------------------------------------
     def add_buttons(self):
-        self.newButton = Button(text='New Maze',size_hint=BUTTON_SIZE_HINT,pos_hint={'right': .87,'top': .75},background_normal='assets/green_roundedrect.png',background_down='assets/gray_roundedrect.png')
+        self.newButton = Button(text='New Maze',size_hint=BUTTON_SIZE_HINT,pos_hint={'right': .87,'top': .75},background_normal='assets/menu/green_roundedrect.png',background_down='assets/menu/gray_roundedrect.png')
         def callback(instance,value):
             instance.text_size=instance.texture_size
         self.newButton.bind(texture_size=callback)
-        self.quitButton = Button(text='Quit',size_hint=BUTTON_SIZE_HINT,pos_hint={'right': .87,'top': .45},background_normal='assets/red_roundedrect.png',background_down='assets/gray_roundedrect.png')
+        self.quitButton = Button(text='Quit',size_hint=BUTTON_SIZE_HINT,pos_hint={'right': .87,'top': .45},background_normal='assets/menu/red_roundedrect.png',background_down='assets/menu/gray_roundedrect.png')
         def callback(instance,value):
             instance.text_size=instance.texture_size
         self.quitButton.bind(texture_size=callback)
@@ -242,15 +242,15 @@ class PauseMenu(BaseMenu):
         self.build(caption=caption,soundOn=soundOn,vibrateOn=vibrateOn)
 # ------------------------------------------------------
     def add_buttons(self):
-        self.resButton = Button(text='Resume',size_hint=BUTTON_SIZE_HINT,pos_hint={'x': .5,'top': .8},background_normal='assets/green_roundedrect.png',background_down='assets/gray_roundedrect.png')
+        self.resButton = Button(text='Resume',size_hint=BUTTON_SIZE_HINT,pos_hint={'x': .5,'top': .8},background_normal='assets/menu/green_roundedrect.png',background_down='assets/menu/gray_roundedrect.png')
         def callback(instance,value):
             instance.text_size=instance.texture_size
         self.resButton.bind(texture_size=callback)
-        self.mainButton = Button(text='New Game',size_hint=BUTTON_SIZE_HINT,pos_hint={'x': .5,'top': .55},background_normal='assets/blue_roundedrect.png',background_down='assets/gray_roundedrect.png')
+        self.mainButton = Button(text='New Game',size_hint=BUTTON_SIZE_HINT,pos_hint={'x': .5,'top': .55},background_normal='assets/menu/blue_roundedrect.png',background_down='assets/menu/gray_roundedrect.png')
         def callback(instance,value):
             instance.text_size=instance.texture_size
         self.mainButton.bind(texture_size=callback)        
-        self.quitButton = Button(text='Quit',size_hint=BUTTON_SIZE_HINT,pos_hint={'x': .5,'top': .3},background_normal='assets/red_roundedrect.png',background_down='assets/gray_roundedrect.png')
+        self.quitButton = Button(text='Quit',size_hint=BUTTON_SIZE_HINT,pos_hint={'x': .5,'top': .3},background_normal='assets/menu/red_roundedrect.png',background_down='assets/menu/gray_roundedrect.png')
         def callback(instance,value):
             instance.text_size=instance.texture_size
         self.quitButton.bind(texture_size=callback)
@@ -369,9 +369,9 @@ class SettingsSection(GridLayout):
         self.soundOn = soundOn
         self.vibrateOn = vibrateOn
         self.soundSwitch = SettingsButton()
-        self.soundSwitch.build(background_normal='assets/audio-on.png',background_down='assets/audio-off.png',active=soundOn)      
+        self.soundSwitch.build(background_normal='assets/menu/audio-on.png',background_down='assets/menu/audio-off.png',active=soundOn)      
         self.vibeSwitch = SettingsButton() 
-        self.vibeSwitch.build(background_normal='assets/vibrate-on.png',background_down='assets/vibrate-off.png',active=vibrateOn)
+        self.vibeSwitch.build(background_normal='assets/menu/vibrate-on.png',background_down='assets/menu/vibrate-off.png',active=vibrateOn)
         def callback(instance, value):
             #Logger.debug('Setting self.soundOn to {}'.format(value))
             self.soundOn = value
@@ -387,7 +387,7 @@ class SettingsSection(GridLayout):
 # ------------------------------------------------------
     def add_info(self):
         self.infoButton = StandardButton() 
-        self.infoButton.build(background_normal='assets/info.png',background_down='assets/info-pressed.png')
+        self.infoButton.build(background_normal='assets/menu/info.png',background_down='assets/menu/info-pressed.png')
         def callback(instance):
             self.parent.show_credits()
         self.infoButton.bind(on_press=callback)
@@ -395,7 +395,7 @@ class SettingsSection(GridLayout):
 # ------------------------------------------------------
     def add_blank(self):
         blank = StandardButton() 
-        blank.build(background_normal='assets/black-square.png',background_down='assets/black-square.png')
+        blank.build(background_normal='assets/menu/black-square.png',background_down='assets/menu/black-square.png')
         self.add_widget(blank)        
 # ------------------------------------------------------
     def build(self,soundOn=False,vibrateOn=False,size_hint=(.25,.25),pos_hint={'center_x': .35, 'center_y': .15}):

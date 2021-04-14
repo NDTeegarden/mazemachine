@@ -250,7 +250,7 @@ class MazeGame(Widget):
 # ------------------------------------------------------
     def place_pause_button(self) :
         button = StandardButton()
-        button.build(background_normal='assets/menu.png', background_down='assets/menu-pressed.png')  
+        button.build(background_normal='assets/menu/menu.png', background_down='assets/menu/menu-pressed.png')  
         def callback(instance):
             if self.running:
                 self.pause_game()
@@ -403,29 +403,33 @@ class Playfield(FloatLayout):
         mtrx = maze.ToArray()
         w = mtrx.shape[0]  #number of cells wide
         h = mtrx.shape[1] #number of cells high
-        cw = int(self.width / (w + 1))
-        ch = int(self.height / (h + 1))
-        self.wallSize = (int(cw/5),ch)    #ch + int(ch/5)
-        self.floorSize = (cw,int(ch/5))
+        ow = int(self.width / (w + 1))
+        oh = int(self.height / (h + 1))
+        if ow < oh:
+            n = ow
+        else:
+            n = oh
+        cellSize = (n,n)
+        seg = int(n/5)
+        wallSize = (seg,n+seg)    
+        floorSize = (n+seg,seg)     
         self.walls = []
         self.floors = []
         for y in range (h):
             for x in range (w):
                 #add a blank cell to the layout
                 invy = h-y    #because kivy puts 0,0 on bottom left
-                c = Cell(pos=((x*cw)+self.xoffset,(invy*ch)-self.yoffset), size=(cw,ch),color=self.cellColor)
+                c = Cell(pos=((x*n)+self.xoffset,(invy*n)-self.yoffset), size=cellSize,color=self.cellColor)
                 self.add_widget(c)
                 #look up the grid position and see if we need to add a wall and/or floor to the cell
                 if (mtrx[x,y,1]):
-                    item = Floor(pos=(c.pos[0]+2,c.pos[1]),size=(cw,int(ch/5)),source=self.assetData['floor'])
+                    item = Floor(pos=c.pos,size=floorSize,source=self.assetData['floor'])
                     c.add_widget(item)   
                     self.floors.append(item)                
                 if (mtrx[x,y,0]):
-                    item = Wall(pos=c.pos,size=(int(cw/5),int(ch + int(ch/5))),source=self.assetData['wall']) 
+                    item = Wall(pos=c.pos,size=wallSize,source=self.assetData['wall']) 
                     c.add_widget(item)
                     self.walls.append(item)
-        self.wallSize = self.walls[0].size
-        self.floorSize = self.floors[0].size
         self.bottomRight = self.children[1]
         self.bottomLeft = self.children[w-1]
         self.topLeft = self.children[(w-1)*h-1]
@@ -482,8 +486,8 @@ class Playfield(FloatLayout):
         Logger.debug('place_ball: speed={}'.format(speed))
         asset = self.assetData['ball']
         self.ball = Ball(speed=speed,size_hint=(None,None),source=asset[0],size=(width,height),pos=(x,y),allow_stretch=True,altSources=[asset[1]],soundOn=False)
-        self.ball.add_sound_source(key='win', source='assets/glassbell.wav')
-        self.ball.add_sound_source(key='move', source='assets/rollin.wav')
+        self.ball.add_sound_source(key='win', source='assets/sound/glassbell.wav')
+        self.ball.add_sound_source(key='move', source='assets/sound/rollin.wav')
         self.ball.soundOn = self.parent.soundOn
         def callback(instance, value):
             self.ball.soundOn = value
@@ -500,9 +504,11 @@ class Playfield(FloatLayout):
         cell.add_widget(self.ball)
 # ------------------------------------------------------
     def place_goal(self,cell):
-        w = int(self.floorSize[0] / 2)
+        floorSize = self.floors[0].size
+        wallSize = self.walls[0].size
+        w = int(floorSize[0] / 2)
         h = w
-        x = cell.pos[0] + (w / 2) + (self.wallSize[0] / 2)
+        x = cell.pos[0] + (w / 2) + (wallSize[0] / 2)
         y = cell.pos[1] - (h / 2)
         #.debug('place_goal: y={}   cell.pos={}'.format(y,cell.pos))
         src = self.assetData['goal_bottom']

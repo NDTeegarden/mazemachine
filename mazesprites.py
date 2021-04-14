@@ -448,7 +448,7 @@ class Wall(Image):
         self.obstacle = obstacle
         self.blockVert = False
         self.blockHoriz = True   
-        self.anim_delay = .25     
+        self.anim_delay = .20     
 
 # ######################################################
 class Floor(Image):
