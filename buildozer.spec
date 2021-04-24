@@ -1,7 +1,7 @@
 [app]
 
 # (str) Title of your application
-title = Maze Machine test
+title = Maze Machine
 
 # (str) Package name
 package.name = mazeapp
@@ -13,26 +13,26 @@ package.domain = org.lovegardengames
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,kv,atlas,json,zip,gif,wav,dat
+source.include_exts = py,png,jpg,kv,atlas,json,zip,gif,wav,dat,ttf
 
 # (list) List of inclusions using pattern matching
-source.include_patterns = assets/*.png,assets/*.zip,assets/*.gif,assets/*.wav,*.dat
+source.include_patterns = assets/*.png,assets/*.zip,assets/*.gif,assets/*.wav,*.dat,*.ttf
 
 # (list) Source files to exclude (let empty to not exclude anything)
 source.exclude_exts = .git,.gitignore,.bak,.xcf,.ora,.jpg,.ini
 
 # (list) List of directory to exclude (let empty to not exclude anything)
-source.exclude_dirs = tests, bin, venv, assets/work
+source.exclude_dirs = tests, bin, venv, assets/work, assets/playstore
 
 # (list) List of exclusions using pattern matching
-source.exclude_patterns = license,images/*/*.jpg,.git,.gitignore,*.bak,*.xcf,*.ora,*.jpg,*.ini
+source.exclude_patterns = license,images/*/*.jpg,.git,.gitignore,*.bak,*.xcf,*.ora,*.jpg,*.ini,assets/work/*, assets/playstore/*
 
 # (str) Application versioning (method 1)
-version = 0.4
+#version = 1.0
 
 # (str) Application versioning (method 2)
-# version.regex = __version__ = ['"](.*)['"]
-# version.filename = %(source.dir)s/main.py
+version.regex = __version__ = ['"](.*)['"]
+version.filename = %(source.dir)s/main.py
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
@@ -79,7 +79,7 @@ fullscreen = 1
 # red, blue, green, black, white, gray, cyan, magenta, yellow, lightgray,
 # darkgray, grey, lightgrey, darkgrey, aqua, fuchsia, lime, maroon, navy,
 # olive, purple, silver, teal.
-android.presplash_color = #000000
+android.presplash_color = #111111
 
 # (string) Presplash animation using Lottie format.
 # see https://lottiefiles.com/ for examples and https://airbnb.design/lottie/
@@ -97,7 +97,7 @@ android.permissions = VIBRATE,WAKE_LOCK
 android.api = 29
 
 # (int) Minimum API your APK will support.
-#android.minapi = 21
+android.minapi = 21
 
 # (int) Android SDK version to use
 #android.sdk = 20
@@ -106,7 +106,7 @@ android.api = 29
 #android.ndk = 19b
 
 # (int) Android NDK API to use. This is the minimum API your app will support, it should usually match android.minapi.
-#android.ndk_api = 21
+android.ndk_api = 21
 
 # (bool) Use --private data storage (True) or --dir public storage (False)
 #android.private_storage = True
@@ -115,7 +115,7 @@ android.api = 29
 #android.ndk_path =
 
 # (str) Android SDK directory (if empty, it will be automatically downloaded.)
-#android.sdk_path =
+#android.sdk_path = /usr/lib/android-sdk
 
 # (str) ANT directory (if empty, it will be automatically downloaded.)
 #android.ant_path =
@@ -227,6 +227,7 @@ android.wakelock = True
 
 # (str) The Android arch to build for, choices: armeabi-v7a, arm64-v8a, x86, x86_64
 android.arch = armeabi-v7a
+#android.arch = arm64-v8a
 
 # (int) overrides automatic versionCode computation (used in build.gradle)
 # this is not the same as app version and should only be edited if you know what you're doing

@@ -508,7 +508,7 @@ class Playfield(FloatLayout):
         wallSize = self.walls[0].size
         w = int(floorSize[0] / 2)
         h = w
-        x = cell.pos[0] + (w / 2) + (wallSize[0] / 2)
+        x = cell.pos[0] + (w / 2) 
         y = cell.pos[1] - (h / 2)
         #.debug('place_goal: y={}   cell.pos={}'.format(y,cell.pos))
         src = self.assetData['goal_bottom']

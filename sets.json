@@ -172,11 +172,5 @@
         , "background": "assets/backgrounds/dark-gray.png" 
         , "goal_bottom": "assets/mazeparts/exit-down.zip" 
         ,  "ball": ["assets/players/whiteA-ball-left.zip","assets/players/whiteA-ball-right.zip"]
-    } 
-    ,{ "wall": "assets/mazeparts/3d-wall.png"
-        , "floor": "assets/mazeparts/3d-floor.png"
-        , "background": "assets/backgrounds/dark-gray.png" 
-        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
-        ,  "ball": ["assets/players/whiteD-ball-left.zip","assets/players/whiteD-ball-right.zip"]
-    }                                            
+    }                                          
 ]

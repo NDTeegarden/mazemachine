@@ -430,7 +430,7 @@ class TextDisplay(Button):
         finally:
             f.close()
         self.markup=True
-        self.text = t
+        self.text = t.format(chr(169))
         def callback(instance):
             instance.close()
         self.bind(on_press=callback)
