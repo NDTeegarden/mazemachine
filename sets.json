@@ -71,8 +71,8 @@
         , "goal_bottom": "assets/mazeparts/exit-down.zip" 
         ,  "ball": ["assets/players/whiteA-ball-left.zip","assets/players/whiteA-ball-right.zip"]
     } 
-    ,{ "wall": "assets/mazeparts/sandstone-wall.png"
-        , "floor": "assets/mazeparts/sandstone-floor.png"
+    ,{ "wall": "assets/mazeparts/yellow-wall.png"
+        , "floor": "assets/mazeparts/yellow-floor.png"
         , "background": "assets/backgrounds/dark-wood-background.png" 
         , "goal_bottom": "assets/mazeparts/exit-down.zip" 
         ,  "ball": ["assets/players/whiteD-ball-left.zip","assets/players/whiteD-ball-right.zip"]
@@ -129,7 +129,7 @@
         , "floor": "assets/mazeparts/vine-floor.png"
         , "background": "assets/backgrounds/stone01_c-background.png" 
         , "goal_bottom": "assets/mazeparts/exit-down.zip" 
-        ,  "ball": ["assets/players/orange-ball-left.zip","assets/players/orange-ball-right.zip"]
+        ,  "ball": ["assets/players/yellow-ball-left.zip","assets/players/yellow-ball-right.zip"]
     }  
     ,{ "wall": "assets/mazeparts/quartz-wall.png"
         , "floor": "assets/mazeparts/quartz-floor.png"
@@ -159,7 +159,7 @@
         , "floor": "assets/mazeparts/recessed-floor.png"
         , "background": "assets/backgrounds/recessed-background.png" 
         , "goal_bottom": "assets/mazeparts/exit-down.zip" 
-        ,  "ball": ["assets/players/red-ball-left.zip","assets/players/red-ball-right.zip"]
+        ,  "ball": ["assets/players/yellow-ball-left.zip","assets/players/yellow-ball-right.zip"]
     }
     ,{ "wall": "assets/mazeparts/cobblestone-wall.png"
         , "floor": "assets/mazeparts/cobblestone-floor.png"
@@ -172,5 +172,11 @@
         , "background": "assets/backgrounds/dark-gray.png" 
         , "goal_bottom": "assets/mazeparts/exit-down.zip" 
         ,  "ball": ["assets/players/whiteA-ball-left.zip","assets/players/whiteA-ball-right.zip"]
-    }                                          
+    }  
+    ,{ "wall": "assets/mazeparts/dried-red-wall.png"
+        , "floor": "assets/mazeparts/dried-red-floor.png"
+        , "background": "assets/backgrounds/dark-gray.png" 
+        , "goal_bottom": "assets/mazeparts/exit-down.zip" 
+        ,  "ball": ["assets/players/yellow-ball-left.zip","assets/players/yellow-ball-right.zip"]
+    }                                              
 ]

@@ -114,9 +114,10 @@ class Sprite(Image):
         def callback(instance, value):
             if not value:
                 self.pause_all_sounds()
-            else:     #load sounds if they were never loaded (for example of player flips Sound setting on pause menu)
-                if len(self.sounds) != len(self.soundSources):
+            else:     #load sounds if they were never loaded (for example if player starts with sound off but later turns it on)
+                if len(self.sounds) == 0:
                     self.load_sounds()
+                self.handle_move_sound(self, self.moving)
         self.bind(soundOn=callback)
 #------------------------------------------------------
     def load_content(self):
@@ -169,6 +170,7 @@ class Sprite(Image):
         return item        
 #------------------------------------------------------
     def add_move_sound(self,source, key='move', loop=True):
+        Logger.debug('Loading move sound {}'.format(key))
         if (key not in self.soundSources) or (self.soundSources[key] != source):
             self.soundSources[key] = source        
         item = True
@@ -185,19 +187,22 @@ class Sprite(Image):
 # ------------------------------------------------------
     def handle_move_sound(self,instance,value):
         if self.soundOn:
+            item = True
             try:
                 sound = self.sounds['move']
             except Exception:
                 traceback.print_exc()
+                item = False
             moving = value
             #Logger.debug('READ THIS: handle_move_sound: moving={}  playing={}'.format(moving,sound.isPlaying()))
-            if moving and (not sound.isPlaying()):
+            if item and moving and (not sound.isPlaying()):
                 sound.play()
-            elif (not moving) and sound.isPlaying():
+            elif item and (not moving) and sound.isPlaying():
                 sound.pause()
        
 #------------------------------------------------------
     def add_victory_sound(self,source, key='win', loop=False):
+        Logger.debug('Loading victory sound {}'.format(key))
         if (key not in self.soundSources) or (self.soundSources[key] != source):
             self.soundSources[key] = source        
         item = True
@@ -229,10 +234,11 @@ class Sprite(Image):
                 pass
         # remove the binding on moving - even if there's no stop sound defined     
         try:
-            self.unbbind(moving=self.handle_move_sound)
+            self.unbind(moving=self.handle_move_sound)
         except Exception:
             pass
         # now play the victory sound (if there is one, and sound is on)
+        item = True 
         if self.soundOn:
             try:
                 sound = self.sounds['win']
@@ -240,12 +246,13 @@ class Sprite(Image):
                 item = False
                 traceback.print_exc()
                 return item
-            item = True 
             if item:
-            #Logger.debug('READ THIS: trying to play victory sound')
+                Logger.debug('READ THIS: trying to play victory sound {}'.format(sound))
                 try:
                     sound.play()
                 except Exception:
+                    Logger.debug('FAILED!: Failed')
+                    traceback.print_exc()
                     item = False
         return item
 # ------------------------------------------------------
@@ -290,17 +297,16 @@ class Sprite(Image):
     def pause_sound(self, key='move'):
         s = self.sounds[key]
         if s != None:
-            if s.isPlaying():
-                try:
-                    s.pause()
-                except Exception:
-                    Logger.debug('Unable to stop sound {}'.format(key))
+            try:
+                s.pause()
+            except Exception:
+                Logger.debug('Unable to stop sound {}'.format(key))
 # ------------------------------------------------------
     def pause_all_sounds(self):
         for key in self.sounds:
-            s = self.sounds[key]
-            if s != None:
-                if s.isPlaying():
+            if key != 'win':
+                s = self.sounds[key]
+                if s != None:
                     try:
                         s.pause()
                     except Exception:

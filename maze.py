@@ -291,6 +291,7 @@ class MazeGame(Widget):
     def resume_game(self, menu):
         self.soundOn = menu.soundOn
         Logger.debug('resume_game: MazeGame.soundOn={}'.format(self.soundOn))
+        Logger.debug('resume_game: ball.soundOn={}'.format(self.playfield.ball.soundOn))
         self.vibrateOn = menu.vibrateOn
         self.set_config({'sound':self.soundOn,'vibrate':self.vibrateOn})
         menu.parent.remove_widget(menu)
