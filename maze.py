@@ -52,7 +52,7 @@ class MazeApp(App):
 
     def build_config(self, config):
         config.setdefaults('MazeApp', {
-            'loglevel': 'info',
+            'loglevel': 'debug',
         })
         config.setdefaults('MazeGame', {
             'difficulty': 2,

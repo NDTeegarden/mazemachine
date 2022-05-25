@@ -94,7 +94,7 @@ android.permissions = VIBRATE,WAKE_LOCK
 #android.features = android.hardware.usb.host
 
 # (int) Target Android API, should be as high as possible.
-android.api = 29
+android.api = 30
 
 # (int) Minimum API your APK will support.
 android.minapi = 21
@@ -228,6 +228,8 @@ android.wakelock = True
 # (str) The Android arch to build for, choices: armeabi-v7a, arm64-v8a, x86, x86_64
 #android.arch = armeabi-v7a
 android.arch = arm64-v8a
+#android.arch = x86
+#android.arch = x86_64
 
 # (int) overrides automatic versionCode computation (used in build.gradle)
 # this is not the same as app version and should only be edited if you know what you're doing
